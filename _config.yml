@@ -3,8 +3,8 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: 聆听世界
-subtitle:
+title: 千里之行 始于足下
+subtitle: 
 description:
 author: hsuloong
 language: zh-Hans
@@ -14,7 +14,8 @@ timezone:
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
 url: http://yoursite.com
 root: /
-permalink: :year/:month/:day/:title/
+#permalink: :year/:month/:day/:title/
+permalink: :category/:urlname.html
 permalink_defaults:
 
 # Directory
@@ -22,7 +23,7 @@ source_dir: source
 public_dir: public
 tag_dir: tags
 archive_dir: archives
-category_dir: categories
+category_dir: public/categories
 code_dir: downloads/code
 i18n_dir: :lang
 skip_render:
@@ -55,6 +56,31 @@ index_generator:
 # Category & Tag
 default_category: uncategorized
 category_map:
+  C++: cplusplus
+  Python: python
+  Java: java
+  Linux: linux
+  数据库: database_system
+  微积分:
+  概率论:
+  网络安全:
+  面向对象:
+  线性代数:
+  软件测试:
+  离散数学:
+  数值分析:
+  抽象代数:
+  高等数学:
+  编译原理: compilers
+  算法设计: algorithms_design
+  软件工程: software_engineering
+  设计模式: design_pattern
+  数据结构: data_structure
+  操作系统: operating_system
+  机器学习: machine_learning
+  计算机网络: computer_network
+  计算机组成原理: computer_organization
+  计算机体系结构: computer_architecture
 tag_map:
 
 # Date / Time format
