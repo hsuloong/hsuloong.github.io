@@ -2,6 +2,8 @@
 title: struct位段和字节对齐原理及其计算法则
 urlname: struct-byte-alignment
 date: 2018-03-12 17:04:21
+copyright: true
+mathjax: true
 tags:
 - C++
 categories:

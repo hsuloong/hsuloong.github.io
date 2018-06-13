@@ -2,6 +2,8 @@
 title: C++多态分类及其实现和C模拟实现多态
 urlname: cpp-polymorphism
 date: 2018-03-12 12:59:43
+copyright: true
+mathjax: true
 tags:
 - C++
 categories:

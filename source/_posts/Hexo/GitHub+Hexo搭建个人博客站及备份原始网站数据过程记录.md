@@ -2,6 +2,8 @@
 title: GitHub+Hexo搭建个人博客站及备份原始网站数据过程记录
 urlname: build-blog-website
 date: 2018-02-28 19:56:13
+copyright: true
+mathjax: true
 tags:
 - Hexo
 categories:

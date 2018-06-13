@@ -2,6 +2,8 @@
 title: 选择问题-TopK问题：N个元素的数组找到最大K个数
 urlname: top-k-problem
 date: 2018-04-16 23:05:40
+copyright: true
+mathjax: true
 tags:
 - 算法设计
 categories:
@@ -26,7 +28,7 @@ categories:
     2. 读入新数据，如果新数据小于K个元素最小的数据，则直接丢弃，否则插入到正确的位置
     3. 在结束后保存下来的K个元素的数组即为最大的K个数
 
-在进行排序可以使用插入排序、堆排序思想。插入排序较为简单，以下实现采用堆排序的算法代码。采用堆排序的思路时间复杂度为建堆O(K)+更新堆O((N-K)lgk)，合计为O(NlogK)。
+在进行排序可以使用插入排序、堆排序思想。插入排序较为简单，以下实现采用堆排序的算法代码。采用堆排序的思路时间复杂度为建堆O(K)+更新堆O((N-K)logk)，合计为O(NlogK)。
 
 ```cpp
 #include <vector>
@@ -90,7 +92,7 @@ using namespace std;
 //会修改原数组，end和STL保持一致
 void SelectCore(vector<int> &intVec, int start, int end, int k)
 {
-        int middle = start + (end-start)/2; 
+        int middle = start + (end-start)/2;
         //选择中间元素作为分割元素，有一种称为五分化中项的中项的选择方式
         swap(intVec[middle], intVec[end-1]);
         int i = start, j = end-2;
@@ -173,7 +175,7 @@ int main()
                         }
 
                         auto startTime = system_clock::now();
-            
+
                         vector<int> result = QuickSelect(testData1, 10); //调用具体的TopK算法
                         sort(result.begin(), result.end(), greater<int>());
 

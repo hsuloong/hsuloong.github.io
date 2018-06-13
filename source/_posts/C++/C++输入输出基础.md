@@ -2,6 +2,8 @@
 title: C++输入输出基础
 urlname: cpp-io
 date: 2018-03-12 9:05:24
+copyright: true
+mathjax: true
 tags:
 - C++
 categories:

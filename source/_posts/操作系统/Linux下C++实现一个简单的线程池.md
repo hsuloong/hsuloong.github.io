@@ -2,6 +2,8 @@
 title: Linux下C++实现一个简单的线程池
 urlname: linux-cpp-thread-pool
 date: 2018-04-8 20:18:17
+copyright: true
+mathjax: true
 tags:
 - 操作系统
 - Linux

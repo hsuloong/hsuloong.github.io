@@ -2,6 +2,8 @@
 title: C/C++类型转换总结
 urlname: cpp-type-convert
 date: 2018-03-13 10:40:43
+copyright: true
+mathjax: true
 tags:
 - C++
 categories:

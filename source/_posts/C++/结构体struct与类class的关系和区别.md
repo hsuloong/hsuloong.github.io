@@ -2,6 +2,8 @@
 title: 结构体struct与类class的关系和区别
 urlname: struct-class
 date: 2018-03-12 15:47:43
+copyright: true
+mathjax: true
 tags:
 - C++
 categories:

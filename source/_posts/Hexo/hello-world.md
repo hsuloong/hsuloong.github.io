@@ -2,6 +2,8 @@
 title: Hello World
 urlname: hello-world
 date: 2018-02-28 12:56:11
+copyright: true
+mathjax: true
 tags:
 - Hexo
 categories:

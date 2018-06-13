@@ -2,6 +2,8 @@
 title: TCP-UDP基础以及区别
 urlname: tcp-up-foundation
 date: 2018-04-15 21:24:44
+copyright: true
+mathjax: true
 tags:
 - 计算机网络
 categories:
