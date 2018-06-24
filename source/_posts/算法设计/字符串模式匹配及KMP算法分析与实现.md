@@ -65,7 +65,7 @@ int BrutePatternMatch(string mainString, string patternString, size_t startPos)
 
 ![KMP](/images/kmp-algorithm-step.png)
 
-如上图所示，我们字符串可以直接开始从 $i$ 启动下一轮比较，此时 $i$ 没有发生回溯，只是 $j$ 发生回溯以对齐比较位置。如果我们希望能够一次就可以使得对齐位置移动到如上图所示的位置该如何处理呢？这便是$next$数组需要完成的工作了。比如上述匹配失配发生在$j=7$的位置，如果此时我们令$next[7]=2$，则我们可以当第 7 号（下标从 0 开始）元素发生失配时直接将j的值置为$j=next[j]$便可以完成不回溯 $i$ 的情况下一次性对齐主串和模式串使得下一轮比较可以从当前失配 $i$ 开始。以上便是KMP算法的基本思路了，剩下的就是如何得到这个$next$数组了。
+如上图所示，我们字符串可以直接开始从 $i$ 启动下一轮比较，此时 $i$ 没有发生回溯，只是 $j$ 发生回溯以对齐比较位置。如果我们希望能够一次就可以使得对齐位置移动到如上图所示的位置该如何处理呢？这便是$next$数组需要完成的工作了。比如上述匹配失配发生在$j=7$的位置，如果此时我们令$next[7]=2$，则我们可以当第 7 号（下标从 0 开始）元素发生失配时直接将 $j$ 的值置为$j=next[j]$便可以完成不回溯 $i$ 的情况下一次性对齐主串和模式串使得下一轮比较可以从当前失配 $i$ 开始。以上便是KMP算法的基本思路了，剩下的就是如何得到这个$next$数组了。
 
 ### KMP算法Next数组计算
 
@@ -133,7 +133,7 @@ vector<int> CalculateNextArray(string patternString)
 }
 ```
 
-从上述代码可以看出代码重复判断 $j==0$ 的情况，如果可以统一处理可以使得代码更加简洁，这便需要用到前面提到过的 $next[0]$，如何设置该值呢？观察代码，我们可以发现当 $j==0$是有两种情况，一种是此时 $i,j$ 对应的字符相等，此时 $next[i+1]=j+1=1$，当不等时 $next[i+1]=0=-1+1$，如果我们让 $j==0$ 和 字符不等时将 $j$ 置为 $-1$，结合上述思路修改代码如下：
+从上述代码可以看出代码重复判断 $j==0$ 的情况，如果可以统一处理可以使得代码更加简洁，这便需要用到前面提到过的 $next[0]$，如何设置该值呢？观察代码，我们可以发现当 $j==0$是有两种情况，一种是此时 $i,j$ 对应的字符相等，此时 $next[i+1]=j+1=0+1=1$，当不等时 $next[i+1]=0=-1+1$，如果我们让 $j==0$ 和字符不等时将 $j$ 置为 $-1$，结合上述思路修改代码如下：
 
 ```cpp
 #include <vector>
@@ -185,6 +185,46 @@ vector<int> CalculateNextArrayUltimate(string patternString)
                         if (j == -1 || patternString[i] == patternString[j]) {
                                 j += 1;
                                 nextArray[i+1] = j; break;
+                        }
+                        j = nextArray[j];
+                }
+        }
+        return nextArray;
+}
+```
+
+上述代码只是优化掉了一行赋值代码，实际上上面代码依旧可以进行优化，考虑如下图一种情况：
+
+![KMP不等](/images/kmp-next-array-improve.png)
+
+在第 $2,3,5,6,7,8,10,11$ 个字符一旦失配后，如果 $j$ 回溯到 $next[j]$ 时依旧会失效，因为这两个下标的字符是一样的，因此如果在发现第 $j$ 与第 $next[j]$ 字符相等时，可以接着往前回溯，直到不相等。由于递推是从前往后，因此我们只需把值赋为上一个值即可，优化代码如下：
+
+```cpp
+#include <vector>
+#include <string>
+using std::vector;
+using std::string;
+
+vector<int> CalculateNextArrayUltimateImprove(string patternString)
+{
+        vector<int> nextArray(patternString.size(), -1);
+        if (patternString.size() <= 1) {
+                return nextArray;
+        }
+
+        nextArray[0] = -1; /*第0个赋为-1*/
+        int i = 0, j = -1;
+        for ( ; i < int(patternString.size()) - 1; i++) {
+                while (1) {
+                        if (j == -1 || patternString[i] == patternString[j]) {
+                                j += 1;
+                                if (patternString[j] == patternString[i+1]) {
+                                        nextArray[i+1] = nextArray[j];
+                                }
+                                else {
+                                        nextArray[i+1] = j;
+                                }
+                                break;
                         }
                         j = nextArray[j];
                 }
