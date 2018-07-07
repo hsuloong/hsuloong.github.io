@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="操作系统," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="磁盘调度基础磁盘是一种大容量低成本的存储设备，其支持随机存取。机械硬盘的物理结构如下所示：图片来源  如图所示，磁盘由多个盘片和读写磁头臂组成。盘面被分为多个同心圆，称为磁道；每个磁道又被划分为多个独立的逻辑区域，被称为扇区，扇区容量一般是512byte，有些较大为4Kbyte。每个磁道上扇区的数量可能相同也可能不相同，由于外圈长度比较大，为了提高密度可以划分更多的扇区。 磁盘在设计时根据磁头是否">
+<meta name="keywords" content="操作系统">
+<meta property="og:type" content="article">
+<meta property="og:title" content="磁盘调度策略介绍与实现">
+<meta property="og:url" content="http://yoursite.com/operating-system/disk-scheduling.html">
+<meta property="og:site_name" content="千里之行 始于足下">
+<meta property="og:description" content="磁盘调度基础磁盘是一种大容量低成本的存储设备，其支持随机存取。机械硬盘的物理结构如下所示：图片来源  如图所示，磁盘由多个盘片和读写磁头臂组成。盘面被分为多个同心圆，称为磁道；每个磁道又被划分为多个独立的逻辑区域，被称为扇区，扇区容量一般是512byte，有些较大为4Kbyte。每个磁道上扇区的数量可能相同也可能不相同，由于外圈长度比较大，为了提高密度可以划分更多的扇区。 磁盘在设计时根据磁头是否">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/images/disk-physical-structure.png">
+<meta property="og:updated_time" content="2018-06-13T14:21:15.065Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="磁盘调度策略介绍与实现">
+<meta name="twitter:description" content="磁盘调度基础磁盘是一种大容量低成本的存储设备，其支持随机存取。机械硬盘的物理结构如下所示：图片来源  如图所示，磁盘由多个盘片和读写磁头臂组成。盘面被分为多个同心圆，称为磁道；每个磁道又被划分为多个独立的逻辑区域，被称为扇区，扇区容量一般是512byte，有些较大为4Kbyte。每个磁道上扇区的数量可能相同也可能不相同，由于外圈长度比较大，为了提高密度可以划分更多的扇区。 磁盘在设计时根据磁头是否">
+<meta name="twitter:image" content="http://yoursite.com/images/disk-physical-structure.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/operating-system/disk-scheduling.html"/>
+
+
+
+
+
+  <title>磁盘调度策略介绍与实现 | 千里之行 始于足下</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">千里之行 始于足下</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/operating-system/disk-scheduling.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="hsuloong">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Limbo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="千里之行 始于足下">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">磁盘调度策略介绍与实现</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-06T14:57:04+08:00">
+                2018-04-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/public/categories/operating-system/" itemprop="url" rel="index">
+                    <span itemprop="name">操作系统</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="磁盘调度基础"><a href="#磁盘调度基础" class="headerlink" title="磁盘调度基础"></a>磁盘调度基础</h2><p>磁盘是一种大容量低成本的存储设备，其支持随机存取。机械硬盘的物理结构如下所示：<a href="https://blog.csdn.net/idber/article/details/8087473" target="_blank" rel="noopener">图片来源</a></p>
+<p><img src="/images/disk-physical-structure.png" alt="磁盘物理结构"></p>
+<p>如图所示，磁盘由多个盘片和读写磁头臂组成。盘面被分为多个同心圆，称为磁道；每个磁道又被划分为多个独立的逻辑区域，被称为扇区，扇区容量一般是512byte，有些较大为4Kbyte。每个磁道上扇区的数量可能相同也可能不相同，由于外圈长度比较大，为了提高密度可以划分更多的扇区。</p>
+<p>磁盘在设计时根据磁头是否在磁道之间移动可大致分为以下两种：</p>
+<pre><code>1. 固定头磁盘，每条磁道都有读写磁头，磁头被安装在刚性磁臂上，可并行读写磁道
+2. 移动头磁盘，每个盘面只有一个磁头，磁头需要能在不同磁道之间移动，读写速度较慢
+</code></pre><p>磁盘调度主要是针对移动头磁盘的读写时间优化。</p>
+<h2 id="磁盘访问时间"><a href="#磁盘访问时间" class="headerlink" title="磁盘访问时间"></a>磁盘访问时间</h2><p>磁盘在读写的时候主要经历如下过程：启动磁臂-&gt;移动磁头到指定磁道-&gt;扇区移动到磁头下方-&gt;读取数据。因此磁盘访问时间主要如下几部分组成：</p>
+<pre><code>1. 寻道时间Ts，Ts=m*n&quot;+s，s为启动磁臂时间，n为跨越磁道数，m为一常数，和具体磁盘有关
+2. 旋转延迟时间Tr，指扇区移动到磁头下花费的时间
+3. 传输时间Tt，为数据读写所花费的时间，如果每次读写字节数为b，旋转速度为r，磁道字节数为N，则Tt=b/(rN)
+</code></pre><p>从上述可得出整个读写期间共花费Ta=Ts+Tr+Tt，其中前两项一般与读取的数据量无关，且是整个时间中的大头。</p>
+<h2 id="磁盘调度策略"><a href="#磁盘调度策略" class="headerlink" title="磁盘调度策略"></a>磁盘调度策略</h2><p>由于读写总花费时间中寻道时间和旋转延迟占比比较大，因此从这两方面出发优化读写效率。对于旋转延迟一般和磁盘转速有关，因此主要提高转速。寻道时间则主要从寻道策略中优化，因此主要形成如下几种磁盘调度策略：</p>
+<pre><code>1. 先来先服务（FCFS，First Come First Served）
+2. 最短寻道时间优先（SSTF，Shortest Seek Time First）
+3. 扫描算法（SCAN）
+4. 循环扫描算法（CSCAN）
+5. NStepSCAN以及FSCAN算法
+</code></pre><p>一下分别详细介绍各种调度算法。</p>
+<h3 id="先来先服务"><a href="#先来先服务" class="headerlink" title="先来先服务"></a>先来先服务</h3><p>先来先服务是一种非常简单的算法，其按照请求的顺序依次处理，其优点是简单公平，但是由于没有对寻道时间进行任何优化，因此致使平均寻道时间比较大。这些特点使得FCFS算法不太适用于需要进行频繁读写的场合。其基本实现模拟代码如下所示。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">FCFS</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;serveArray, <span class="keyword">int</span> startPosition)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (serveArray.size() &lt;=<span class="number">0</span>) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">int</span> nowPosition = startPosition;</span><br><span class="line">	<span class="keyword">int</span> sum = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; serveArray.size(); i++) &#123;</span><br><span class="line">		<span class="keyword">int</span> tmp = serveArray[i] - nowPosition;</span><br><span class="line">		sum += tmp &gt; <span class="number">0</span> ?  tmp :-tmp;</span><br><span class="line">		nowPosition = serveArray[i];</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> sum;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="最短寻道时间优先"><a href="#最短寻道时间优先" class="headerlink" title="最短寻道时间优先"></a>最短寻道时间优先</h3><p>最短寻道时间优先是指在请求队列中优先满足离当前位置最近的磁道，使得每次寻道时间最短，即简单的贪心思想，但是这样并不能保证平均寻道时间最短。最短寻道时间优先策略一般优于先来先服务策略，但是可能发生饥饿现象，这是由于每次都选择离当前位置最近的磁道，对于离的比较的远的请求可能一直得不到服务。最短寻道时间优先模拟代码如下所示。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">SSTF</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;serveArray, <span class="keyword">int</span> startPosition)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (serveArray.size() &lt;= <span class="number">0</span>) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">int</span> leftIndex = <span class="number">0</span>, rightIndex = <span class="number">0</span>;</span><br><span class="line">	sort(serveArray.begin(), serveArray.end());</span><br><span class="line">	<span class="keyword">for</span> (leftIndex = <span class="number">0</span>; leftIndex &lt; <span class="keyword">int</span>(serveArray.size()) &amp;&amp; startPosition &gt; serveArray[leftIndex]; leftIndex++) ;</span><br><span class="line">	rightIndex = leftIndex; --leftIndex;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">int</span> sum = <span class="number">0</span>; <span class="keyword">int</span> nowPosition = startPosition;</span><br><span class="line">	<span class="keyword">while</span> (leftIndex &gt;= <span class="number">0</span> || rightIndex &lt; <span class="keyword">int</span>(serveArray.size())) &#123;</span><br><span class="line">		<span class="keyword">if</span> (leftIndex &gt;= <span class="number">0</span> &amp;&amp; rightIndex &lt; <span class="keyword">int</span>(serveArray.size())) &#123;</span><br><span class="line">			<span class="keyword">if</span> (<span class="built_in">abs</span>(serveArray[leftIndex]-nowPosition) &lt; <span class="built_in">abs</span>(serveArray[rightIndex]-nowPosition)) &#123;</span><br><span class="line">				sum += <span class="built_in">abs</span>(serveArray[leftIndex]-nowPosition); </span><br><span class="line">				nowPosition = serveArray[leftIndex];</span><br><span class="line">				--leftIndex;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">else</span> &#123;</span><br><span class="line">				sum += <span class="built_in">abs</span>(serveArray[rightIndex]-nowPosition); </span><br><span class="line">				nowPosition = serveArray[rightIndex];</span><br><span class="line">				++rightIndex;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> <span class="keyword">if</span> (leftIndex &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">			sum += <span class="built_in">abs</span>(serveArray[leftIndex]-nowPosition); </span><br><span class="line">			nowPosition = serveArray[leftIndex];</span><br><span class="line">			--leftIndex;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> <span class="keyword">if</span> (rightIndex &lt; <span class="keyword">int</span>(serveArray.size())) &#123;</span><br><span class="line">			sum += <span class="built_in">abs</span>(serveArray[rightIndex]-nowPosition); </span><br><span class="line">			nowPosition = serveArray[rightIndex];</span><br><span class="line">			++rightIndex;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> sum;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="扫描算法"><a href="#扫描算法" class="headerlink" title="扫描算法"></a>扫描算法</h3><p>扫描算法又称为电梯调度算法，其考虑请求磁道与当前磁道的距离和磁头当前移动的方向，在某一方向上一直访问下去直到没有更远的请求磁道，接着才调转方向。这个过程非常类似于电梯运行方式。由于磁头会一直向一个方向移动直到无更远访问请求，因此扫描算法不会发生饥饿现象，但是可能发生磁臂粘滞现象。以下是基本的模拟代码。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">SACN</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;serveArray, <span class="keyword">int</span> startPosition)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (serveArray.size() &lt;= <span class="number">0</span>) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">int</span> leftIndex = <span class="number">0</span>, rightIndex = <span class="number">0</span>;</span><br><span class="line">	sort(serveArray.begin(), serveArray.end());</span><br><span class="line">	<span class="keyword">for</span> (leftIndex = <span class="number">0</span>; leftIndex &lt; <span class="keyword">int</span>(serveArray.size()) &amp;&amp; startPosition &gt; serveArray[leftIndex]; leftIndex++) ;</span><br><span class="line">	rightIndex = leftIndex; --leftIndex;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">int</span> sum = <span class="number">0</span>; <span class="keyword">int</span> nowPosition = startPosition;</span><br><span class="line">	<span class="keyword">if</span> (leftIndex &gt;= <span class="number">0</span> &amp;&amp; rightIndex &lt; <span class="keyword">int</span>(serveArray.size())) &#123;</span><br><span class="line">		<span class="keyword">if</span> (<span class="built_in">abs</span>(serveArray[leftIndex]-nowPosition) &lt; <span class="built_in">abs</span>(serveArray[rightIndex]-nowPosition)) &#123;</span><br><span class="line">			<span class="keyword">while</span> (leftIndex &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">				sum += <span class="built_in">abs</span>(serveArray[leftIndex]-nowPosition); </span><br><span class="line">				nowPosition = serveArray[leftIndex]; --leftIndex;</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			<span class="keyword">while</span> (rightIndex &lt; <span class="keyword">int</span>(serveArray.size())) &#123;</span><br><span class="line">				sum += <span class="built_in">abs</span>(serveArray[rightIndex]-nowPosition); </span><br><span class="line">				nowPosition = serveArray[rightIndex]; ++rightIndex;</span><br><span class="line">			&#125;</span><br><span class="line">				</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="keyword">while</span> (rightIndex &lt; <span class="keyword">int</span>(serveArray.size())) &#123;</span><br><span class="line">				sum += <span class="built_in">abs</span>(serveArray[rightIndex]-nowPosition); </span><br><span class="line">				nowPosition = serveArray[rightIndex]; ++rightIndex;</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			<span class="keyword">while</span> (leftIndex &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">				sum += <span class="built_in">abs</span>(serveArray[leftIndex]-nowPosition); </span><br><span class="line">				nowPosition = serveArray[leftIndex]; --leftIndex;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span> (leftIndex &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">		<span class="keyword">while</span> (leftIndex &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">			sum += <span class="built_in">abs</span>(serveArray[leftIndex]-nowPosition); </span><br><span class="line">			nowPosition = serveArray[leftIndex]; --leftIndex;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span> (rightIndex &lt; <span class="keyword">int</span>(serveArray.size())) &#123;</span><br><span class="line">		sum += <span class="built_in">abs</span>(serveArray[rightIndex]-nowPosition); </span><br><span class="line">		nowPosition = serveArray[rightIndex]; ++rightIndex;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> sum;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="循环扫描算法"><a href="#循环扫描算法" class="headerlink" title="循环扫描算法"></a>循环扫描算法</h3><p>循环扫描算法和扫描算法最大的区别是规定磁头采用单向移动的模式，比如规定从里向外移动。这种方式可以减少对刚越过磁道发生请求的响应时间。以下是基本的模拟代码，假定采用磁道号增加的方向的扫描方式。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">CSACN</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;serveArray, <span class="keyword">int</span> startPosition)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (serveArray.size() &lt;= <span class="number">0</span>) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">int</span> leftIndex = <span class="number">0</span>, rightIndex = <span class="number">0</span>;</span><br><span class="line">	sort(serveArray.begin(), serveArray.end());</span><br><span class="line">	<span class="keyword">for</span> (leftIndex = <span class="number">0</span>; leftIndex &lt; <span class="keyword">int</span>(serveArray.size()) &amp;&amp; startPosition &gt; serveArray[leftIndex]; leftIndex++) ;</span><br><span class="line">	rightIndex = leftIndex; --leftIndex;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">int</span> sum = <span class="number">0</span>; <span class="keyword">int</span> nowPosition = startPosition;</span><br><span class="line">	<span class="keyword">if</span> (rightIndex &lt; <span class="keyword">int</span>(serveArray.size())) &#123;</span><br><span class="line">		<span class="keyword">while</span> (rightIndex &lt; <span class="keyword">int</span>(serveArray.size())) &#123;</span><br><span class="line">			sum += <span class="built_in">abs</span>(serveArray[rightIndex]-nowPosition); </span><br><span class="line">			nowPosition = serveArray[rightIndex]; ++rightIndex;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">		<span class="keyword">while</span> (i &lt;= leftIndex) &#123;</span><br><span class="line">			sum += <span class="built_in">abs</span>(serveArray[i]-nowPosition);</span><br><span class="line">			nowPosition = serveArray[i]; ++i;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">		<span class="keyword">while</span> (i &lt;= leftIndex) &#123;</span><br><span class="line">			sum += <span class="built_in">abs</span>(serveArray[i]-nowPosition);</span><br><span class="line">			nowPosition = serveArray[i]; ++i;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> sum;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="NStepSCAN与FSCAN算法"><a href="#NStepSCAN与FSCAN算法" class="headerlink" title="NStepSCAN与FSCAN算法"></a>NStepSCAN与FSCAN算法</h3><p>在SSTF、SCAN、CSCAN几种调度算法中，可能会由于频繁发生请求在当前磁道或附近致使磁头一直停留在附近或当前磁道中，导致对于某个磁道的请求垄断了整个磁盘设备，该现象称为磁盘粘滞，一般发生在高密度磁盘上。而NStepSCAN则将请求分成若干个长度为N的子队列，队列之间按照先来先服务的顺序，每个队列内按照SCAN算法处理，新请求插入其他队列（非当前处理队列）。如果N=1则退化成FCFS算法。</p>
+<p>FSCAN算法和NStepSCAN区别主要是FSCAN算法只将请求分为两个队列，一个是当前处理队列以及在处理过程中新的请求队列。</p>
+<p>两种算法的处理模拟代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">SACN</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;serveArray, <span class="keyword">int</span> &amp;nowPosition)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (serveArray.size() &lt;= <span class="number">0</span>) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">int</span> leftIndex = <span class="number">0</span>, rightIndex = <span class="number">0</span>;</span><br><span class="line">	sort(serveArray.begin(), serveArray.end());</span><br><span class="line">	<span class="keyword">for</span> (leftIndex = <span class="number">0</span>; leftIndex &lt; <span class="keyword">int</span>(serveArray.size()) &amp;&amp; nowPosition &gt; serveArray[leftIndex]; leftIndex++) ;</span><br><span class="line">	rightIndex = leftIndex; --leftIndex;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">int</span> sum = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">if</span> (leftIndex &gt;= <span class="number">0</span> &amp;&amp; rightIndex &lt; <span class="keyword">int</span>(serveArray.size())) &#123;</span><br><span class="line">		<span class="keyword">if</span> (<span class="built_in">abs</span>(serveArray[leftIndex]-nowPosition) &lt; <span class="built_in">abs</span>(serveArray[rightIndex]-nowPosition)) &#123;</span><br><span class="line">			<span class="keyword">while</span> (leftIndex &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">				sum += <span class="built_in">abs</span>(serveArray[leftIndex]-nowPosition); </span><br><span class="line">				nowPosition = serveArray[leftIndex]; --leftIndex;</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			<span class="keyword">while</span> (rightIndex &lt; <span class="keyword">int</span>(serveArray.size())) &#123;</span><br><span class="line">				sum += <span class="built_in">abs</span>(serveArray[rightIndex]-nowPosition); </span><br><span class="line">				nowPosition = serveArray[rightIndex]; ++rightIndex;</span><br><span class="line">			&#125;</span><br><span class="line">				</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="keyword">while</span> (rightIndex &lt; <span class="keyword">int</span>(serveArray.size())) &#123;</span><br><span class="line">				sum += <span class="built_in">abs</span>(serveArray[rightIndex]-nowPosition); </span><br><span class="line">				nowPosition = serveArray[rightIndex]; ++rightIndex;</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			<span class="keyword">while</span> (leftIndex &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">				sum += <span class="built_in">abs</span>(serveArray[leftIndex]-nowPosition); </span><br><span class="line">				nowPosition = serveArray[leftIndex]; --leftIndex;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span> (leftIndex &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">		<span class="keyword">while</span> (leftIndex &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">			sum += <span class="built_in">abs</span>(serveArray[leftIndex]-nowPosition); </span><br><span class="line">			nowPosition = serveArray[leftIndex]; --leftIndex;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span> (rightIndex &lt; <span class="keyword">int</span>(serveArray.size())) &#123;</span><br><span class="line">		sum += <span class="built_in">abs</span>(serveArray[rightIndex]-nowPosition); </span><br><span class="line">		nowPosition = serveArray[rightIndex]; ++rightIndex;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> sum;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">NStepSCAN</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&gt; &amp;serveArrays, <span class="keyword">int</span> startPosition)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> sum = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">if</span> (serveArrays.size() &lt;= <span class="number">0</span>) <span class="keyword">return</span> sum;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">for</span>(<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; serveArrays.size(); i++) &#123;</span><br><span class="line">		sum += SACN(serveArrays[i], startPosition);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> sum;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">FSCAN</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;serveArray, <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;newArray, <span class="keyword">int</span> startPosition)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> sum = <span class="number">0</span>;</span><br><span class="line">	sum += SACN(serveArray, startPosition);</span><br><span class="line">	sum += SACN(newArray, startPosition);</span><br><span class="line">	<span class="keyword">return</span> sum;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="磁盘调度总结"><a href="#磁盘调度总结" class="headerlink" title="磁盘调度总结"></a>磁盘调度总结</h2><p>FCFS算法、SSTF算法、SCAN算法、CSCAN算法、NStepSCAN算法、FSCAN算法各有其优缺点，总结如下：</p>
+<ul>
+<li><p>FCFS算法</p>
+<ol>
+<li>优点：算法实现简单，公平</li>
+<li>缺点：效率不高，相邻请求不能快速处理，磁头反复移动</li>
+</ol>
+</li>
+<li><p>SSTF算法</p>
+<ol>
+<li>优点：采取贪心策略，优化平均寻道时间</li>
+<li>缺点：可能导致饥饿现象</li>
+</ol>
+</li>
+<li><p>SCAN算法</p>
+<ol>
+<li>优点：可以防止饥饿现象同时考虑到优化寻道时间</li>
+<li>缺点：可能发生磁臂粘滞现象，某些请求可能会被严重推迟</li>
+</ol>
+</li>
+<li><p>CSCAN算法</p>
+<ol>
+<li>优点：解决SCAN算法某些请求可能会被严重推迟的问题</li>
+<li>缺点：由于单向移动，对于请求较少可能会出现返回时间的浪费</li>
+</ol>
+</li>
+</ul>
+<ul>
+<li><p>NStepSCAN算法</p>
+<ol>
+<li>优点：避免磁臂粘滞的情况同时继承SCAN的优点</li>
+<li>缺点：编程稍微复杂</li>
+</ol>
+</li>
+<li><p>FSCAN算法</p>
+<ol>
+<li>优点：简化处理，实现较NStepSCAN算法更为简单</li>
+<li>缺点：两个队列可能会稍增加平均寻道时间</li>
+</ol>
+</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/操作系统/" rel="tag"># 操作系统</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/operating-system/dead-lock.html" rel="next" title="进程或线程死锁">
+                <i class="fa fa-chevron-left"></i> 进程或线程死锁
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/operating-system/linux-cpp-thread-pool.html" rel="prev" title="Linux下C++实现一个简单的线程池">
+                Linux下C++实现一个简单的线程池 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/Limbo.jpg"
+                alt="hsuloong" />
+            
+              <p class="site-author-name" itemprop="name">hsuloong</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">44</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/hsuloong" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#磁盘调度基础"><span class="nav-number">1.</span> <span class="nav-text">磁盘调度基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#磁盘访问时间"><span class="nav-number">2.</span> <span class="nav-text">磁盘访问时间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#磁盘调度策略"><span class="nav-number">3.</span> <span class="nav-text">磁盘调度策略</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#先来先服务"><span class="nav-number">3.1.</span> <span class="nav-text">先来先服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#最短寻道时间优先"><span class="nav-number">3.2.</span> <span class="nav-text">最短寻道时间优先</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#扫描算法"><span class="nav-number">3.3.</span> <span class="nav-text">扫描算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#循环扫描算法"><span class="nav-number">3.4.</span> <span class="nav-text">循环扫描算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#NStepSCAN与FSCAN算法"><span class="nav-number">3.5.</span> <span class="nav-text">NStepSCAN与FSCAN算法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#磁盘调度总结"><span class="nav-number">4.</span> <span class="nav-text">磁盘调度总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hsuloong</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

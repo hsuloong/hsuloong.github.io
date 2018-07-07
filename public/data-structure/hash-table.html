@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="数据结构," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="散列基础知识散列（hashing）是指散列表的实现，散列是一种用于以常数平均时间进行插入、删除、查找的的数据结构。但是散列表并不包含任何元素之间的排序信息，因此散列表不支持诸如查找最大元素、最小元素等需要排序的操作。散列表一般的实现中是采用一个固定大小的数组以及一个散列函数将关键字映射到数组的某一个位置，由于数组的大小是有限的而关键字数量却无限制，因此自然会发生多个关键字经过散列函数的映射到同一位">
+<meta name="keywords" content="数据结构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="散列表的定义与实现">
+<meta property="og:url" content="http://yoursite.com/data-structure/hash-table.html">
+<meta property="og:site_name" content="千里之行 始于足下">
+<meta property="og:description" content="散列基础知识散列（hashing）是指散列表的实现，散列是一种用于以常数平均时间进行插入、删除、查找的的数据结构。但是散列表并不包含任何元素之间的排序信息，因此散列表不支持诸如查找最大元素、最小元素等需要排序的操作。散列表一般的实现中是采用一个固定大小的数组以及一个散列函数将关键字映射到数组的某一个位置，由于数组的大小是有限的而关键字数量却无限制，因此自然会发生多个关键字经过散列函数的映射到同一位">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-06-13T14:07:38.087Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="散列表的定义与实现">
+<meta name="twitter:description" content="散列基础知识散列（hashing）是指散列表的实现，散列是一种用于以常数平均时间进行插入、删除、查找的的数据结构。但是散列表并不包含任何元素之间的排序信息，因此散列表不支持诸如查找最大元素、最小元素等需要排序的操作。散列表一般的实现中是采用一个固定大小的数组以及一个散列函数将关键字映射到数组的某一个位置，由于数组的大小是有限的而关键字数量却无限制，因此自然会发生多个关键字经过散列函数的映射到同一位">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/data-structure/hash-table.html"/>
+
+
+
+
+
+  <title>散列表的定义与实现 | 千里之行 始于足下</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">千里之行 始于足下</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/data-structure/hash-table.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="hsuloong">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Limbo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="千里之行 始于足下">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">散列表的定义与实现</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-09T09:45:11+08:00">
+                2018-03-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/public/categories/data-structure/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="散列基础知识"><a href="#散列基础知识" class="headerlink" title="散列基础知识"></a>散列基础知识</h2><p>散列（hashing）是指散列表的实现，散列是一种用于以常数平均时间进行插入、删除、查找的的数据结构。但是散列表并不包含任何元素之间的排序信息，因此散列表不支持诸如查找最大元素、最小元素等需要排序的操作。散列表一般的实现中是采用一个固定大小的数组以及一个散列函数将关键字映射到数组的某一个位置，由于数组的大小是有限的而关键字数量却无限制，因此自然会发生多个关键字经过散列函数的映射到同一位置，此时就需要解决这种称为冲突的情况，因此可以认为散列是一种由散列函数和一系列冲突解决方案组成的抽像数据结构。</p>
+<p>散列表中有一个概念称为装填因子λ，其定义为散列表元素的个数除以散列表大小的比值。</p>
+<h2 id="散列函数"><a href="#散列函数" class="headerlink" title="散列函数"></a>散列函数</h2><p>散列函数又称为哈希函数（Hash Function），散列函数具有如下性质：</p>
+<ul>
+<li>同一散列函数计算出的散列值不同，则原始输出必定不同，称为散列函数的确定性</li>
+<li>散列函数的输入输出不一定是唯一对应关系，如果两个输入散列值相同，两个输入可能不同，称为散列碰撞</li>
+</ul>
+<p>散列函数的选取将会极大影响散列的性能，如果散列函数选取失败，不能将大量的关键字均匀地进行分配，则会产生大量的冲突。使得散列性能下降。因此构建散列函数的目标就是均匀的分布在连续的内存空间中，常用的散列函数构造方法有如下几种：</p>
+<h3 id="直接定址法"><a href="#直接定址法" class="headerlink" title="直接定址法"></a>直接定址法</h3><p>即以关键字加上某个常数作为散列值，比如对于26个小写字母的散列函数可以直接是H(X) = X - ‘a’，这种哈希函数计算简单，一般适用于关键字值连续的情况，否则将会浪费大量的空间。</p>
+<h3 id="数字分析法"><a href="#数字分析法" class="headerlink" title="数字分析法"></a>数字分析法</h3><p>对于关键字中存在一定规律且分布比较均匀的数字作为计算散列值的依据，数据分析方法比较适用于关键字基本已知的情况，比如对于学生学号为关键字的散列函数，由于学号中一般包含学生编号序列，因此在计算学号的散列值可以提取出这部分编号计算出散列值。</p>
+<h3 id="除留余数法"><a href="#除留余数法" class="headerlink" title="除留余数法"></a>除留余数法</h3><p>用关键字除以某个不大于哈希表容量大小的数（一般直接关键字%散列表大小），余数作为散列值，即H(x) = X mod SizeOfTable。这种方法计算简单，通常适用于关键字分布均匀的情况</p>
+<h3 id="分段叠加法"><a href="#分段叠加法" class="headerlink" title="分段叠加法"></a>分段叠加法</h3><p>根据散列表地址情况将关键字分为几个大小相同的段（最后一个段大小可较短），然后将这几部分叠加，丢弃进位部分，余下的即为散列值，分段叠加可以分为折叠发和位移法两种，折叠法是将奇数段正序偶数段逆序相加，位移法是将分割后的每部分地位对齐后相加。</p>
+<h3 id="平方取中法"><a href="#平方取中法" class="headerlink" title="平方取中法"></a>平方取中法</h3><p>如果关键字的各个部分分布不够均匀，可以先求出关键字的平方值然后按需求取中间的几位作为散列值，由于平方值和关键字的每一位都有关系，因此平方值的随机性比较高。</p>
+<h3 id="伪随机数法"><a href="#伪随机数法" class="headerlink" title="伪随机数法"></a>伪随机数法</h3><p>在计算机中计算随机数时，得到的数不能称为正真的随机数，因为其值是通过一个确定性的算法计算出来，因此如果计算伪随机数的开始值不变的话，计算出的随机数也保持相同，这就是伪随机数法的基础。伪随机数散列函数结构为H(X) = random(X)。</p>
+<h2 id="散列冲突解决"><a href="#散列冲突解决" class="headerlink" title="散列冲突解决"></a>散列冲突解决</h2><p>一个好的散列函数尽量避免冲突的产生，但是一旦冲突发生，必须给予消除，一下为几种常用的冲突解决方法：</p>
+<h3 id="分离链接法（又称链地址法、拉链法）"><a href="#分离链接法（又称链地址法、拉链法）" class="headerlink" title="分离链接法（又称链地址法、拉链法）"></a>分离链接法（又称链地址法、拉链法）</h3><p>其基本思想是把散列到同一个散列值的所有元素保存到一个链表中。在执行删除、插入查找时，需要遍历该表已确定元素是否在链表中，然后执行下一步操作。</p>
+<p>分离链接法有如下优缺点：</p>
+<pre><code>- 优点
+    1. 处理简单，无堆积现象
+    2. 链表元素是动态申请内存的，因此对于无法事前了解散列表长度的情况非常合适
+    3. 该方法对装填因子没有很高的要求，甚至装填因子λ可以大于1
+    4. 删除操方便
+- 缺点
+    1. 指针占用内存空间，导致空间利用率下降
+</code></pre><h3 id="开放定址法"><a href="#开放定址法" class="headerlink" title="开放定址法"></a>开放定址法</h3><p>在分离链接法中，需要增加一个指针，同时可能需要分配新的单元，因此分离链接法的速度会受到申请内存开销的影响，而开放定址法则在发生冲突时尝试选择其他的单元直到找到一个空闲单元，在寻找空闲单元时，h<sub>i</sub>(X)=(Hash(X)+F(i)) mod SizeOfTable, i=0,1,2…依次被尝试，由于开放定址的特点，其不能进行标准的删除操作，只能采用惰性删除，否则可能将使查找操作失败，既元素已存在却返回不存在。开放定址法装填因子应该低于0.5。根据F(i)计算方式的不同开放定址法可分为：</p>
+<ul>
+<li><p>线性探测法：在该方法中，F(i)是i的线性函数，一般取F(i)=i，即出现冲突则依次探测下一个单元（可回绕）。在该冲突解决方法中，因为依次探测下一个，在散列表比较空的时候占据的单元会开始形成区块，称为一次聚集，导致散列到区块中的元素需要进行多次探测才能找到合适的空闲单元。使用线性探测方法预期的探测次数对于插入和不成功的查找为1/2*（1+(1/(1-λ)<sup>2</sup>))，对于成功的查找则为1/2*（1+(1/(1-λ))。线性探测法插入平均时间可用1/λ*ln(1/(1-λ))，计算方法为对1/(1-λ)从0~λ积分。</p>
+</li>
+<li><p>平方探测：F(i)是i的二次函数，常用F(i)=i<sup>2</sup>，在使用平方探测时，如果表的大小是一个素数，当表至少有一半是空闲时，保证总能够插入一个新元素。如果表有比一半多一个的位置被填满，则插入操作可能失败。平方探测存在二次聚集的情况.</p>
+</li>
+<li><p>双散列：双散列F(i)=i*hash<sub>2</sub>(X)。第二个散列函数值不能为0，否则原地死循环。另外尽量保证所有的单元都能被探测到。</p>
+</li>
+</ul>
+<h3 id="再散列法"><a href="#再散列法" class="headerlink" title="再散列法"></a>再散列法</h3><p>如果表的元素天的过满，则直接新建一个是原来约两倍的表，同时采用一个新的散列函数并把原始数据移入新表中，这既是再散列的含义。再散列可以用平方探测以多种方式实现，主要有以下做法：</p>
+<pre><code>1. 表满一半就再散列
+2. 插入失败立刻再散列，这种方式比较极端
+3. 即途中策略，当表装填因子达到某一值再散列
+</code></pre><h2 id="分离链接法的实现"><a href="#分离链接法的实现" class="headerlink" title="分离链接法的实现"></a>分离链接法的实现</h2><p>根据分离链接法的基本定义，该ADT可以包含以下操作：</p>
+<ul>
+<li>插入一个元素InsertElement</li>
+<li>删除一个元素DeleteElement</li>
+<li>查找一个元素Find</li>
+<li>清空所有元素MakeEmpty</li>
+</ul>
+<p>仿照《数据结构与算法分析-C语言描述》，有如下数据结构：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Node</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">	DataType data;</span><br><span class="line">	Node *next;</span><br><span class="line">	Node(): next(<span class="literal">nullptr</span>) &#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">HashTable</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	HashTable(<span class="keyword">int</span> inTableSize);</span><br><span class="line">	~HashTable();</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">InsertElement</span><span class="params">(DataType inKey)</span></span>;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">DeleteElement</span><span class="params">(DataType inKey)</span></span>;</span><br><span class="line">	<span class="function">DataType *<span class="title">Find</span><span class="params">(DataType inKey)</span></span>;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">MakeEmpty</span><span class="params">()</span></span>;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	<span class="function"><span class="keyword">int</span> <span class="title">Hash</span><span class="params">(DataType inKey)</span></span>; <span class="comment">//具体的哈希函数，采用除余留法</span></span><br><span class="line">	<span class="keyword">int</span> tableSize; <span class="comment">//哈希表大小</span></span><br><span class="line">	Node&lt;DataType&gt; *tableArray; <span class="comment">//哈希表指针</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>如上所示，tableSize用来保存使用者指定的下一个素数，tableArray用来保存元素，采用哑节点的方式方便进行删除操作，以下为具体实现。</p>
+<ul>
+<li>构造函数</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line">HashTable&lt;DataType&gt;::HashTable(<span class="keyword">int</span> inTableSize): tableSize(inTableSize), tableArray(<span class="literal">nullptr</span>) </span><br><span class="line">&#123;</span><br><span class="line">	tableArray = <span class="keyword">new</span> Node&lt;DataType&gt;[inTableSize];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>插入节点函数，采用头插法实现</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">void</span> HashTable&lt;DataType&gt;::InsertElement(DataType inKey)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">int</span> position = Hash(inKey);</span><br><span class="line">	Node&lt;DataType&gt; *cycleIter = tableArray[position].next;</span><br><span class="line">	<span class="keyword">while</span> (cycleIter != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">		<span class="keyword">if</span> (cycleIter-&gt;data == inKey) &#123;</span><br><span class="line">			<span class="keyword">return</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		cycleIter = cycleIter-&gt;next;</span><br><span class="line">	&#125;</span><br><span class="line">	Node&lt;DataType&gt; *newNode = <span class="keyword">new</span> Node&lt;DataType&gt;;</span><br><span class="line">	newNode-&gt;next =  tableArray[position].next;</span><br><span class="line">	newNode-&gt;data = inKey;</span><br><span class="line">	tableArray[position].next = newNode;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>删除一个元素</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">void</span> HashTable&lt;DataType&gt;::DeleteElement(DataType inKey)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">int</span> position = Hash(inKey);</span><br><span class="line">	Node&lt;DataType&gt; *preCycleIter = &amp;tableArray[position];</span><br><span class="line"></span><br><span class="line">	<span class="keyword">while</span> (preCycleIter-&gt;next != <span class="literal">nullptr</span> &amp;&amp; preCycleIter-&gt;next-&gt;data !=inKey) &#123;</span><br><span class="line">		preCycleIter = preCycleIter-&gt;next;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (preCycleIter-&gt;next == <span class="literal">nullptr</span>) &#123;</span><br><span class="line">		<span class="keyword">return</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	Node&lt;DataType&gt; * toBeDelete = preCycleIter-&gt;next;</span><br><span class="line">	preCycleIter-&gt;next = toBeDelete-&gt;next;</span><br><span class="line">	<span class="keyword">delete</span> toBeDelete;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>找到节点，返回该节点在内存中的地址</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line">DataType * HashTable&lt;DataType&gt;::Find(DataType inKey)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">int</span> position = Hash(inKey);</span><br><span class="line">	Node&lt;DataType&gt; *cycleIter = tableArray[position].next;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">while</span> (cycleIter != <span class="literal">nullptr</span> &amp;&amp; cycleIter-&gt;data !=inKey) &#123;</span><br><span class="line">		cycleIter = cycleIter-&gt;next;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> cycleIter == <span class="literal">nullptr</span> ? <span class="literal">nullptr</span> : &amp;cycleIter-&gt;data;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>清空散列表中的链表</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">void</span> HashTable&lt;DataType&gt;::MakeEmpty()</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; tableSize; i++) &#123;</span><br><span class="line">		<span class="keyword">if</span> (tableArray[i].next != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">			Node&lt;DataType&gt; *pre = &amp;tableArray[i];</span><br><span class="line">			<span class="keyword">while</span> (pre-&gt;next != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">				Node&lt;DataType&gt; *tmp = pre-&gt;next;</span><br><span class="line">				pre-&gt;next = tmp-&gt;next;</span><br><span class="line">				<span class="keyword">delete</span> tmp;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>析构函数，清空散列表</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line">HashTable&lt;DataType&gt;::~HashTable()</span><br><span class="line">&#123;</span><br><span class="line">	MakeEmpty();</span><br><span class="line">	<span class="keyword">delete</span> [] tableArray;</span><br><span class="line">	tableArray = <span class="literal">nullptr</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>散列函数，简单起见，直接除余留法，假设键值为数值类型</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">int</span> HashTable&lt;DataType&gt;::Hash(DataType inKey)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">int</span>(inKey)%tableSize;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="开放定址法平方探测的实现"><a href="#开放定址法平方探测的实现" class="headerlink" title="开放定址法平方探测的实现"></a>开放定址法平方探测的实现</h2><p>开放地址法与分离链接法最大的区别就是在没找到位置时需要继续探测直到找到空位，而且可能会出现插入失败的情况，而且删除只能采用惰性删除，因此需要在节点域中添加标记当前节点状态，主要有三种状态空闲、占用、已删除。仿照《数据结构与算法分析-C语言描述》，有如下数据结构：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> State</span><br><span class="line">&#123;</span><br><span class="line">	EMPTY,</span><br><span class="line">	DELETED,</span><br><span class="line">	OCCUPY</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Node</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">	DataType data;</span><br><span class="line">	State nodeState;</span><br><span class="line">	Node(): nodeState(State::EMPTY) &#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">HashTable</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	HashTable(<span class="keyword">int</span> inTableSize);</span><br><span class="line">	~HashTable();</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">InsertElement</span><span class="params">(DataType inKey)</span></span>;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">DeleteElement</span><span class="params">(DataType inKey)</span></span>;</span><br><span class="line">	<span class="function">DataType *<span class="title">Find</span><span class="params">(DataType inKey)</span></span>;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	<span class="function"><span class="keyword">int</span> <span class="title">Hash</span><span class="params">(DataType inKey)</span></span>; <span class="comment">//具体的哈希函数，采用除余留法</span></span><br><span class="line">	<span class="function"><span class="keyword">int</span> <span class="title">FindCore</span><span class="params">(DataType inKey)</span></span>; <span class="comment">//查找核心函数，如果没找到返回插入位置</span></span><br><span class="line">	<span class="keyword">int</span> tableSize; <span class="comment">//哈希表大小</span></span><br><span class="line">	Node&lt;DataType&gt; *tableArray; <span class="comment">//哈希表指针</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>以上数据成员和分离链接法基本类似，以下为各函数实现：</p>
+<ul>
+<li>构造函数</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line">HashTable&lt;DataType&gt;::HashTable(<span class="keyword">int</span> inTableSize): tableSize(inTableSize), tableArray(<span class="literal">nullptr</span>) </span><br><span class="line">&#123;</span><br><span class="line">	tableArray = <span class="keyword">new</span> Node&lt;DataType&gt;[inTableSize];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>插入节点函数，调用核心查找函数，如果找到则不做任何处理，否则插入返回位置（如果可以插入）</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">void</span> HashTable&lt;DataType&gt;::InsertElement(DataType inKey)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">int</span> position = FindCore(inKey);</span><br><span class="line">	<span class="keyword">if</span> (tableArray[position].nodeState != State::OCCUPY) &#123;</span><br><span class="line">		tableArray[position].nodeState = State::OCCUPY;</span><br><span class="line">		tableArray[position].data = inKey;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>删除一个元素</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">void</span> HashTable&lt;DataType&gt;::DeleteElement(DataType inKey)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">int</span> position = FindCore(inKey);</span><br><span class="line">	<span class="keyword">if</span> (tableArray[position].nodeState == State::OCCUPY) &#123;</span><br><span class="line">		tableArray[position].nodeState = State::DELETED;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>找到节点核心函数，如果找到则返回下标，否则返回下一个可供插入的位置</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">int</span> HashTable&lt;DataType&gt;::FindCore(DataType inKey)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">int</span> position = Hash(inKey);</span><br><span class="line">	<span class="keyword">int</span> i = <span class="number">1</span>;</span><br><span class="line">	<span class="keyword">while</span> (tableArray[position].nodeState != State::EMPTY </span><br><span class="line">			&amp;&amp; tableArray[position].data != inKey) &#123;</span><br><span class="line">		position += <span class="number">2</span>*i<span class="number">-1</span>; ++i; <span class="comment">//采用书上公式</span></span><br><span class="line">		position = position &gt;= tableSize ? position - tableSize : position;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> position;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>找到节点，返回该节点在内存中的地址</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line">DataType * HashTable&lt;DataType&gt;::Find(DataType inKey)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">int</span> position = FindCore(inKey);</span><br><span class="line">	<span class="keyword">if</span> (tableArray[position].nodeState == State::OCCUPY) &#123;</span><br><span class="line">		<span class="keyword">return</span> &amp;tableArray[position].data;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nullptr</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>析构函数，清空散列表</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line">HashTable&lt;DataType&gt;::~HashTable()</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">delete</span> [] tableArray;</span><br><span class="line">	tableArray = <span class="literal">nullptr</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>散列函数，简单起见，直接除余留法，假设键值为数值类型</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">int</span> HashTable&lt;DataType&gt;::Hash(DataType inKey)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">int</span>(inKey)%tableSize;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上代码没有进行错误检测，如果核心查找函数失败的话可能会陷入死循环，因此可添加一个计数值，循环次数大于该值就停止寻找。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/数据结构/" rel="tag"># 数据结构</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/data-structure/binary-search-tree.html" rel="next" title="数据结构之二叉查找树的定义与实现">
+                <i class="fa fa-chevron-left"></i> 数据结构之二叉查找树的定义与实现
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/data-structure/priority-queue.html" rel="prev" title="优先队列的定义与二叉堆实现">
+                优先队列的定义与二叉堆实现 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/Limbo.jpg"
+                alt="hsuloong" />
+            
+              <p class="site-author-name" itemprop="name">hsuloong</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">44</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/hsuloong" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#散列基础知识"><span class="nav-number">1.</span> <span class="nav-text">散列基础知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#散列函数"><span class="nav-number">2.</span> <span class="nav-text">散列函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#直接定址法"><span class="nav-number">2.1.</span> <span class="nav-text">直接定址法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数字分析法"><span class="nav-number">2.2.</span> <span class="nav-text">数字分析法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#除留余数法"><span class="nav-number">2.3.</span> <span class="nav-text">除留余数法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分段叠加法"><span class="nav-number">2.4.</span> <span class="nav-text">分段叠加法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#平方取中法"><span class="nav-number">2.5.</span> <span class="nav-text">平方取中法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#伪随机数法"><span class="nav-number">2.6.</span> <span class="nav-text">伪随机数法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#散列冲突解决"><span class="nav-number">3.</span> <span class="nav-text">散列冲突解决</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#分离链接法（又称链地址法、拉链法）"><span class="nav-number">3.1.</span> <span class="nav-text">分离链接法（又称链地址法、拉链法）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#开放定址法"><span class="nav-number">3.2.</span> <span class="nav-text">开放定址法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#再散列法"><span class="nav-number">3.3.</span> <span class="nav-text">再散列法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分离链接法的实现"><span class="nav-number">4.</span> <span class="nav-text">分离链接法的实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开放定址法平方探测的实现"><span class="nav-number">5.</span> <span class="nav-text">开放定址法平方探测的实现</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hsuloong</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

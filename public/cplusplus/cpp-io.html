@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="C++," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="C++输入输出基础知识C++语言自身没有定义输入输出语句，其通过标准库来提供IO能力。在C++中iostream库为常用的IO库，该库包含两个基础类型istream和ostream，分别表示输入流（即读）与输出流（即写）。其中流指的是一个字符序列。标准库中定义了四个IO对象，分别为cin（标准输入）、cout（标准输出）、cerr（非缓冲标准错误流）、clog（缓冲标准错误流）。在使用诸如“cou">
+<meta name="keywords" content="C++">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++输入输出基础">
+<meta property="og:url" content="http://yoursite.com/cplusplus/cpp-io.html">
+<meta property="og:site_name" content="千里之行 始于足下">
+<meta property="og:description" content="C++输入输出基础知识C++语言自身没有定义输入输出语句，其通过标准库来提供IO能力。在C++中iostream库为常用的IO库，该库包含两个基础类型istream和ostream，分别表示输入流（即读）与输出流（即写）。其中流指的是一个字符序列。标准库中定义了四个IO对象，分别为cin（标准输入）、cout（标准输出）、cerr（非缓冲标准错误流）、clog（缓冲标准错误流）。在使用诸如“cou">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-06-13T14:22:12.223Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="C++输入输出基础">
+<meta name="twitter:description" content="C++输入输出基础知识C++语言自身没有定义输入输出语句，其通过标准库来提供IO能力。在C++中iostream库为常用的IO库，该库包含两个基础类型istream和ostream，分别表示输入流（即读）与输出流（即写）。其中流指的是一个字符序列。标准库中定义了四个IO对象，分别为cin（标准输入）、cout（标准输出）、cerr（非缓冲标准错误流）、clog（缓冲标准错误流）。在使用诸如“cou">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/cplusplus/cpp-io.html"/>
+
+
+
+
+
+  <title>C++输入输出基础 | 千里之行 始于足下</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">千里之行 始于足下</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/cplusplus/cpp-io.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="hsuloong">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Limbo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="千里之行 始于足下">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">C++输入输出基础</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-12T09:05:24+08:00">
+                2018-03-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/public/categories/cplusplus/" itemprop="url" rel="index">
+                    <span itemprop="name">C++</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="C-输入输出基础知识"><a href="#C-输入输出基础知识" class="headerlink" title="C++输入输出基础知识"></a>C++输入输出基础知识</h2><p>C++语言自身没有定义输入输出语句，其通过标准库来提供IO能力。在C++中iostream库为常用的IO库，该库包含两个基础类型istream和ostream，分别表示输入流（即读）与输出流（即写）。其中流指的是一个字符序列。标准库中定义了四个IO对象，分别为cin（标准输入）、cout（标准输出）、cerr（非缓冲标准错误流）、clog（缓冲标准错误流）。在使用诸如“cout&lt;&lt;something;”语句时，该语句返回输入输出流对象的引用，这也是为什么可以采用“cout&lt;&lt;something1&lt;&lt;something2;”这种格式的原因。</p>
+<p>在使用一个istream对象作为条件时，其返回的是输入流的有效状态标记，如果流是有效的则返回真，否则如果读到流末尾（EOF）或者无效输入（读入一个整数实际输入不是整数）返回假。</p>
+<h2 id="C-IO库概览"><a href="#C-IO库概览" class="headerlink" title="C++IO库概览"></a>C++IO库概览</h2><p>C++IO库不仅定义了istream和ostream，还定义其他IO类型，具体见下：</p>
+<ul>
+<li><p>头文件iostream</p>
+<ol>
+<li>istream，wistream：用来从流中读取数据，w代表宽字符（wchar_t）</li>
+<li>ostream，wostream：用来向流写入数据</li>
+<li>iostream，wiostream：读写流。</li>
+</ol>
+</li>
+<li><p>头文件fstream</p>
+<ol>
+<li>ifstream，wifstream：从文件读取数据</li>
+<li>ofstream，wofstream：向文件写入数据</li>
+<li>fstream，wfstream：读写文件</li>
+</ol>
+</li>
+<li><p>头文件sstream</p>
+<ol>
+<li>istringstream，wistream：从string中读取数据</li>
+<li>ostringstream，wostringstream：向string写入数据</li>
+<li>stringstream，wstringstream：读写string</li>
+</ol>
+</li>
+<li><p>头文件iomanip</p>
+</li>
+</ul>
+<p>在以上流类型中，ifstream和istringstream继承于istream，而ofstream和ostringstream则继承于ostream。IO对象是一种不能进行拷贝或者赋值的对象，而且由于在写过程中对象的状态会发生改变，流对象也不能设置为const（const对象不能调用非const类型的成员函数）。</p>
+<p>在进行IO操作时，难免会发生错误，因此IO类定义了一系列条件状态，如下所示：</p>
+<pre><code>1. ::iostate：是一种机器相关的类型，提供了条件状态的完整功能
+2. ::badbit：表明流已崩溃
+3. ::failbit：表明一个IO操作失败
+4. ::eofbit：表明流已达到末尾
+5. ::goodbit表明流未处于错误状态，值保证为0
+6. .eof()：若eofbit置位则返回true
+7. .fail()：若badbit或failbit置位则返回true
+8. .good()：流有效则返回true
+9. .clear()：所有条件状态复位，流状态成为有效，返回void
+10. .clear(iostate flag)：根据flag标志位将相应条件状态复位，返回void
+11. .setstate(iostate flag)：根据flag标志位将相应条件状态置位，返回void
+12. .rdstate()：返回流当前条件状态，返回值为iostate类型
+</code></pre><p>一旦一个流发生错误，其上所有的后续操作均会失败，只有处于无错状态时才能读写数据。</p>
+<h2 id="输出缓冲管理"><a href="#输出缓冲管理" class="headerlink" title="输出缓冲管理"></a>输出缓冲管理</h2><p>每一个输出流都有一个缓冲区用于保存程序读写的数据。缓冲机制的存在使得输出不一定被立刻显示或者写入文件出来，而导致真正读写发生（即缓冲刷新）主要有如下原因：</p>
+<pre><code>1. 程序正常结束，执行缓冲刷新
+2. 缓冲区满
+3. 使用endl等操作符显式刷新缓冲区
+4. 每个输出操作后用unitbuff设置流的内部状态来清空缓冲区，cerr默认设置unitbuff，因此cerr是立刻刷新的
+5. 一个输出流被关联到另外一个流时，当读写该流时关联流的缓冲区会被立刻刷新，默认cin和cerr关联到cout，导致读cin或者写cerr会刷新cout缓冲区
+</code></pre><p>以下代码为立刻刷新缓冲区的方式：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cout</span> &lt;&lt; <span class="string">"Hello world!"</span> &lt;&lt; <span class="built_in">endl</span>; <span class="comment">//输出Hello world!+换行并刷新缓冲区</span></span><br><span class="line"><span class="built_in">cout</span> &lt;&lt; <span class="string">"Hello world!"</span> &lt;&lt; flush; <span class="comment">//输出Hello world!并刷新缓冲区</span></span><br><span class="line"><span class="built_in">cout</span> &lt;&lt; <span class="string">"Hello world!"</span> &lt;&lt; ends; <span class="comment">//输出Hello world!+空字符并刷新缓冲区</span></span><br><span class="line"><span class="built_in">cout</span> &lt;&lt; unitbuff; <span class="comment">//所有输出操作立刻刷新缓冲区</span></span><br><span class="line"><span class="built_in">cout</span> &lt;&lt; nounitbuff; <span class="comment">//还原正常缓冲</span></span><br></pre></td></tr></table></figure>
+<p>在程序崩溃后，输出缓冲将不会被刷新。</p>
+<h2 id="关联输入输出流"><a href="#关联输入输出流" class="headerlink" title="关联输入输出流"></a>关联输入输出流</h2><p>当一个输入流被关联到一个输出流时，任何从输入流读取数据的操作均会导致输出流被刷新。关联流的函数为tie，其重载为两个版本：</p>
+<pre><code>1. tie()无参数，返回指向关联到输出流的指针，没有关联返回空指针
+2. tie(ostream对象指针)，将自己关联到输出流
+</code></pre><p>以下下代码演示关联操作<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cin</span>.tie(&amp;<span class="built_in">cout</span>); <span class="comment">//将cin关联到cout上，标准库默认关联</span></span><br><span class="line">ostream *oldTie = <span class="built_in">cin</span>.tie(<span class="literal">nullptr</span>); <span class="comment">//cin不在与其他流关联</span></span><br><span class="line"><span class="built_in">cin</span>.tie(&amp;<span class="built_in">cerr</span>); <span class="comment">//关联到cerr，读取cin会刷新cerr</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="文件输入输出"><a href="#文件输入输出" class="headerlink" title="文件输入输出"></a>文件输入输出</h2><p>头文件fstream定义了文件读写的相关类型。由于fstream继承于iostream，因此iostream操作都可以使用。但是新增了一些操作，如下所示：</p>
+<pre><code>1. fstream fObject(&quot;fileName&quot;)：创建一个流并打开某个文件
+2. fstream fObject(&quot;fileName&quot;, mode)：创建一个流并打开某个文件，mode指定读写模式
+3. fObject.open(&quot;fileName&quot;)：并打开某个文件
+4. fObject.close()：关闭流绑定的文件
+5. fObject.is_open()：判断流是否和文件关联且未关闭并返回bool值
+</code></pre><p>fstream对象在销毁时会自动调用close函数。</p>
+<p>在文件输入输出中，主要有如下读写模式：</p>
+<pre><code>1. in：只读打开，只能对ifstream和fstream设置
+2. out：只写，会覆盖原始数据，只能对ofstream和fstream对象设置
+3. app：每次写均定位到文件末尾，只要trunc没被设置
+4. ate：打开文件后立即定位末尾，可和任何模式组合使用
+5. trunc：截断文件，只有当out被设置时才能被设定
+6. binary：二进制方式读写，可和任何模式组合使用
+</code></pre><h2 id="string流"><a href="#string流" class="headerlink" title="string流"></a>string流</h2><p>在sstream头文件中定义了三个类型来支持内存IO，这几个类型可以直接项string读写数据。sstream也继承自iostream，但有自己一些特殊的操作，如下：</p>
+<pre><code>1. sstream sObject(string s)：保存字符串s的一个拷贝，此构造函数是explicit的，编译器不会自动执行转换
+2. sObject.str()：返回保存的string拷贝
+3. sObject.str(string s)：将字符串s拷贝到对象中，返回void
+</code></pre><p>以下为一个sstream使用范例：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;fstream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sstream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, _TCHAR* argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        <span class="built_in">stringstream</span> Test;</span><br><span class="line">        <span class="function"><span class="built_in">string</span> <span class="title">data</span><span class="params">(<span class="string">"Hello World!"</span>)</span></span>;</span><br><span class="line">        Test.str(data);</span><br><span class="line">        <span class="built_in">string</span> outPut;</span><br><span class="line">        <span class="keyword">while</span> (Test &gt;&gt; outPut) &#123;</span><br><span class="line">                <span class="built_in">cout</span> &lt;&lt; outPut &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        Test.clear();</span><br><span class="line">        Test &lt;&lt; <span class="string">"Hi"</span> &lt;&lt; <span class="string">"World"</span>;</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; Test.str() &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>整个控制台输出为：</p>
+<pre><code>Hello
+World!
+HiWorldorld!
+</code></pre><h2 id="格式化输入输出"><a href="#格式化输入输出" class="headerlink" title="格式化输入输出"></a>格式化输入输出</h2><p>标准库定义了一组操纵符用来修改流的格式状态，且格式控制由设置和复原成对出现。具体操作符可见相关手册。</p>
+<p>同时IO库还定义了一组未格式化的输入输出操作，用于将流当成无解释的字节序列（不跳过空格）来处理，具体见下：</p>
+<ul>
+<li><p>单字节操作</p>
+<ol>
+<li>object.get(ch)：读取下一个字节存入ch中，返回对象</li>
+<li>object.put(ch)：将字符写到流中，返回对象</li>
+<li>object.get()：读取下一个字节并作为int类型返回</li>
+<li>object.putback(ch)：读将字符放入流中，返回对象</li>
+<li>object.unget()：将对象object向后移动一个字节，返回对象</li>
+<li>object.peek()：读取下一个字节并作为int类型返回但不从流中删除</li>
+</ol>
+</li>
+<li><p>多字节操作</p>
+<ol>
+<li>obejct.get(sink, size, delim)：从流中最多读出size个字节，遇到delim或者文件结尾或者读满size个字节则停止读写，将delim放在输入流中且不丢弃delim，读出的数据放入sink数组中</li>
+<li>obejct.getline(sink, size, delim)：和get类似，不过会读取并丢弃delim</li>
+<li>obejct.read(sink, size)：读取最多size个字节并放入sink数组</li>
+<li>obejct.gcount()：返回上一个未格式化操作读取的字节数</li>
+<li>obejct.write(src, size)：将数组src的size个字节写入流中</li>
+<li>obejct.ignore(size, delim)：读取并忽略size个字节，包括delim</li>
+</ol>
+</li>
+</ul>
+<h2 id="流随机访问"><a href="#流随机访问" class="headerlink" title="流随机访问"></a>流随机访问</h2><p>大多数系统cin\cout\cerr\clog的流不支持随机访问，因此一般只有istream和ostream支持随机访问。通常由两组函数tell（返回当前位置）和seek（定位到某一位置）根据是输入流还是输出流主要有tellg\tellp、seekg\seekp，g表示读取数据，p表示写入数据，函数各定义如下：</p>
+<pre><code>1. tellg\tellp：返回输入流或者输出流标记的当前位置
+2. sekg(pos)\seekp(pos)：将输入输出流重定位到决定位置pos
+3. sekg(off, from)、sekp(off, from)：输入输出定位到from之前或者之后的off个字符，from可以是beg（流开始）、cur（流当前）、end（流结尾）    
+</code></pre><h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p><a href="http://www.weixueyuan.net/view/5875.html" target="_blank" rel="noopener">C++标准设备的输入/输出（cin,cout,cerr,clog,&gt;&gt;,&lt;&lt;）</a></p>
+<p><a href="http://blog.csdn.net/zx824/article/details/6644455" target="_blank" rel="noopener">c++里关于cerr,clog,cout三者的区别</a></p>
+<p><a href="http://www.cnblogs.com/xiezhw3/p/4349766.html" target="_blank" rel="noopener">clog，cout，cerr 输出机制</a></p>
+<p><a href="http://www.cnblogs.com/hjslovewcl/archive/2011/01/10/2314356.html" target="_blank" rel="noopener">C/C++ 标准输入输出重定向</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/C/" rel="tag"># C++</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/data-structure/binomial-queue.html" rel="next" title="数据结构之二项队列的定义与实现">
+                <i class="fa fa-chevron-left"></i> 数据结构之二项队列的定义与实现
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/cplusplus/cpp-polymorphism.html" rel="prev" title="C++多态分类及其实现和C模拟实现多态">
+                C++多态分类及其实现和C模拟实现多态 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/Limbo.jpg"
+                alt="hsuloong" />
+            
+              <p class="site-author-name" itemprop="name">hsuloong</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">44</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/hsuloong" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#C-输入输出基础知识"><span class="nav-number">1.</span> <span class="nav-text">C++输入输出基础知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-IO库概览"><span class="nav-number">2.</span> <span class="nav-text">C++IO库概览</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输出缓冲管理"><span class="nav-number">3.</span> <span class="nav-text">输出缓冲管理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关联输入输出流"><span class="nav-number">4.</span> <span class="nav-text">关联输入输出流</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文件输入输出"><span class="nav-number">5.</span> <span class="nav-text">文件输入输出</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#string流"><span class="nav-number">6.</span> <span class="nav-text">string流</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#格式化输入输出"><span class="nav-number">7.</span> <span class="nav-text">格式化输入输出</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#流随机访问"><span class="nav-number">8.</span> <span class="nav-text">流随机访问</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文章"><span class="nav-number">9.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hsuloong</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

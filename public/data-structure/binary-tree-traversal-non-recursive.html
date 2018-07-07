@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="数据结构," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前言由于二叉树是一种递归定义的数据结构，采用递归的方式去遍历是一种非常简洁方便的做法，但是如果要求使用非递归的方式去遍历整棵二叉树则必须使用辅助的空间。以下分别实现二叉树的前序、中序、后序以及层序的遍历算法。约定二叉树的基本结构如下： 12345678template &amp;lt;typename DataType&amp;gt;struct TreeNode&amp;#123;	DataType data; //存">
+<meta name="keywords" content="数据结构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="二叉树的非递归前、中、后、层序遍历的不同实现">
+<meta property="og:url" content="http://yoursite.com/data-structure/binary-tree-traversal-non-recursive.html">
+<meta property="og:site_name" content="千里之行 始于足下">
+<meta property="og:description" content="前言由于二叉树是一种递归定义的数据结构，采用递归的方式去遍历是一种非常简洁方便的做法，但是如果要求使用非递归的方式去遍历整棵二叉树则必须使用辅助的空间。以下分别实现二叉树的前序、中序、后序以及层序的遍历算法。约定二叉树的基本结构如下： 12345678template &amp;lt;typename DataType&amp;gt;struct TreeNode&amp;#123;	DataType data; //存">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/images/binary-tree-test.png">
+<meta property="og:updated_time" content="2018-06-13T14:05:42.498Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="二叉树的非递归前、中、后、层序遍历的不同实现">
+<meta name="twitter:description" content="前言由于二叉树是一种递归定义的数据结构，采用递归的方式去遍历是一种非常简洁方便的做法，但是如果要求使用非递归的方式去遍历整棵二叉树则必须使用辅助的空间。以下分别实现二叉树的前序、中序、后序以及层序的遍历算法。约定二叉树的基本结构如下： 12345678template &amp;lt;typename DataType&amp;gt;struct TreeNode&amp;#123;	DataType data; //存">
+<meta name="twitter:image" content="http://yoursite.com/images/binary-tree-test.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/data-structure/binary-tree-traversal-non-recursive.html"/>
+
+
+
+
+
+  <title>二叉树的非递归前、中、后、层序遍历的不同实现 | 千里之行 始于足下</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">千里之行 始于足下</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/data-structure/binary-tree-traversal-non-recursive.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="hsuloong">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Limbo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="千里之行 始于足下">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">二叉树的非递归前、中、后、层序遍历的不同实现</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-04T17:56:39+08:00">
+                2018-06-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/public/categories/data-structure/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>由于二叉树是一种递归定义的数据结构，采用递归的方式去遍历是一种非常简洁方便的做法，但是如果要求使用非递归的方式去遍历整棵二叉树则必须使用辅助的空间。以下分别实现二叉树的前序、中序、后序以及层序的遍历算法。约定二叉树的基本结构如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">TreeNode</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">	DataType data; <span class="comment">//存储的数据</span></span><br><span class="line">	TreeNode *left; <span class="comment">/*指向左子树根节点*/</span></span><br><span class="line">	TreeNode *right; <span class="comment">/*指向右子树根节点*/</span></span><br><span class="line">	TreeNode(DataType inData): data(inData), right(<span class="literal">nullptr</span>), left(<span class="literal">nullptr</span>) &#123;&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="前序非递归遍历"><a href="#前序非递归遍历" class="headerlink" title="前序非递归遍历"></a>前序非递归遍历</h2><p>前序遍历的顺序为根-&gt;左-&gt;右，因此在使用辅助栈时，结合栈的先进后出特性，为了让左子树能在右子树之前弹出，我们可以先把右子节点先压入栈中，然后就可以保证左子节点先弹出，实现代码如下所示：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stack&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">stack</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="built_in">vector</span>&lt;DataType&gt; PreorderTraverse(TreeNode&lt;DataType&gt; *root)</span><br><span class="line">&#123;</span><br><span class="line">        <span class="built_in">vector</span>&lt;DataType&gt; result;</span><br><span class="line">        <span class="keyword">if</span> (root == <span class="literal">nullptr</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> result;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">stack</span>&lt;TreeNode&lt;DataType&gt; *&gt; nodeStack;</span><br><span class="line">        nodeStack.push(root);</span><br><span class="line">        <span class="keyword">while</span> (!nodeStack.empty()) &#123;</span><br><span class="line">                <span class="comment">/*弹出根节点并访问之*/</span></span><br><span class="line">                TreeNode&lt;DataType&gt; *tmp = nodeStack.top();</span><br><span class="line">                result.push_back(tmp-&gt;data);</span><br><span class="line">                nodeStack.pop();</span><br><span class="line"></span><br><span class="line">                <span class="comment">/*先压右子节点再压左子节点*/</span></span><br><span class="line">                <span class="keyword">if</span> (tmp-&gt;right != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">                        nodeStack.push(tmp-&gt;right);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (tmp-&gt;left != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">                        nodeStack.push(tmp-&gt;left);</span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="中序非递归遍历"><a href="#中序非递归遍历" class="headerlink" title="中序非递归遍历"></a>中序非递归遍历</h2><p>中序遍历的顺序为左-&gt;根-&gt;右，因此在左子树被访问前根才能被访问，因此需要一直压栈最左，然后弹栈压入栈顶的右子节点，代码实现如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stack&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">stack</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="built_in">vector</span>&lt;DataType&gt; InorderTraverse(TreeNode&lt;DataType&gt; *root)</span><br><span class="line">&#123;</span><br><span class="line">        <span class="built_in">vector</span>&lt;DataType&gt; result;</span><br><span class="line">        <span class="keyword">if</span> (root == <span class="literal">nullptr</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> result;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">stack</span>&lt;TreeNode&lt;DataType&gt; *&gt; nodeStack;</span><br><span class="line">        TreeNode&lt;DataType&gt; *cycleIter = root;</span><br><span class="line">        <span class="keyword">while</span> (cycleIter != <span class="literal">nullptr</span> || !nodeStack.empty()) &#123;</span><br><span class="line">                <span class="comment">/*一直压左子节点*/</span></span><br><span class="line">                <span class="keyword">if</span> (cycleIter != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">                        nodeStack.push(cycleIter);</span><br><span class="line">                        cycleIter = cycleIter-&gt;left;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> &#123;</span><br><span class="line">                        <span class="comment">/*压到最左了*/</span></span><br><span class="line">                        result.push_back(nodeStack.top()-&gt;data);</span><br><span class="line">                        cycleIter = nodeStack.top()-&gt;right;</span><br><span class="line">                        nodeStack.pop();</span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="后序非递归遍历"><a href="#后序非递归遍历" class="headerlink" title="后序非递归遍历"></a>后序非递归遍历</h2><p>后序遍历的顺序为左-&gt;右-&gt;根，由于根是最后访问，我们可以考虑前序遍历的思路，最后镜像结果即可。后序遍历的镜像访问顺序为根-&gt;右-&gt;左，和前序遍历的顺序只是访问左右的结果不同，因此可以将前序代码稍作调整即可用于后序遍历，代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stack&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">stack</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="built_in">vector</span>&lt;DataType&gt; PostorderTraverse(TreeNode&lt;DataType&gt; *root)</span><br><span class="line">&#123;</span><br><span class="line">        <span class="built_in">vector</span>&lt;DataType&gt; result;</span><br><span class="line">        <span class="keyword">if</span> (root == <span class="literal">nullptr</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> result;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">stack</span>&lt;TreeNode&lt;DataType&gt; *&gt; nodeStack;</span><br><span class="line">        nodeStack.push(root);</span><br><span class="line">        <span class="keyword">while</span> (!nodeStack.empty()) &#123;</span><br><span class="line">                <span class="comment">/*弹出根节点并访问之*/</span></span><br><span class="line">                TreeNode&lt;DataType&gt; *tmp = nodeStack.top();</span><br><span class="line">                result.push_back(tmp-&gt;data);</span><br><span class="line">                nodeStack.pop();</span><br><span class="line"></span><br><span class="line">                <span class="comment">/*和前序相反*/</span></span><br><span class="line">                <span class="keyword">if</span> (tmp-&gt;left != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">                        nodeStack.push(tmp-&gt;left);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (tmp-&gt;right != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">                        nodeStack.push(tmp-&gt;right);</span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        reverse(result.begin(), result.end());</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="层序遍历"><a href="#层序遍历" class="headerlink" title="层序遍历"></a>层序遍历</h2><p>层序遍历类似于广度优先搜索(BFS)，此时一般使用队列来辅助存储，其思路可以借鉴前序遍历思路，只是弹出(出队)顺序略有不同，只需对前序代码稍作修改即可，具体代码见下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;queue&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">queue</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="built_in">vector</span>&lt;DataType&gt; BFSTraverse(TreeNode&lt;DataType&gt; *root)</span><br><span class="line">&#123;</span><br><span class="line">        <span class="built_in">vector</span>&lt;DataType&gt; result;</span><br><span class="line">        <span class="keyword">if</span> (root == <span class="literal">nullptr</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> result;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">queue</span>&lt;TreeNode&lt;DataType&gt; *&gt; nodeQueue;</span><br><span class="line">        nodeQueue.push(root);</span><br><span class="line">        <span class="keyword">while</span> (!nodeQueue.empty()) &#123;</span><br><span class="line">                <span class="comment">/*弹出根节点并访问之*/</span></span><br><span class="line">                TreeNode&lt;DataType&gt; *tmp = nodeQueue.front();</span><br><span class="line">                result.push_back(tmp-&gt;data);</span><br><span class="line">                nodeQueue.pop();</span><br><span class="line"></span><br><span class="line">                <span class="comment">/*先压左子节点再压右子节点*/</span></span><br><span class="line">                <span class="keyword">if</span> (tmp-&gt;left != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">                        nodeQueue.push(tmp-&gt;left);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (tmp-&gt;right != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">                        nodeQueue.push(tmp-&gt;right);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果要考虑分层输出的问题，则需要增加几个标识变量用来标识某一层的结束。由于已知第一层只有一个根节点，通过这个已知条件就可以推算下一层结束节点，换句话来说是一层最后的一个节点的右子节点是下一层的最后一个节点。将上述层序代码稍作变形就可以得到支持分层的代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;queue&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">queue</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;DataType&gt;&gt; BFSTraverseWithLevel(TreeNode&lt;DataType&gt; *root)</span><br><span class="line">&#123;</span><br><span class="line">        <span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;DataType&gt;&gt; result;</span><br><span class="line">        <span class="keyword">if</span> (root == <span class="literal">nullptr</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> result;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">queue</span>&lt;TreeNode&lt;DataType&gt; *&gt; nodeQueue;</span><br><span class="line">        TreeNode&lt;DataType&gt; *lastNode = root;</span><br><span class="line">        TreeNode&lt;DataType&gt; *nextLevelLastNode = <span class="literal">nullptr</span>;</span><br><span class="line">        nodeQueue.push(root);</span><br><span class="line">        <span class="built_in">vector</span>&lt;DataType&gt; oneLevelData;</span><br><span class="line">        <span class="keyword">while</span> (!nodeQueue.empty()) &#123;</span><br><span class="line">                <span class="comment">/*弹出根节点并访问之*/</span></span><br><span class="line">                TreeNode&lt;DataType&gt; *tmp = nodeQueue.front();</span><br><span class="line">                oneLevelData.push_back(tmp-&gt;data);</span><br><span class="line">                nodeQueue.pop();</span><br><span class="line"></span><br><span class="line">                <span class="comment">/*先压左子节点再压右子节点*/</span></span><br><span class="line">                <span class="keyword">if</span> (tmp-&gt;left != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">                        nodeQueue.push(tmp-&gt;left);</span><br><span class="line">                        nextLevelLastNode = tmp-&gt;left;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (tmp-&gt;right != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">                        nodeQueue.push(tmp-&gt;right);</span><br><span class="line">                        nextLevelLastNode = tmp-&gt;right;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (tmp == lastNode) &#123;</span><br><span class="line">                        result.push_back(oneLevelData);</span><br><span class="line">                        oneLevelData.clear();</span><br><span class="line">                        lastNode = nextLevelLastNode;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="代码测试"><a href="#代码测试" class="headerlink" title="代码测试"></a>代码测试</h2><p>手动做出如下图的一棵二叉树：<a href="http://www.jzsyz.jzedu.cn/xxjs/datastructure/basic/binary_tree/chapter5_1.htm" target="_blank" rel="noopener">图片来源</a><br><img src="/images/binary-tree-test.png" alt="二叉树测试案例"></p>
+<p>测试代码如下所示：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;random&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;ctime&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;chrono&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;functional&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> chrono;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	TreeNode&lt;<span class="keyword">char</span>&gt; testNode[<span class="number">17</span>] = &#123;<span class="string">'A'</span>, <span class="string">'B'</span>, <span class="string">'C'</span>, <span class="string">'D'</span>, <span class="string">'E'</span>,</span><br><span class="line">                                       <span class="string">'F'</span>, <span class="string">'G'</span>, <span class="string">'H'</span>, <span class="string">'I'</span>, <span class="string">'J'</span>,</span><br><span class="line">                                       <span class="string">'K'</span>, <span class="string">'L'</span>, <span class="string">'M'</span>, <span class="string">'N'</span>, <span class="string">'O'</span>,</span><br><span class="line">                                       <span class="string">'P'</span>, <span class="string">'Q'</span>&#125;;</span><br><span class="line"></span><br><span class="line">	testNode[<span class="number">0</span>].left = &amp;testNode[<span class="number">1</span>];</span><br><span class="line">	testNode[<span class="number">0</span>].right = &amp;testNode[<span class="number">2</span>];</span><br><span class="line"></span><br><span class="line">	testNode[<span class="number">1</span>].left = &amp;testNode[<span class="number">3</span>];</span><br><span class="line">	testNode[<span class="number">1</span>].right = &amp;testNode[<span class="number">4</span>];</span><br><span class="line"></span><br><span class="line">        testNode[<span class="number">2</span>].left = &amp;testNode[<span class="number">5</span>];</span><br><span class="line">	testNode[<span class="number">2</span>].right = &amp;testNode[<span class="number">6</span>];</span><br><span class="line"></span><br><span class="line">        testNode[<span class="number">3</span>].left = &amp;testNode[<span class="number">7</span>];</span><br><span class="line">	testNode[<span class="number">3</span>].right = &amp;testNode[<span class="number">8</span>];</span><br><span class="line"></span><br><span class="line">	testNode[<span class="number">4</span>].left = &amp;testNode[<span class="number">9</span>];</span><br><span class="line">	testNode[<span class="number">4</span>].right = &amp;testNode[<span class="number">10</span>];</span><br><span class="line"></span><br><span class="line">        testNode[<span class="number">5</span>].left = &amp;testNode[<span class="number">11</span>];</span><br><span class="line">	testNode[<span class="number">5</span>].right = &amp;testNode[<span class="number">12</span>];</span><br><span class="line"></span><br><span class="line">        testNode[<span class="number">6</span>].left = &amp;testNode[<span class="number">13</span>];</span><br><span class="line">	testNode[<span class="number">6</span>].right = &amp;testNode[<span class="number">14</span>];</span><br><span class="line"></span><br><span class="line">        testNode[<span class="number">7</span>].left = &amp;testNode[<span class="number">15</span>];</span><br><span class="line">	testNode[<span class="number">7</span>].right = &amp;testNode[<span class="number">16</span>];</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"---------------前序--------------"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">auto</span> startTime = system_clock::now();</span><br><span class="line"></span><br><span class="line">	<span class="built_in">vector</span>&lt;<span class="keyword">char</span>&gt; result1 = PreorderTraverse(testNode);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">auto</span> endTime = system_clock::now();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; result1.size(); i++) &#123;</span><br><span class="line">                <span class="built_in">cout</span> &lt;&lt; result1[i] &lt;&lt; <span class="string">";"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">auto</span> duration = duration_cast&lt;microseconds&gt;(endTime - startTime);</span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="string">"TimeCost:"</span> &lt;&lt; duration.count() &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"---------------中序--------------"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">        startTime = system_clock::now();</span><br><span class="line"></span><br><span class="line">	<span class="built_in">vector</span>&lt;<span class="keyword">char</span>&gt; result2 = InorderTraverse(testNode);</span><br><span class="line"></span><br><span class="line">        endTime = system_clock::now();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; result2.size(); i++) &#123;</span><br><span class="line">                <span class="built_in">cout</span> &lt;&lt; result2[i] &lt;&lt; <span class="string">";"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">        duration = duration_cast&lt;microseconds&gt;(endTime - startTime);</span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="string">"TimeCost:"</span> &lt;&lt; duration.count() &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"---------------后序--------------"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">        startTime = system_clock::now();</span><br><span class="line"></span><br><span class="line">	<span class="built_in">vector</span>&lt;<span class="keyword">char</span>&gt; result3 = PostorderTraverse(testNode);</span><br><span class="line"></span><br><span class="line">        endTime = system_clock::now();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; result3.size(); i++) &#123;</span><br><span class="line">                <span class="built_in">cout</span> &lt;&lt; result3[i] &lt;&lt; <span class="string">";"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">        duration = duration_cast&lt;microseconds&gt;(endTime - startTime);</span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="string">"TimeCost:"</span> &lt;&lt; duration.count() &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"---------------层序--------------"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">        startTime = system_clock::now();</span><br><span class="line"></span><br><span class="line">	<span class="built_in">vector</span>&lt;<span class="keyword">char</span>&gt; result4 = BFSTraverse(testNode);</span><br><span class="line"></span><br><span class="line">        endTime = system_clock::now();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; result4.size(); i++) &#123;</span><br><span class="line">                <span class="built_in">cout</span> &lt;&lt; result4[i] &lt;&lt; <span class="string">";"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">        duration = duration_cast&lt;microseconds&gt;(endTime - startTime);</span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="string">"TimeCost:"</span> &lt;&lt; duration.count() &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"---------------层序（分层）--------------"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">        startTime = system_clock::now();</span><br><span class="line"></span><br><span class="line">	<span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;<span class="keyword">char</span>&gt;&gt; result5 = BFSTraverseWithLevel(testNode);</span><br><span class="line"></span><br><span class="line">        endTime = system_clock::now();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; result5.size(); i++) &#123;</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">size_t</span> j = <span class="number">0</span>; j &lt; result5[i].size(); j++) &#123;</span><br><span class="line">                        <span class="built_in">cout</span> &lt;&lt; result5[i][j] &lt;&lt; <span class="string">";"</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="built_in">cout</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        duration = duration_cast&lt;microseconds&gt;(endTime - startTime);</span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="string">"TimeCost:"</span> &lt;&lt; duration.count() &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p><a href="https://blog.csdn.net/sgbfblog/article/details/7773103" target="_blank" rel="noopener">二叉树遍历之非递归算法</a></p>
+<p><a href="https://www.jianshu.com/p/49c8cfd07410" target="_blank" rel="noopener">更简单的非递归遍历二叉树的方法</a></p>
+<p><a href="https://zh.wikipedia.org/zh/广度优先搜索" target="_blank" rel="noopener">广度优先搜索</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/数据结构/" rel="tag"># 数据结构</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/data-structure/double-circular-linked-list.html" rel="next" title="数据结构之双向循环链表-指针实现">
+                <i class="fa fa-chevron-left"></i> 数据结构之双向循环链表-指针实现
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/data-structure/multi-table.html" rel="prev" title="数据结构之多重表的定义与实现">
+                数据结构之多重表的定义与实现 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/Limbo.jpg"
+                alt="hsuloong" />
+            
+              <p class="site-author-name" itemprop="name">hsuloong</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">44</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/hsuloong" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#前序非递归遍历"><span class="nav-number">2.</span> <span class="nav-text">前序非递归遍历</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#中序非递归遍历"><span class="nav-number">3.</span> <span class="nav-text">中序非递归遍历</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#后序非递归遍历"><span class="nav-number">4.</span> <span class="nav-text">后序非递归遍历</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#层序遍历"><span class="nav-number">5.</span> <span class="nav-text">层序遍历</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码测试"><span class="nav-number">6.</span> <span class="nav-text">代码测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文章"><span class="nav-number">7.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hsuloong</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="C++,STL," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="STL基础知识STL全称标准模板库（Standard Template Library），是一套程序库，采用了模板编程技术。STL并不是C++标准库的一部分，其由六大组件组成  容器（containers）：各种数据结构，有vector（动态数组），list（双向链表），dequeue（双端队列），set（红黑树），map（红黑树）。 算法（algorithm）：常用的算法如排序、搜索、复制、删除">
+<meta name="keywords" content="C++,STL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="STL基础概述">
+<meta property="og:url" content="http://yoursite.com/cplusplus/stl-foundation.html">
+<meta property="og:site_name" content="千里之行 始于足下">
+<meta property="og:description" content="STL基础知识STL全称标准模板库（Standard Template Library），是一套程序库，采用了模板编程技术。STL并不是C++标准库的一部分，其由六大组件组成  容器（containers）：各种数据结构，有vector（动态数组），list（双向链表），dequeue（双端队列），set（红黑树），map（红黑树）。 算法（algorithm）：常用的算法如排序、搜索、复制、删除">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/images/stl-components.jpg">
+<meta property="og:updated_time" content="2018-06-13T14:22:03.919Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="STL基础概述">
+<meta name="twitter:description" content="STL基础知识STL全称标准模板库（Standard Template Library），是一套程序库，采用了模板编程技术。STL并不是C++标准库的一部分，其由六大组件组成  容器（containers）：各种数据结构，有vector（动态数组），list（双向链表），dequeue（双端队列），set（红黑树），map（红黑树）。 算法（algorithm）：常用的算法如排序、搜索、复制、删除">
+<meta name="twitter:image" content="http://yoursite.com/images/stl-components.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/cplusplus/stl-foundation.html"/>
+
+
+
+
+
+  <title>STL基础概述 | 千里之行 始于足下</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">千里之行 始于足下</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/cplusplus/stl-foundation.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="hsuloong">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Limbo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="千里之行 始于足下">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">STL基础概述</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-13T21:59:43+08:00">
+                2018-03-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/public/categories/cplusplus/" itemprop="url" rel="index">
+                    <span itemprop="name">C++</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="STL基础知识"><a href="#STL基础知识" class="headerlink" title="STL基础知识"></a>STL基础知识</h2><p>STL全称标准模板库（Standard Template Library），是一套程序库，采用了模板编程技术。STL并不是C++标准库的一部分，其由六大组件组成</p>
+<ol>
+<li>容器（containers）：各种数据结构，有vector（动态数组），list（双向链表），dequeue（双端队列），set（红黑树），map（红黑树）。</li>
+<li>算法（algorithm）：常用的算法如排序、搜索、复制、删除等</li>
+<li>迭代器（iterator）：算法和容器之间的桥梁，是一种泛型指针，主要有五种类型，重载了一些运算符。</li>
+<li>仿函数（functor）：重载了operator()的类或者类模板，行为和函数类似</li>
+<li>配接器（adapter）：一种用来修饰容器或仿函数或迭代器的结构，比如stack和queue，行为和容器类似，不过底层操作采用其他容器实现。</li>
+<li>配置器（allocator）：负责进行空间配置与管理</li>
+</ol>
+<p>六大组件交互过程如下：容器通过配置器获取存储空间，算法通过迭代器存取容器的内容，仿函数协助算法完成不同策略的操作，配接器可以修饰或套接仿函数，通过适配器接受一种已有的事物而表现起来像另外一种事物。</p>
+<p>盗用一张交互图：<a href="http://blog.csdn.net/u010275850/article/details/51935404" target="_blank" rel="noopener">图片来源</a></p>
+<p><img src="/images/stl-components.jpg" alt="六大组件交互图"></p>
+<h2 id="STL语法"><a href="#STL语法" class="headerlink" title="STL语法"></a>STL语法</h2><p>STL有一些使用语法并不是非常常规，主要有如下几点：</p>
+<ul>
+<li>临时对象</li>
+</ul>
+<p>临时对象是一种无名对象，如果临时对象的产生并不是编程人员刻意为之，那么一般意味着程序效率存在一种损失。在某些时候如果刻意使用临时对象则可以使程序非常简洁。其方法为在类型名称后直接加一括号并可指定初值，如int(8)定义了一个值为8的临时对象。STL常将这种操作应用于仿函数上。代码示例如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">print</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">operator</span><span class="params">()</span> <span class="params">(<span class="keyword">const</span> T&amp;ele)</span> </span>&#123; <span class="built_in">cout</span> &lt;&lt; ele &lt;&lt; <span class="built_in">endl</span>;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; ia&#123;<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>&#125;;</span><br><span class="line">	for_each(ia.begin(), ia.end(), print&lt;<span class="keyword">int</span>&gt;()); <span class="comment">//STL函数</span></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在调用for_each()函数时传入一个无名对象。</p>
+<ul>
+<li>静态常量整数成员在class内部直接初始化</li>
+</ul>
+<p>C++11中，静态常成员可以直接在类内初始化，代码示例如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">print</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">operator</span><span class="params">()</span> <span class="params">(<span class="keyword">const</span> T&amp;ele)</span> </span>&#123; <span class="built_in">cout</span> &lt;&lt; ele &lt;&lt; <span class="built_in">endl</span>;&#125;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	<span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">int</span> iVal = <span class="number">2</span>;</span><br><span class="line">	<span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">char</span> cVal = <span class="string">'g'</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>++或--以及解引用运算符</li>
+</ul>
+<p>++与--运算符在迭代器上的运用十分广泛，基本迭代器都需要实现上述操作。这是示例代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">INT</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	INT() : iVal(<span class="number">0</span>) &#123;&#125;</span><br><span class="line">	INT &amp;<span class="keyword">operator</span>++(); <span class="comment">//前置++</span></span><br><span class="line">	<span class="keyword">const</span> INT <span class="keyword">operator</span>++(<span class="keyword">int</span>); <span class="comment">//后置++</span></span><br><span class="line">	<span class="keyword">int</span> &amp;<span class="keyword">operator</span>*() <span class="keyword">const</span>; <span class="comment">//解引用</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	<span class="keyword">int</span> iVal;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line">INT&lt;T&gt; &amp; INT&lt;T&gt;::<span class="keyword">operator</span>++()</span><br><span class="line">&#123;</span><br><span class="line">	++(<span class="keyword">this</span>-&gt;iVal);</span><br><span class="line">	<span class="keyword">return</span> *<span class="keyword">this</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">const</span> INT&lt;T&gt; INT&lt;T&gt;::<span class="keyword">operator</span>++(<span class="keyword">int</span>)</span><br><span class="line">&#123;</span><br><span class="line">	INT tmp = *<span class="keyword">this</span>;</span><br><span class="line">	++(<span class="keyword">this</span>-&gt;iVal);</span><br><span class="line">	<span class="keyword">return</span> tmp;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">int</span> &amp;INT&lt;T&gt;::<span class="keyword">operator</span>*() <span class="keyword">const</span> <span class="comment">//const不能丢</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">return</span> (<span class="keyword">int</span>&amp;)<span class="keyword">this</span>-&gt;iVal;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>前闭后开区间表示</li>
+</ul>
+<p>STL里面的算法需要获取一对迭代器表示操作的范围，STL规定该区间为左闭右开，即[first, end)区间。实际需要操作元素的位置为first到end-1。左闭右开区间带来了许多方便，比如在去换判断终止时可以采用iter != end的形式，示例代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">InputIterator</span>, <span class="title">class</span> <span class="title">T</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">InputIterator</span> <span class="title">fin</span>(<span class="title">InputIterator</span> <span class="title">first</span>, <span class="title">InputIterator</span> <span class="title">end</span>, <span class="title">const</span> <span class="title">T</span>&amp;<span class="title">key</span>)</span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">	<span class="keyword">for</span> ( ; first != end &amp;&amp; *first != key; ++first);</span><br><span class="line">	<span class="keyword">return</span> first;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>函数调用</li>
+</ul>
+<p>STL算法大多提供两个版本，一个针对普通情况，一个针对特殊情况。比如对于排序算法，可能默认按照递增顺序排列，如果想要按照用户自己的意愿进行排列，则可以由用户指定策略，而这可以通过函数调用完成。比如考虑以下实例：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">fcmp</span><span class="params">(<span class="keyword">const</span> <span class="keyword">void</span> *in1, <span class="keyword">const</span> <span class="keyword">void</span> *in2)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">const</span> <span class="keyword">int</span> *iP1 = (<span class="keyword">const</span> <span class="keyword">int</span>*)in1;</span><br><span class="line">	<span class="keyword">const</span> <span class="keyword">int</span> *iP2 = (<span class="keyword">const</span> <span class="keyword">int</span>*)in2;</span><br><span class="line">	<span class="keyword">if</span> (*iP1 &lt; *iP2) <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">	<span class="keyword">if</span> (*iP1 &gt; *iP2) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> ia[] = &#123;<span class="number">1</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">2</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">7</span>&#125;;</span><br><span class="line">	qsort(ia, <span class="keyword">sizeof</span>(ia)/<span class="keyword">sizeof</span>(ia[<span class="number">0</span>]), <span class="keyword">sizeof</span>(ia[<span class="number">0</span>]), fcmp); <span class="comment">//使用用户定义的排序策略</span></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上示代码中函数指针无法持有自身的状态（即每次调用状态不会发生变化，仿函数由于是一个对象，实际可以携带自己的数据）。</p>
+<h2 id="STL常见容器或配接器"><a href="#STL常见容器或配接器" class="headerlink" title="STL常见容器或配接器"></a>STL常见容器或配接器</h2><ol>
+<li>vector：底层数据结构为数组 ，序列容器，支持快速随机访问</li>
+<li>list：底层数据结构为双向链表，序列容器，支持快速增删</li>
+<li>dequeue：底层数据结构为一个中央控制器和多个缓冲区，序列容器，支持首尾（中间不能）快速增删，也支持随机访问</li>
+<li>stack：底层一般用list或deque实现，封闭一端即可</li>
+<li>queue：和stack类似底层一般用list或deque实现</li>
+<li>priority_queue：底层数据结构一般为vector为底层容器，使用数据结构堆</li>
+<li>set：底层数据结构为红黑树，有序关联容器，关键字不重复</li>
+<li>multiset：底层数据结构为红黑树，有序关联容器，关键字允许重复</li>
+<li>map：底层数据结构为红黑树，有序关联容器，关键字不重复</li>
+<li>multimap：底层数据结构为红黑树，有序关联容器，关键字允许重复</li>
+<li>unordered_set：底层数据结构为hash表，无序，关键字不重复</li>
+<li>unordered_multiset：底层数据结构为hash表，无序，关键字允许重复</li>
+<li>unordered_map：底层数据结构为hash表，无序，关键字不重复</li>
+<li>unordered_multimap：底层数据结构为hash表，无序，关关键字允许重复</li>
+<li>bitset：存储系列位类似的固定大小的布尔向量。实现按位运算，没有迭代器，不是序列</li>
+<li>valarray：数值类型的std::vector。牺牲泛型能力而专为数值计算做了优化。</li>
+<li>forward_list：单向链表，只支持单向顺序访问，在链表任何位置进行插入和删除速度都很快</li>
+</ol>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p><a href="http://www.cnblogs.com/hustlijian/p/3611424.html" target="_blank" rel="noopener">STL底层数据结构实现</a></p>
+<p><a href="https://zh.wikipedia.org/wiki/标准模板库" target="_blank" rel="noopener">标准模板库</a></p>
+<p><a href="http://zh.cppreference.com/w/cpp/container" target="_blank" rel="noopener">容器库</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/C/" rel="tag"># C++</a>
+          
+            <a href="/tags/STL/" rel="tag"># STL</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/cplusplus/cpp-type-convert.html" rel="next" title="C/C++类型转换总结">
+                <i class="fa fa-chevron-left"></i> C/C++类型转换总结
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/algorithms-design/sort-algorithm.html" rel="prev" title="各大排序算法的分析与实现">
+                各大排序算法的分析与实现 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/Limbo.jpg"
+                alt="hsuloong" />
+            
+              <p class="site-author-name" itemprop="name">hsuloong</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">44</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/hsuloong" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#STL基础知识"><span class="nav-number">1.</span> <span class="nav-text">STL基础知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#STL语法"><span class="nav-number">2.</span> <span class="nav-text">STL语法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#STL常见容器或配接器"><span class="nav-number">3.</span> <span class="nav-text">STL常见容器或配接器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文章"><span class="nav-number">4.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hsuloong</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

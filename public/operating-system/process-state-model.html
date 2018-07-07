@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="操作系统," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="简述进程在整个生命周期中，由于各进程之间的相互制约关系以及外部运行环境的变化，进程需要在不同的状态之间进行切换，进程状态模型通常如下三种：  三状态模型：包含运行态、就绪态、阻塞态三种基本状态模型 五状态模型：除三状态模型中的三种基本状态外，由于进程需要经过创建过程并且最终结束运行，因此添加创建态、终止态 七状态模型：除五状态模型五种状态外，在引入挂起概念后，多出了就绪挂起、阻塞挂起两种状态  三">
+<meta name="keywords" content="操作系统">
+<meta property="og:type" content="article">
+<meta property="og:title" content="进程状态模型">
+<meta property="og:url" content="http://yoursite.com/operating-system/process-state-model.html">
+<meta property="og:site_name" content="千里之行 始于足下">
+<meta property="og:description" content="简述进程在整个生命周期中，由于各进程之间的相互制约关系以及外部运行环境的变化，进程需要在不同的状态之间进行切换，进程状态模型通常如下三种：  三状态模型：包含运行态、就绪态、阻塞态三种基本状态模型 五状态模型：除三状态模型中的三种基本状态外，由于进程需要经过创建过程并且最终结束运行，因此添加创建态、终止态 七状态模型：除五状态模型五种状态外，在引入挂起概念后，多出了就绪挂起、阻塞挂起两种状态  三">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/images/process-status.png">
+<meta property="og:image" content="http://yoursite.com/images/process-five-status.png">
+<meta property="og:image" content="http://yoursite.com/images/process-seven-status.png">
+<meta property="og:image" content="http://yoursite.com/images/process-queue-model.png">
+<meta property="og:updated_time" content="2018-06-13T14:21:30.191Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="进程状态模型">
+<meta name="twitter:description" content="简述进程在整个生命周期中，由于各进程之间的相互制约关系以及外部运行环境的变化，进程需要在不同的状态之间进行切换，进程状态模型通常如下三种：  三状态模型：包含运行态、就绪态、阻塞态三种基本状态模型 五状态模型：除三状态模型中的三种基本状态外，由于进程需要经过创建过程并且最终结束运行，因此添加创建态、终止态 七状态模型：除五状态模型五种状态外，在引入挂起概念后，多出了就绪挂起、阻塞挂起两种状态  三">
+<meta name="twitter:image" content="http://yoursite.com/images/process-status.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/operating-system/process-state-model.html"/>
+
+
+
+
+
+  <title>进程状态模型 | 千里之行 始于足下</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">千里之行 始于足下</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/operating-system/process-state-model.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="hsuloong">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Limbo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="千里之行 始于足下">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">进程状态模型</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-06T10:49:57+08:00">
+                2018-03-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/public/categories/operating-system/" itemprop="url" rel="index">
+                    <span itemprop="name">操作系统</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h2><p>进程在整个生命周期中，由于各进程之间的相互制约关系以及外部运行环境的变化，进程需要在不同的状态之间进行切换，进程状态模型通常如下三种：</p>
+<ul>
+<li>三状态模型：包含运行态、就绪态、阻塞态三种基本状态模型</li>
+<li>五状态模型：除三状态模型中的三种基本状态外，由于进程需要经过创建过程并且最终结束运行，因此添加创建态、终止态</li>
+<li>七状态模型：除五状态模型五种状态外，在引入挂起概念后，多出了就绪挂起、阻塞挂起两种状态</li>
+</ul>
+<h2 id="三状态模型"><a href="#三状态模型" class="headerlink" title="三状态模型"></a>三状态模型</h2><p>三状态模型包含的是进程最基本的状态。运行态是指当前进程正在占用CPU；就绪态是指当前进程已经具有运行的条件，只是当前没有空闲CPU而暂时无法运行的状态；阻塞态是指当前进程因等待某一事件的发生而无法运行的状态，其又称为等待态、封锁态、睡眠态等。状态之间的转换如下图所示：<br><img src="/images/process-status.png" alt="进程三状态转换模型"></p>
+<ul>
+<li>就绪态-&gt;运行态</li>
+</ul>
+<p>调度程序选择程序进入CPU运行</p>
+<ul>
+<li>运行态-&gt;就绪态</li>
+</ul>
+<p>当前进程的时间片用完或者CPU被高优先级进程抢占导致被剥夺CPU使用权而转入就绪态</p>
+<ul>
+<li>运行态-&gt;阻塞态</li>
+</ul>
+<p>当前进程由于需要等待某个事件的发生或者调用类似pause等系统调用来进入阻塞态。事件可是请求OS服务、请求资源且暂时不可用、等待I/O、等待其他进程提供信息等。</p>
+<ul>
+<li>阻塞态-&gt;就绪态</li>
+</ul>
+<p>当进程等待的事件完成后（如I/O操作结束、中断结束时），中断处理程序必须把相应的进程状态由阻塞态转换为就绪态。</p>
+<h2 id="五状态模型"><a href="#五状态模型" class="headerlink" title="五状态模型"></a>五状态模型</h2><p>进程在整个生命周期中，除了就绪态、运行态、阻塞态以外，还包含创建态以及终止态。创建态是因为系统在创建进程时，需要填写PCB里面的相关信息，但是由于当前系统资源有限暂未同意执行；终止态是进程在结束运行时，系统需要处理资源释放和回收以及一些数据统计工作而处于的状态。下图为五状态之间的转换图：<br><img src="/images/process-five-status.png" alt="进程五状态转换模型"></p>
+<ul>
+<li>创建态-&gt;就绪态</li>
+</ul>
+<p>当系统创建进程的主要工作完成后（申请PCB并填写相关信息），通过提交进入就绪态</p>
+<ul>
+<li>运行态-&gt;终止态</li>
+</ul>
+<p>进程运行结束后进程进入终止态</p>
+<p>其余状态转换和三状态模型相似。</p>
+<h2 id="七状态模型"><a href="#七状态模型" class="headerlink" title="七状态模型"></a>七状态模型</h2><p>由于系统的资源是有限的，如果当前有大量的进程在运行时，系统负载大，内存可能出现不足，此时就需要将一部分进程暂时保存到磁盘上，当进程再次运行时再调入内存。此时就会多出就绪挂起态以及阻塞挂起态，其互相转换图如下：</p>
+<p><img src="/images/process-seven-status.png" alt="进程七状态转换模型"></p>
+<ul>
+<li>创建态-&gt;就绪挂起态</li>
+</ul>
+<p>此时进程创建完毕后，系统可能没有足够内存来运行该进程，因此进入就绪挂起态</p>
+<ul>
+<li>就绪态-&gt;就绪挂起态</li>
+</ul>
+<p>系统负载过重时，可能会将一部分进程换出到磁盘中以腾出空间。</p>
+<ul>
+<li>阻塞态-&gt;阻塞挂起态</li>
+</ul>
+<p>原因和就绪态被挂起的原因一致，减轻系统负载。</p>
+<ul>
+<li>运行态-&gt;就绪挂起态</li>
+</ul>
+<p>直接被系统换出内存而不经历就绪态</p>
+<ul>
+<li>就绪挂起态-&gt;就绪态</li>
+</ul>
+<p>在条件允许时激活就绪挂起态使其进入内存，成为就绪态</p>
+<ul>
+<li>阻塞挂起-&gt;阻塞态</li>
+</ul>
+<p>激活使其进入内存，成为阻塞态</p>
+<h2 id="进程队列"><a href="#进程队列" class="headerlink" title="进程队列"></a>进程队列</h2><p>由于进程在不同的状态之间转换，因此操作系统为每一类进程建立一个或多个PCB队列，随着进程状态的转变，PCB由一个队列转换到另外一个队列。对于一个五状态模型，其队列模型如下图所示：</p>
+<p><img src="/images/process-queue-model.png" alt="进程五状态队列模型"></p>
+<p>如图所示，等待队列可以有多个，每个等待队列等待不同的事件发生。实际就绪队列也可以实现为多个，比如不同的优先级进程在不同的就绪队列中。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/操作系统/" rel="tag"># 操作系统</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/operating-system/process-thread.html" rel="next" title="进程与线程">
+                <i class="fa fa-chevron-left"></i> 进程与线程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/data-structure/binary-tree-traversal.html" rel="prev" title="二叉树的前序遍历、中序遍历、后序遍历的递归实现以及非递归实现">
+                二叉树的前序遍历、中序遍历、后序遍历的递归实现以及非递归实现 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/Limbo.jpg"
+                alt="hsuloong" />
+            
+              <p class="site-author-name" itemprop="name">hsuloong</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">44</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/hsuloong" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简述"><span class="nav-number">1.</span> <span class="nav-text">简述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三状态模型"><span class="nav-number">2.</span> <span class="nav-text">三状态模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#五状态模型"><span class="nav-number">3.</span> <span class="nav-text">五状态模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#七状态模型"><span class="nav-number">4.</span> <span class="nav-text">七状态模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程队列"><span class="nav-number">5.</span> <span class="nav-text">进程队列</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hsuloong</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

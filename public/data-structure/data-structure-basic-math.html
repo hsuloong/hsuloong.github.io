@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="数据结构," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="指数公式 $X^A*X^B=X^{A+B}$ $X^A/X^B=X^{A-B}$ $(X^A)^B=X^{AB}$  对数公式 $X^A=B=&amp;gt;\log_X(B)=A$ $\log_A(B)=\log_C(B)/\log_C(A),C&amp;gt;0$ $\log(AB)=\log(A) + \log(B)$ $\log(A/B)=\log(A) - \log(B)$ $\log(A^B) = B">
+<meta name="keywords" content="数据结构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据结构基础数学知识">
+<meta property="og:url" content="http://yoursite.com/data-structure/data-structure-basic-math.html">
+<meta property="og:site_name" content="千里之行 始于足下">
+<meta property="og:description" content="指数公式 $X^A*X^B=X^{A+B}$ $X^A/X^B=X^{A-B}$ $(X^A)^B=X^{AB}$  对数公式 $X^A=B=&amp;gt;\log_X(B)=A$ $\log_A(B)=\log_C(B)/\log_C(A),C&amp;gt;0$ $\log(AB)=\log(A) + \log(B)$ $\log(A/B)=\log(A) - \log(B)$ $\log(A^B) = B">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-06-13T14:04:12.528Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="数据结构基础数学知识">
+<meta name="twitter:description" content="指数公式 $X^A*X^B=X^{A+B}$ $X^A/X^B=X^{A-B}$ $(X^A)^B=X^{AB}$  对数公式 $X^A=B=&amp;gt;\log_X(B)=A$ $\log_A(B)=\log_C(B)/\log_C(A),C&amp;gt;0$ $\log(AB)=\log(A) + \log(B)$ $\log(A/B)=\log(A) - \log(B)$ $\log(A^B) = B">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/data-structure/data-structure-basic-math.html"/>
+
+
+
+
+
+  <title>数据结构基础数学知识 | 千里之行 始于足下</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">千里之行 始于足下</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/data-structure/data-structure-basic-math.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="hsuloong">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Limbo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="千里之行 始于足下">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">数据结构基础数学知识</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-03T22:33:17+08:00">
+                2018-03-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/public/categories/data-structure/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="指数公式"><a href="#指数公式" class="headerlink" title="指数公式"></a>指数公式</h2><ul>
+<li>$X^A*X^B=X^{A+B}$</li>
+<li>$X^A/X^B=X^{A-B}$</li>
+<li>$(X^A)^B=X^{AB}$</li>
+</ul>
+<h2 id="对数公式"><a href="#对数公式" class="headerlink" title="对数公式"></a>对数公式</h2><ul>
+<li>$X^A=B=&gt;\log_X(B)=A$</li>
+<li>$\log_A(B)=\log_C(B)/\log_C(A),C&gt;0$</li>
+<li>$\log(AB)=\log(A) + \log(B)$</li>
+<li>$\log(A/B)=\log(A) - \log(B)$</li>
+<li>$\log(A^B) = B*\log(A)$</li>
+<li>$X &gt; 0 =&gt; \log(X) &lt; X$</li>
+</ul>
+<h2 id="级数"><a href="#级数" class="headerlink" title="级数"></a>级数</h2><ul>
+<li>$\sum_{i=0}^{N}A^i=(A^{N+1}-1)/(A-1)$</li>
+<li>$\sum_{i=0}^{N}A^i&lt;=1/(1-A)$当$0&lt;A&lt;1$</li>
+<li>$\sum_{i=1}^{N}i=(N+1)N/2\approx N^2/2$</li>
+<li>$\sum_{i=1}^{N}i^2=(N+1)(2N+1)N/6\approx N^3/3$</li>
+<li>$\sum_{i=1}^{N}i^k\approx N^{k+1}/|K+1|,k\ne -1$</li>
+<li>$H_N =\sum_{i=1}^{N}(1/i)\approx log_e(N),H_N $称为调和数</li>
+</ul>
+<h2 id="模运算"><a href="#模运算" class="headerlink" title="模运算"></a>模运算</h2><ul>
+<li>$(A \mod N) = (B \mod N) =&gt; N$整除$(A-B)$</li>
+<li>如果$M&gt;N$，则$M \mod N &lt; M/2$</li>
+</ul>
+<p><strong>注：取模运算耗费很大</strong></p>
+<h2 id="数据结构证明常用方法"><a href="#数据结构证明常用方法" class="headerlink" title="数据结构证明常用方法"></a>数据结构证明常用方法</h2><ul>
+<li>归纳法：证明基准情形-&gt;归纳假设-&gt;证明下一个值也成立</li>
+<li>反例证明：举出反例</li>
+<li>反证法：假设定理不成立，然后证明某个已知的性质不成立，从而证明原假设是错误的</li>
+</ul>
+<h2 id="递归"><a href="#递归" class="headerlink" title="递归"></a>递归</h2><p>当一个函数用自身来定义时就称为递归的，编写递归例程需要遵循四条基本法则：</p>
+<ul>
+<li>基准情形：必须总有某些基准情形无需递归即可求解</li>
+<li>不断递进：递归调用总是朝着基准情形推进</li>
+<li>设计法则：假设所有的递归调用都能运行</li>
+<li>合成效益法则：求解一个问题同一实例时切勿在不同递归调用中做重复性工作（类似动态规划保存结果）</li>
+</ul>
+<h2 id="算法分析基础"><a href="#算法分析基础" class="headerlink" title="算法分析基础"></a>算法分析基础</h2><ul>
+<li>大$O$标记：如果存在正常数$c$以及$n_0$使得当$N&gt;=n_0$时$T(N)&lt;=cf(N)$，则记为$T(N)=O(f(N))$</li>
+<li>大$Ω$标记：如果存在正常数$c$以及$n_0$使得当$N&gt;=n_0$时$T(N)&gt;=cf(N)$,则记为$T(N)=Ω(f(N))$</li>
+<li>$Θ$标记：$T(N)=Θ(f(N))$当且仅当$T(N)=O(f(N))$ AND $T(N)=Ω(f(N))$</li>
+<li>小$o$标记：$T(N)=o(f(N))$当且仅当$T(N)=O(f(N)) AND T(N)!=Ω(f(N))$</li>
+<li>如果$T_1(N)=O(f(N))$且$T_2(N)=O(g(N))$<br>则$T_1(N)+T_2(N)=max(O(f(N)),O(g(N))), T_1(N)*T_2(N)=O(f(N)*g(N))$</li>
+<li>如果$T(N)$是一个$k$次多项式，则$T(N)=Θ(N^k)$</li>
+<li>对于任意$k,\log^k(N)=O(N)$，表明对数增长十分缓慢</li>
+</ul>
+<h2 id="时间复杂度计算一般法则"><a href="#时间复杂度计算一般法则" class="headerlink" title="时间复杂度计算一般法则"></a>时间复杂度计算一般法则</h2><ul>
+<li>FOR循环：一次FOR循环的运行时间至多是该循环语句（包括测试）的运行时间乘以迭代的次数。</li>
+<li>嵌套的FOR循环：从里向外分析这些循环。在一组嵌套循环内部的一条语句总的运行时间为该语句运行时间乘以所有的FOR循环的大小的乘积。</li>
+<li>顺序语句：将各个语句的运行时间求和即可。</li>
+<li>IF/ELSE语句：IF/ELSE语句运行时间不超过判断再加上两部分运行时间长者的和。</li>
+<li>如果一个算法用常数时间将问题的的大小削减为其一部分，那么该算法就是$O(\log(N))$；如果使用常数时间只是把问题减少一个常数，那么这种算法就是$O(N)$。</li>
+</ul>
+<h2 id="联机算法"><a href="#联机算法" class="headerlink" title="联机算法"></a>联机算法</h2><p>在任意时刻算法对要操作的数据只读入（扫描）一次，一旦被读入并处理，它就不需要在被记忆了。而在此处理过程中算法能对它已经读入的数据立即给出相应子序列问题的正确答案。仅需要常量空间并以线性时间运行的联机算法几乎是完美算法。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/数据结构/" rel="tag"># 数据结构</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/data-structure/data-structure-introduction.html" rel="next" title="数据结构简介">
+                <i class="fa fa-chevron-left"></i> 数据结构简介
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/data-structure/one-way-linked-list.html" rel="prev" title="数据结构之单向链表-指针实现">
+                数据结构之单向链表-指针实现 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/Limbo.jpg"
+                alt="hsuloong" />
+            
+              <p class="site-author-name" itemprop="name">hsuloong</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">44</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/hsuloong" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#指数公式"><span class="nav-number">1.</span> <span class="nav-text">指数公式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对数公式"><span class="nav-number">2.</span> <span class="nav-text">对数公式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#级数"><span class="nav-number">3.</span> <span class="nav-text">级数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模运算"><span class="nav-number">4.</span> <span class="nav-text">模运算</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据结构证明常用方法"><span class="nav-number">5.</span> <span class="nav-text">数据结构证明常用方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#递归"><span class="nav-number">6.</span> <span class="nav-text">递归</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#算法分析基础"><span class="nav-number">7.</span> <span class="nav-text">算法分析基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#时间复杂度计算一般法则"><span class="nav-number">8.</span> <span class="nav-text">时间复杂度计算一般法则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#联机算法"><span class="nav-number">9.</span> <span class="nav-text">联机算法</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hsuloong</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

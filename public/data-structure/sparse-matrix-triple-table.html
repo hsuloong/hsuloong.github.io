@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="数据结构," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="基础知识在定义稀疏矩阵时，可以引入一个称为稀疏因子的数，其定义如下：假设对于一个 $m*n$ 矩阵，其中有 $t$ 个元素不为 $0$， 则定义稀疏因子 $δ=t/(m*n)$，一般认为 $δ&amp;lt;=0.05$ 的矩阵为稀疏矩阵。稀疏矩阵如果采用二维数组直接存储将会导致大量的空间存储 $0$ 值，对于空间是一种极大的浪费，因此一般采用压缩存储，目前稀疏矩阵常用三元组顺序表和十字链表来存储，本文将">
+<meta name="keywords" content="数据结构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="稀疏矩阵压缩存储之三元组">
+<meta property="og:url" content="http://yoursite.com/data-structure/sparse-matrix-triple-table.html">
+<meta property="og:site_name" content="千里之行 始于足下">
+<meta property="og:description" content="基础知识在定义稀疏矩阵时，可以引入一个称为稀疏因子的数，其定义如下：假设对于一个 $m*n$ 矩阵，其中有 $t$ 个元素不为 $0$， 则定义稀疏因子 $δ=t/(m*n)$，一般认为 $δ&amp;lt;=0.05$ 的矩阵为稀疏矩阵。稀疏矩阵如果采用二维数组直接存储将会导致大量的空间存储 $0$ 值，对于空间是一种极大的浪费，因此一般采用压缩存储，目前稀疏矩阵常用三元组顺序表和十字链表来存储，本文将">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-06-25T11:03:52.329Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="稀疏矩阵压缩存储之三元组">
+<meta name="twitter:description" content="基础知识在定义稀疏矩阵时，可以引入一个称为稀疏因子的数，其定义如下：假设对于一个 $m*n$ 矩阵，其中有 $t$ 个元素不为 $0$， 则定义稀疏因子 $δ=t/(m*n)$，一般认为 $δ&amp;lt;=0.05$ 的矩阵为稀疏矩阵。稀疏矩阵如果采用二维数组直接存储将会导致大量的空间存储 $0$ 值，对于空间是一种极大的浪费，因此一般采用压缩存储，目前稀疏矩阵常用三元组顺序表和十字链表来存储，本文将">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/data-structure/sparse-matrix-triple-table.html"/>
+
+
+
+
+
+  <title>稀疏矩阵压缩存储之三元组 | 千里之行 始于足下</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">千里之行 始于足下</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/data-structure/sparse-matrix-triple-table.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="hsuloong">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Limbo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="千里之行 始于足下">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">稀疏矩阵压缩存储之三元组</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-25T18:57:36+08:00">
+                2018-06-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/public/categories/data-structure/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h2><p>在定义稀疏矩阵时，可以引入一个称为稀疏因子的数，其定义如下：假设对于一个 $m*n$ 矩阵，其中有 $t$ 个元素不为 $0$， 则定义稀疏因子 $δ=t/(m*n)$，一般认为 $δ&lt;=0.05$ 的矩阵为稀疏矩阵。稀疏矩阵如果采用二维数组直接存储将会导致大量的空间存储 $0$ 值，对于空间是一种极大的浪费，因此一般采用压缩存储，目前稀疏矩阵常用三元组顺序表和十字链表来存储，本文将实现采用三元组顺序表压缩稀疏矩阵并实现矩阵常用的操作。</p>
+<p>在实现三元组顺序表压缩存储稀疏矩阵之前，预先定义三元组节点结构如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">TripleAtom</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">        <span class="keyword">int</span> row;       <span class="comment">/*行号*/</span></span><br><span class="line">        <span class="keyword">int</span> col;       <span class="comment">/*列号*/</span></span><br><span class="line">        DataType ele;  <span class="comment">/*存放的数据*/</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>需要是实现的矩阵基本运算主要有：</p>
+<ul>
+<li>矩阵转置：TransposeMatrix</li>
+<li>矩阵加法：AddMatrix</li>
+<li>矩阵减法：SubMatrix</li>
+<li>矩阵乘法：MultiMatrix</li>
+<li>打印矩阵：PrintMatrix</li>
+</ul>
+<h2 id="三元组顺序表基本定义"><a href="#三元组顺序表基本定义" class="headerlink" title="三元组顺序表基本定义"></a>三元组顺序表基本定义</h2><p>根据上述分析可定义如下基本ADT:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">vector</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TripleTable</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">        TripleTable(<span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;DataType&gt;&gt; &amp;inArray);</span><br><span class="line">        ~TripleTable();</span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">TransposeMatrix</span><span class="params">()</span></span>;         <span class="comment">/*常规转置思路*/</span></span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">FastTransposeMatrix</span><span class="params">()</span></span>;     <span class="comment">/*快速转置*/</span></span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">AddMatrix</span><span class="params">(TripleTable&lt;DataType&gt; &amp;otherMatrix)</span></span>; <span class="comment">/*加上另外一个矩阵，第二个矩阵保持不变*/</span></span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">SubMatrix</span><span class="params">(TripleTable&lt;DataType&gt; &amp;otherMatrix)</span></span>; <span class="comment">/*减去另外一个矩阵，第二个矩阵保持不变*/</span></span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">MultiMatrix</span><span class="params">(TripleTable&lt;DataType&gt; &amp;otherMatrix)</span></span>; <span class="comment">/*乘上另外一个矩阵，第二个矩阵保持不变*/</span></span><br><span class="line">        <span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;DataType&gt;&gt; TransformTo2DArray(); <span class="comment">/*转换成二维数组*/</span></span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">PrintMatrix</span><span class="params">()</span></span>; <span class="comment">/*打印矩阵*/</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">CalculateFirstNoneZeroArray</span><span class="params">()</span></span>; <span class="comment">/*计算每行第一个非零元素下标*/</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">        <span class="built_in">vector</span>&lt;TripleAtom&lt;DataType&gt;&gt; data; <span class="comment">/*存储实际的矩阵数据，自包含非零元个数*/</span></span><br><span class="line">        <span class="keyword">int</span> matrixRowNum; <span class="comment">/*矩阵行数*/</span></span><br><span class="line">        <span class="keyword">int</span> matrixColNum; <span class="comment">/*矩阵列数*/</span></span><br><span class="line">        <span class="keyword">int</span> *rowFirstNoneZeroPos; <span class="comment">/*每行第一个非零元素的起始位置，方便乘法*/</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>如上即为整个三元组顺序表的ADT基本结构，具体含义可见注释。接下来依次实现个函数。</p>
+<h2 id="三元组顺序表ADT的实现"><a href="#三元组顺序表ADT的实现" class="headerlink" title="三元组顺序表ADT的实现"></a>三元组顺序表ADT的实现</h2><ul>
+<li>构造函数</li>
+</ul>
+<p>构造函数主要将二维存储的稀疏矩阵转变为三元组形式存储的矩阵。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line">TripleTable&lt;DataType&gt;::TripleTable(<span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;DataType&gt;&gt; &amp;inArray) : matrixRowNum(<span class="number">-1</span>),</span><br><span class="line">                                matrixColNum(<span class="number">-1</span>), rowFirstNoneZeroPos(<span class="literal">nullptr</span>)</span><br><span class="line">&#123;</span><br><span class="line">        <span class="keyword">if</span> (inArray.size() &gt; <span class="number">0</span> &amp;&amp; inArray[<span class="number">0</span>].size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line"></span><br><span class="line">                matrixRowNum = <span class="keyword">int</span>(inArray.size());</span><br><span class="line">                matrixColNum = <span class="keyword">int</span>(inArray[<span class="number">0</span>].size());</span><br><span class="line"></span><br><span class="line">                TripleAtom&lt;DataType&gt; tmpAtom;</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="keyword">int</span>(inArray.size()); i++) &#123;</span><br><span class="line">                        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; <span class="keyword">int</span>(inArray[i].size()); j++) &#123;</span><br><span class="line">                                <span class="keyword">if</span> (inArray[i][j] != DataType(<span class="number">0</span>)) &#123;</span><br><span class="line">                                        tmpAtom.row = i+<span class="number">1</span>; <span class="comment">/*下标从1开始*/</span></span><br><span class="line">                                        tmpAtom.col = j+<span class="number">1</span>; <span class="comment">/*下标从1开始*/</span></span><br><span class="line">                                        tmpAtom.ele = inArray[i][j];</span><br><span class="line">                                        data.push_back(tmpAtom); <span class="comment">/*压入*/</span></span><br><span class="line">                                &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                CalculateFirstNoneZeroArray();</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>析构函数</li>
+</ul>
+<p>析构主要释放rowFirstNoneZeroPos申请的空间，实现如下所示：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line">TripleTable&lt;DataType&gt;::~TripleTable&lt;DataType&gt;()</span><br><span class="line">&#123;</span><br><span class="line">        <span class="keyword">delete</span> [] rowFirstNoneZeroPos;</span><br><span class="line">        rowFirstNoneZeroPos = <span class="literal">nullptr</span>;</span><br><span class="line">        matrixRowNum = <span class="number">-1</span>; matrixColNum = <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>常规矩阵转置</li>
+</ul>
+<p>由于三元组顺序表的存储顺序是行优先依次存储，而转置后的三元组行号变成列号，原始行号有序使得转置后的列号有序，因此原始三元组转置后的一行中的列相对顺序是正确的。故此有如下代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::swap;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">void</span> TripleTable&lt;DataType&gt;::TransposeMatrix()</span><br><span class="line">&#123;</span><br><span class="line">        TripleAtom&lt;DataType&gt; tmpAtom;</span><br><span class="line">        <span class="built_in">vector</span>&lt;TripleAtom&lt;DataType&gt;&gt; newMatrix;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= matrixColNum; i++) &#123;</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">size_t</span> j = <span class="number">0</span>; j &lt; data.size(); j++) &#123;</span><br><span class="line">                        <span class="keyword">if</span> (data[j].col == i) &#123;</span><br><span class="line">                                tmpAtom.row = data[j].col;</span><br><span class="line">                                tmpAtom.col = data[j].row;</span><br><span class="line">                                tmpAtom.ele = data[j].ele;</span><br><span class="line">                                newMatrix.push_back(tmpAtom); <span class="comment">/*压入*/</span></span><br><span class="line">                        &#125;</span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        data.assign(newMatrix.begin(), newMatrix.end()); <span class="comment">/*转置后的矩阵*/</span></span><br><span class="line">        swap(matrixRowNum, matrixColNum);</span><br><span class="line"></span><br><span class="line">        CalculateFirstNoneZeroArray();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>快速矩阵转置</li>
+</ul>
+<p>由于在常规转置中，我们需要一行一行来处理，如果每遍历到一个三元组便知道该元素放入的位置，那么可以极大降低时间复杂度，此时我们需要计算一个转置后每行起始的位置，然后在遍历过程中可以快速填写三元组顺序表，具体实现代码如下所示：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::swap;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">void</span> TripleTable&lt;DataType&gt;::FastTransposeMatrix()</span><br><span class="line">&#123;</span><br><span class="line">        <span class="keyword">if</span> (matrixRowNum &lt;= <span class="number">0</span> || matrixColNum &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> *colNum = <span class="keyword">new</span> <span class="keyword">int</span>[matrixColNum]; <span class="comment">/*每列非零元素数量*/</span></span><br><span class="line">        <span class="keyword">int</span> *colIndex = <span class="keyword">new</span> <span class="keyword">int</span>[matrixColNum]; <span class="comment">/*每列第一个非零元素起始下标*/</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; matrixColNum; i++) &#123;</span><br><span class="line">                colNum[i] = colIndex[<span class="number">0</span>] = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; data.size(); i++) &#123;</span><br><span class="line">                ++colNum[data[i].col - <span class="number">1</span>];</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; matrixColNum; i++) &#123;</span><br><span class="line">                <span class="comment">/*计算每一列第一个非零元素下标*/</span></span><br><span class="line">                colIndex[i] = colIndex[i<span class="number">-1</span>] + colNum[i<span class="number">-1</span>];</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">vector</span>&lt;TripleAtom&lt;DataType&gt;&gt; newMatrix(data.size());</span><br><span class="line">        TripleAtom&lt;DataType&gt; tmpAtom;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; data.size(); i++) &#123;</span><br><span class="line"></span><br><span class="line">                tmpAtom.row = data[i].col;</span><br><span class="line">                tmpAtom.col = data[i].row;</span><br><span class="line">                tmpAtom.ele = data[i].ele;</span><br><span class="line"></span><br><span class="line">                newMatrix[colIndex[tmpAtom.row<span class="number">-1</span>]] = tmpAtom;</span><br><span class="line">                ++colIndex[tmpAtom.row<span class="number">-1</span>]; <span class="comment">/*矩阵下标从1开始*/</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        data.assign(newMatrix.begin(), newMatrix.end()); <span class="comment">/*转置后的矩阵*/</span></span><br><span class="line">        swap(matrixRowNum, matrixColNum);</span><br><span class="line"></span><br><span class="line">        CalculateFirstNoneZeroArray();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">delete</span> [] colNum; <span class="keyword">delete</span> [] colIndex;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述代码增加辅助空间后便将时间复杂度降低了一个量级。</p>
+<ul>
+<li>矩阵相加</li>
+</ul>
+<p>在进行矩阵加法，首先需要判断两个矩阵是否能够相加，接着使用双下标指针分别指向第一个矩阵和第二个矩阵，如果两个指向的行列号相等只需直接相加，否则需要判断行列号大小，具体实现代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">void</span> TripleTable&lt;DataType&gt;::AddMatrix(TripleTable&lt;DataType&gt; &amp;otherMatrix)</span><br><span class="line">&#123;</span><br><span class="line">        <span class="keyword">if</span> (matrixRowNum != otherMatrix.matrixRowNum || matrixColNum != otherMatrix.matrixColNum) &#123;</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">vector</span>&lt;TripleAtom&lt;DataType&gt;&gt; newMatrix;</span><br><span class="line">        TripleAtom&lt;DataType&gt; tmpAtom;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">size_t</span> i = <span class="number">0</span>, j = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (i &lt; data.size() &amp;&amp; j &lt; otherMatrix.data.size()) &#123;</span><br><span class="line">                <span class="keyword">if</span> (data[i].row &lt; otherMatrix.data[j].row) &#123;</span><br><span class="line">                        newMatrix.push_back(data[i]); ++i;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (data[i].row &gt; otherMatrix.data[j].row) &#123;</span><br><span class="line">                        newMatrix.push_back(otherMatrix.data[j]); ++j;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (data[i].col &lt; otherMatrix.data[j].col) &#123;</span><br><span class="line">                        newMatrix.push_back(data[i]); ++i;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (data[i].col &gt; otherMatrix.data[j].col) &#123;</span><br><span class="line">                        newMatrix.push_back(otherMatrix.data[j]); ++j;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> &#123;</span><br><span class="line">                        tmpAtom.row = data[i].row;</span><br><span class="line">                        tmpAtom.col = data[i].col;</span><br><span class="line">                        tmpAtom.ele = data[i].ele + otherMatrix.data[j].ele;</span><br><span class="line">                        newMatrix.push_back(tmpAtom);</span><br><span class="line">                        ++i; ++j;</span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (i &lt; data.size()) &#123;</span><br><span class="line">                newMatrix.push_back(data[i]); ++i;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (j &lt; otherMatrix.data.size()) &#123;</span><br><span class="line">                newMatrix.push_back(otherMatrix.data[j]); ++j;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        data.assign(newMatrix.begin(), newMatrix.end()); <span class="comment">/*相加后的矩阵*/</span></span><br><span class="line"></span><br><span class="line">        CalculateFirstNoneZeroArray(); <span class="comment">/*重新计算*/</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>矩阵减法</li>
+</ul>
+<p>矩阵减法和矩阵加法类似，具体代码如下所示：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">void</span> TripleTable&lt;DataType&gt;::SubMatrix(TripleTable&lt;DataType&gt; &amp;otherMatrix)</span><br><span class="line">&#123;</span><br><span class="line">        <span class="keyword">if</span> (matrixRowNum != otherMatrix.matrixRowNum || matrixColNum != otherMatrix.matrixColNum) &#123;</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">vector</span>&lt;TripleAtom&lt;DataType&gt;&gt; newMatrix;</span><br><span class="line">        TripleAtom&lt;DataType&gt; tmpAtom;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">size_t</span> i = <span class="number">0</span>, j = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (i &lt; data.size() &amp;&amp; j &lt; otherMatrix.data.size()) &#123;</span><br><span class="line">                <span class="keyword">if</span> (data[i].row &lt; otherMatrix.data[j].row) &#123;</span><br><span class="line">                        newMatrix.push_back(data[i]); ++i;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (data[i].row &gt; otherMatrix.data[j].row) &#123;</span><br><span class="line">                        tmpAtom.row = otherMatrix.data[j].row;</span><br><span class="line">                        tmpAtom.col = otherMatrix.data[j].col;</span><br><span class="line">                        tmpAtom.ele = -otherMatrix.data[j].ele;</span><br><span class="line">                        newMatrix.push_back(tmpAtom); ++j;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (data[i].col &lt; otherMatrix.data[j].col) &#123;</span><br><span class="line">                        newMatrix.push_back(data[i]); ++i;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (data[i].col &gt; otherMatrix.data[j].col) &#123;</span><br><span class="line">                        tmpAtom.row = otherMatrix.data[j].row;</span><br><span class="line">                        tmpAtom.col = otherMatrix.data[j].col;</span><br><span class="line">                        tmpAtom.ele = -otherMatrix.data[j].ele;</span><br><span class="line">                        newMatrix.push_back(tmpAtom); ++j;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> &#123;</span><br><span class="line">                        tmpAtom.row = data[i].row;</span><br><span class="line">                        tmpAtom.col = data[i].col;</span><br><span class="line">                        tmpAtom.ele = data[i].ele - otherMatrix.data[j].ele;</span><br><span class="line">                        newMatrix.push_back(tmpAtom);</span><br><span class="line">                        ++i; ++j;</span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (i &lt; data.size()) &#123;</span><br><span class="line">                newMatrix.push_back(data[i]); ++i;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (j &lt; otherMatrix.data.size()) &#123;</span><br><span class="line">                tmpAtom.row = otherMatrix.data[j].row;</span><br><span class="line">                tmpAtom.col = otherMatrix.data[j].col;</span><br><span class="line">                tmpAtom.ele = -otherMatrix.data[j].ele;</span><br><span class="line">                newMatrix.push_back(tmpAtom); ++j;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        data.assign(newMatrix.begin(), newMatrix.end()); <span class="comment">/*相减后的矩阵*/</span></span><br><span class="line"></span><br><span class="line">        CalculateFirstNoneZeroArray(); <span class="comment">/*重新计算*/</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>矩阵乘法</li>
+</ul>
+<p>矩阵乘法相对而言比较复杂，矩阵乘法如果偷懒可以先解压缩然后使用常规乘法进行计算最后再把结果进行压缩，但这样就不能体现三元组的作用了，因此需要找出一种可以直接在三元组上进行计算的乘法算法。考虑到矩阵乘法的实质是从第一个矩阵抽出一个行向量和从第二个矩阵抽出一个列向量并做向量的点乘，其中行、列号分别对应在结果矩阵中的行、列号，综合上述分析我们可以一行一行处理，其首先也需要判断运算是否合法，具体代码如下所示：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">void</span> TripleTable&lt;DataType&gt;::MultiMatrix(TripleTable&lt;DataType&gt; &amp;otherMatrix)</span><br><span class="line">&#123;</span><br><span class="line">        <span class="keyword">if</span> (matrixColNum != otherMatrix.matrixRowNum) &#123;</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (data.size() &lt;= <span class="number">0</span> || otherMatrix.data.size() &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="comment">/*如果有全零矩阵则相乘结果也是一个全零矩阵*/</span></span><br><span class="line">                data.clear(); <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        DataType *tmpAccumulate = <span class="keyword">new</span> <span class="keyword">int</span>[otherMatrix.matrixColNum]; <span class="comment">/*记录每行各列的累加和*/</span></span><br><span class="line"></span><br><span class="line">        <span class="built_in">vector</span>&lt;TripleAtom&lt;DataType&gt;&gt; newMatrix;</span><br><span class="line">        <span class="comment">/*一行一行处理*/</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; matrixRowNum; i++) &#123;</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; otherMatrix.matrixColNum; j++) &#123;</span><br><span class="line">                        tmpAccumulate[j] = DataType(<span class="number">0</span>); <span class="comment">/*清空累加器*/</span></span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="comment">/*行开始的地方*/</span></span><br><span class="line">                <span class="keyword">int</span> rowBegin = rowFirstNoneZeroPos[i];</span><br><span class="line">                <span class="comment">/*行结束的地方*/</span></span><br><span class="line">                <span class="keyword">int</span> rowEnd = i &gt;= matrixRowNum<span class="number">-1</span> ? <span class="keyword">int</span>(data.size()) : rowFirstNoneZeroPos[i+<span class="number">1</span>];</span><br><span class="line"></span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> j = rowBegin; j &lt; rowEnd; j++) &#123;</span><br><span class="line">                        <span class="comment">/*(m,n)*(n,k)矩阵的行,列对应下标相等才乘*/</span></span><br><span class="line">                        <span class="keyword">int</span> middleIndex = data[j].col - <span class="number">1</span>;</span><br><span class="line">                        <span class="keyword">int</span> anotherRowBegin = otherMatrix.rowFirstNoneZeroPos[middleIndex];</span><br><span class="line">                        <span class="keyword">int</span> anotherRowEnd = middleIndex &gt;= otherMatrix.matrixRowNum<span class="number">-1</span> ? <span class="keyword">int</span>(otherMatrix.data.size()) : otherMatrix.rowFirstNoneZeroPos[middleIndex+<span class="number">1</span>];</span><br><span class="line">                        <span class="keyword">for</span> (<span class="keyword">int</span> k = anotherRowBegin; k &lt; anotherRowEnd; k++) &#123;</span><br><span class="line">                                tmpAccumulate[otherMatrix.data[k].col <span class="number">-1</span>] += data[j].ele * otherMatrix.data[k].ele;</span><br><span class="line">                        &#125;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="comment">/*逐行压缩*/</span></span><br><span class="line">                TripleAtom&lt;DataType&gt; tmpAtom;</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; otherMatrix.matrixColNum; j++) &#123;</span><br><span class="line">                        <span class="keyword">if</span> (tmpAccumulate[j] != DataType(<span class="number">0</span>)) &#123;</span><br><span class="line">                                tmpAtom.row = i+<span class="number">1</span>; <span class="comment">/*下标从1开始*/</span></span><br><span class="line">                                tmpAtom.col = j+<span class="number">1</span>; <span class="comment">/*下标从1开始*/</span></span><br><span class="line">                                tmpAtom.ele = tmpAccumulate[j];</span><br><span class="line">                                newMatrix.push_back(tmpAtom);</span><br><span class="line">                        &#125;</span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/*修改列数*/</span></span><br><span class="line">        matrixColNum = otherMatrix.matrixColNum;</span><br><span class="line">        data.assign(newMatrix.begin(), newMatrix.end()); <span class="comment">/*相乘后的矩阵*/</span></span><br><span class="line"></span><br><span class="line">        CalculateFirstNoneZeroArray(); <span class="comment">/*重新计算*/</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">delete</span> [] tmpAccumulate;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>压缩矩阵转成二维数组</li>
+</ul>
+<p>直接遍历即可，不存在意味着是零值。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;DataType&gt;&gt; TripleTable&lt;DataType&gt;::TransformTo2DArray()</span><br><span class="line">&#123;</span><br><span class="line">        <span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;DataType&gt;&gt; result(matrixRowNum, <span class="built_in">vector</span>&lt;DataType&gt;(matrixColNum, DataType(<span class="number">0</span>)));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; data.size(); i++) &#123;</span><br><span class="line">                result[data[i].row<span class="number">-1</span>][data[i].col<span class="number">-1</span>] = data[i].ele;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>打印矩阵</li>
+</ul>
+<p>先调用转二维函数然后直接打印即可，代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">cout</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">void</span> TripleTable&lt;DataType&gt;::PrintMatrix()</span><br><span class="line">&#123;</span><br><span class="line">        <span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;DataType&gt;&gt; result = TransformTo2DArray();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; result.size(); i++) &#123;</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">size_t</span> j = <span class="number">0</span>; j &lt; result[i].size(); j++) &#123;</span><br><span class="line">                        <span class="built_in">cout</span> &lt;&lt; result[i][j] &lt;&lt; <span class="string">";"</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="built_in">cout</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>计算每行元素的第一个下标值</li>
+</ul>
+<p>这在快速矩阵转置中实现过类似的思路，直接把代码稍作修改即可，结果见下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">void</span> TripleTable&lt;DataType&gt;::CalculateFirstNoneZeroArray()</span><br><span class="line">&#123;</span><br><span class="line">        <span class="keyword">if</span> (rowFirstNoneZeroPos != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">                <span class="keyword">delete</span> [] rowFirstNoneZeroPos;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/*正式给rowFirstNoneZeroPos申请空间*/</span></span><br><span class="line">        rowFirstNoneZeroPos = <span class="keyword">new</span> <span class="keyword">int</span>[matrixRowNum];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> *rowlNum = <span class="keyword">new</span> <span class="keyword">int</span>[matrixRowNum]; <span class="comment">/*每列非零元素数量*/</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; matrixRowNum; i++) &#123;</span><br><span class="line">                rowlNum[i] = rowFirstNoneZeroPos[i] = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; data.size(); i++) &#123;</span><br><span class="line">                ++rowlNum[data[i].row - <span class="number">1</span>];</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; matrixRowNum; i++) &#123;</span><br><span class="line">                <span class="comment">/*计算每一列第一个非零元素下标*/</span></span><br><span class="line">                rowFirstNoneZeroPos[i] = rowFirstNoneZeroPos[i<span class="number">-1</span>] + rowlNum[i<span class="number">-1</span>];</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">delete</span> [] rowlNum;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="代码测试"><a href="#代码测试" class="headerlink" title="代码测试"></a>代码测试</h2><p>通过随机生成两个稀疏矩阵，然后依次测试各个函数是否正确，测试代码如下所示：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;random&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;ctime&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;chrono&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;functional&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> chrono;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	default_random_engine randEngine(unsigned(time(nullptr)));</span><br><span class="line">	uniform_int_distribution&lt;<span class="keyword">int</span>&gt; intDis(<span class="keyword">int</span>(<span class="number">-100</span>), <span class="keyword">int</span>(<span class="number">100</span>)); <span class="comment">/*不能太大，防止溢出*/</span></span><br><span class="line">        uniform_int_distribution&lt;<span class="keyword">int</span>&gt; mnDis(<span class="keyword">int</span>(<span class="number">1</span>), <span class="keyword">int</span>(<span class="number">100</span>));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> testTimes = <span class="number">5</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">while</span> ((testTimes--) &gt; <span class="number">0</span>) &#123;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">int</span> m = mnDis(randEngine);</span><br><span class="line">                <span class="keyword">int</span> n = mnDis(randEngine);</span><br><span class="line">                <span class="keyword">int</span> k = mnDis(randEngine);</span><br><span class="line"></span><br><span class="line">                uniform_int_distribution&lt;<span class="keyword">int</span>&gt; deltaDis1(<span class="keyword">int</span>(<span class="number">1</span>), <span class="keyword">int</span>(m*n));</span><br><span class="line">                uniform_int_distribution&lt;<span class="keyword">int</span>&gt; deltaDis2(<span class="keyword">int</span>(<span class="number">1</span>), <span class="keyword">int</span>(n*k));</span><br><span class="line"></span><br><span class="line">                <span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&gt; testMatrix1(m, <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;(n, <span class="number">0</span>));</span><br><span class="line">                <span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&gt; testMatrix2(m, <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;(n, <span class="number">0</span>));</span><br><span class="line">                <span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&gt; testMatrix3(n, <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;(k, <span class="number">0</span>));</span><br><span class="line"></span><br><span class="line">                <span class="keyword">int</span> delta1 = deltaDis1(randEngine);</span><br><span class="line"></span><br><span class="line">                <span class="comment">/*这里偷个懒，矩阵1，2同时生成*/</span></span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; delta1; i++) &#123;</span><br><span class="line">                        <span class="keyword">int</span> row = mnDis(randEngine) % m;</span><br><span class="line">                        <span class="keyword">int</span> col = mnDis(randEngine) % n;</span><br><span class="line">                        testMatrix1[row][col] = intDis(randEngine);</span><br><span class="line"></span><br><span class="line">                        row = mnDis(randEngine) % m;</span><br><span class="line">                        col = mnDis(randEngine) % n;</span><br><span class="line">                        testMatrix2[row][col] = intDis(randEngine);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">int</span> delta2 = deltaDis2(randEngine);</span><br><span class="line"></span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; delta2; i++) &#123;</span><br><span class="line">                        <span class="keyword">int</span> row = mnDis(randEngine) % n;</span><br><span class="line">                        <span class="keyword">int</span> col = mnDis(randEngine) % k;</span><br><span class="line">                        testMatrix3[row][col] = intDis(randEngine);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                TripleTable&lt;<span class="keyword">int</span>&gt; tripleTest1(testMatrix1);</span><br><span class="line">                TripleTable&lt;<span class="keyword">int</span>&gt; tripleTest2(testMatrix2);</span><br><span class="line">                TripleTable&lt;<span class="keyword">int</span>&gt; tripleTest3(testMatrix3);</span><br><span class="line"></span><br><span class="line">                tripleTest1.TransposeMatrix(); tripleTest1.TransposeMatrix();</span><br><span class="line">                <span class="built_in">cout</span> &lt;&lt; <span class="string">"常规转置测试结果："</span> &lt;&lt; (tripleTest1.TransformTo2DArray() == testMatrix1 ? <span class="string">"Correct"</span> : <span class="string">"Wrong"</span>) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">                tripleTest1.FastTransposeMatrix(); tripleTest1.FastTransposeMatrix();</span><br><span class="line">                <span class="built_in">cout</span> &lt;&lt; <span class="string">"快速转置测试结果："</span> &lt;&lt; (tripleTest1.TransformTo2DArray() == testMatrix1 ? <span class="string">"Correct"</span> : <span class="string">"Wrong"</span>) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">                <span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&gt; addMatrix(m, <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;(n, <span class="number">0</span>));</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; addMatrix.size(); i++) &#123;</span><br><span class="line">                        <span class="keyword">for</span> (<span class="keyword">size_t</span> j = <span class="number">0</span>; j &lt; addMatrix[i].size(); j++) &#123;</span><br><span class="line">                                addMatrix[i][j] = testMatrix1[i][j] + testMatrix2[i][j];</span><br><span class="line">                        &#125;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                tripleTest1.AddMatrix(tripleTest2);</span><br><span class="line">                <span class="built_in">cout</span> &lt;&lt; <span class="string">"矩阵加法测试结果："</span> &lt;&lt; (tripleTest1.TransformTo2DArray() == addMatrix ? <span class="string">"Correct"</span> : <span class="string">"Wrong"</span>) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">                tripleTest1.SubMatrix(tripleTest2);</span><br><span class="line">                <span class="built_in">cout</span> &lt;&lt; <span class="string">"矩阵减法测试结果："</span> &lt;&lt; (tripleTest1.TransformTo2DArray() == testMatrix1 ? <span class="string">"Correct"</span> : <span class="string">"Wrong"</span>) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">                <span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&gt; multiMatrix(m, <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;(k, <span class="number">0</span>));</span><br><span class="line"></span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; multiMatrix.size(); i++) &#123;</span><br><span class="line">                        <span class="keyword">for</span> (<span class="keyword">size_t</span> j = <span class="number">0</span>; j &lt; multiMatrix[i].size(); j++) &#123;</span><br><span class="line">                                <span class="keyword">for</span> (<span class="keyword">int</span> k = <span class="number">0</span>; k &lt; n; k++) &#123;</span><br><span class="line">                                        multiMatrix[i][j] += testMatrix1[i][k]*testMatrix3[k][j];</span><br><span class="line">                                        <span class="comment">/*矩阵乘法*/</span></span><br><span class="line">                                &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                tripleTest1.MultiMatrix(tripleTest3);</span><br><span class="line">                <span class="built_in">cout</span> &lt;&lt; <span class="string">"矩阵乘法测试结果："</span> &lt;&lt; (tripleTest1.TransformTo2DArray() == multiMatrix ? <span class="string">"Correct"</span> : <span class="string">"Wrong"</span>) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">                <span class="comment">/*tripleTest1.PrintMatrix();*/</span></span><br><span class="line">        &#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a href="https://zh.wikipedia.org/wiki/%E7%A8%80%E7%96%8F%E7%9F%A9%E9%98%B5" target="_blank" rel="noopener">稀疏矩阵</a></p>
+<p><a href="https://book.douban.com/subject/2024655/" target="_blank" rel="noopener">数据结构</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/数据结构/" rel="tag"># 数据结构</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/algorithms-design/string-pattern-match-kmp.html" rel="next" title="字符串模式匹配及KMP算法分析与实现">
+                <i class="fa fa-chevron-left"></i> 字符串模式匹配及KMP算法分析与实现
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/data-structure/sparse-matrix-orthogonal-linked-list.html" rel="prev" title="稀疏矩阵压缩存储之十字链表">
+                稀疏矩阵压缩存储之十字链表 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/Limbo.jpg"
+                alt="hsuloong" />
+            
+              <p class="site-author-name" itemprop="name">hsuloong</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">44</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/hsuloong" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#基础知识"><span class="nav-number">1.</span> <span class="nav-text">基础知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三元组顺序表基本定义"><span class="nav-number">2.</span> <span class="nav-text">三元组顺序表基本定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三元组顺序表ADT的实现"><span class="nav-number">3.</span> <span class="nav-text">三元组顺序表ADT的实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码测试"><span class="nav-number">4.</span> <span class="nav-text">代码测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hsuloong</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

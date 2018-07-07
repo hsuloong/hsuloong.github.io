@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="操作系统," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="死锁基本概念死锁是指在一组进程中，每个进程都无限等待该组进程中另一个进程所占有的资源而导致永远无法等到资源的现象，这一组进程被称为死锁进程。死锁一旦发生，将会极大浪费系统资源以及可能造成系统崩溃。 死锁原因从死锁的基本概念可以得知，死锁是发生在进程申请资源而得不到满足同时又互相僵持导致的，因此死锁原因可以归纳为两种： 1. 资源数量有限，进程之间需要竞争资源 2. 进程请求释放资源顺序不合理，即进">
+<meta name="keywords" content="操作系统">
+<meta property="og:type" content="article">
+<meta property="og:title" content="进程或线程死锁">
+<meta property="og:url" content="http://yoursite.com/operating-system/dead-lock.html">
+<meta property="og:site_name" content="千里之行 始于足下">
+<meta property="og:description" content="死锁基本概念死锁是指在一组进程中，每个进程都无限等待该组进程中另一个进程所占有的资源而导致永远无法等到资源的现象，这一组进程被称为死锁进程。死锁一旦发生，将会极大浪费系统资源以及可能造成系统崩溃。 死锁原因从死锁的基本概念可以得知，死锁是发生在进程申请资源而得不到满足同时又互相僵持导致的，因此死锁原因可以归纳为两种： 1. 资源数量有限，进程之间需要竞争资源 2. 进程请求释放资源顺序不合理，即进">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/images/resource-assignment.jpg">
+<meta property="og:updated_time" content="2018-06-13T14:21:10.871Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="进程或线程死锁">
+<meta name="twitter:description" content="死锁基本概念死锁是指在一组进程中，每个进程都无限等待该组进程中另一个进程所占有的资源而导致永远无法等到资源的现象，这一组进程被称为死锁进程。死锁一旦发生，将会极大浪费系统资源以及可能造成系统崩溃。 死锁原因从死锁的基本概念可以得知，死锁是发生在进程申请资源而得不到满足同时又互相僵持导致的，因此死锁原因可以归纳为两种： 1. 资源数量有限，进程之间需要竞争资源 2. 进程请求释放资源顺序不合理，即进">
+<meta name="twitter:image" content="http://yoursite.com/images/resource-assignment.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/operating-system/dead-lock.html"/>
+
+
+
+
+
+  <title>进程或线程死锁 | 千里之行 始于足下</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">千里之行 始于足下</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/operating-system/dead-lock.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="hsuloong">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Limbo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="千里之行 始于足下">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">进程或线程死锁</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-24T10:56:31+08:00">
+                2018-03-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/public/categories/operating-system/" itemprop="url" rel="index">
+                    <span itemprop="name">操作系统</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="死锁基本概念"><a href="#死锁基本概念" class="headerlink" title="死锁基本概念"></a>死锁基本概念</h2><p>死锁是指在一组进程中，每个进程都无限等待该组进程中另一个进程所占有的资源而导致永远无法等到资源的现象，这一组进程被称为死锁进程。死锁一旦发生，将会极大浪费系统资源以及可能造成系统崩溃。</p>
+<h2 id="死锁原因"><a href="#死锁原因" class="headerlink" title="死锁原因"></a>死锁原因</h2><p>从死锁的基本概念可以得知，死锁是发生在进程申请资源而得不到满足同时又互相僵持导致的，因此死锁原因可以归纳为两种：</p>
+<pre><code>1. 资源数量有限，进程之间需要竞争资源
+2. 进程请求释放资源顺序不合理，即进程间推进顺序不合理
+</code></pre><h3 id="资源有限导致资源竞争引起死锁"><a href="#资源有限导致资源竞争引起死锁" class="headerlink" title="资源有限导致资源竞争引起死锁"></a>资源有限导致资源竞争引起死锁</h3><p>在操作系统中，资源可分为可重用资源以及可消耗资源。可重用资源是指资源可以被重复利用，如CPU、I/O设备、内存、文件、信号量等；而可消耗资源则是只能使用一次，如中断、信号、消息等。可重用资源按照资源属性又可分为以下两种：</p>
+<ul>
+<li>可剥夺性资源</li>
+</ul>
+<p>指进程在获得某资源后可以其他进程或者系统被剥夺，主要有CPU、IO设备、内存、文件、数据库、信号量等</p>
+<ul>
+<li>不可剥夺资源</li>
+</ul>
+<p>不可剥夺资源是指资源被分配后不能被强行收回，比如打印机、磁带机等，因为这些资源如果可以被剥夺将会导致输出结果错误</p>
+<h3 id="活锁"><a href="#活锁" class="headerlink" title="活锁"></a>活锁</h3><p>假设两个资源R1、R2和两个进程P1、P2。P1已经给资源R1加锁，同时申请资源R2；P2已经已经给资源R2加锁，同时申请资源R1。由于资源已被加锁，进程P1、P2不断轮询资源尝试加锁，两个进程即没有推进也没有阻塞，这种情况称为活锁。</p>
+<h3 id="饥饿"><a href="#饥饿" class="headerlink" title="饥饿"></a>饥饿</h3><p>假设有资源R1，进程P1正在使用资源R1，接着有进程P2、P3、P4也在申请R1，此时系统决定依次将资源R1分配给P3、P4而导致进程P2一直得不到资源的情况。</p>
+<h2 id="死锁必要条件"><a href="#死锁必要条件" class="headerlink" title="死锁必要条件"></a>死锁必要条件</h2><h3 id="互斥条件"><a href="#互斥条件" class="headerlink" title="互斥条件"></a>互斥条件</h3><p>互斥条件又可以称为资源独占，是指在一段时间内资源只能被一个进程中占有，其他进程只能等待直到占有进程把资源释放掉。</p>
+<h3 id="占有且等待"><a href="#占有且等待" class="headerlink" title="占有且等待"></a>占有且等待</h3><p>又称为请求和保持条件，是指进程在申请其他资源而资源被占用时，申请进程阻塞但是并不释放自己已占有的资源。</p>
+<h3 id="不可抢占"><a href="#不可抢占" class="headerlink" title="不可抢占"></a>不可抢占</h3><p>又称为不可剥夺条件，指进程已获得资源后，除非使用结束或者主动释放，其他进程不可以抢占</p>
+<h3 id="循环等待"><a href="#循环等待" class="headerlink" title="循环等待"></a>循环等待</h3><p>是指有一个进程组P1、P2、P3….Pn。P1等待P2占有的资源，P2等待P3占有的资源…..，Pn等待P1资源。形成一个等待环路</p>
+<h2 id="死锁资源分配图描述"><a href="#死锁资源分配图描述" class="headerlink" title="死锁资源分配图描述"></a>死锁资源分配图描述</h2><h3 id="资源分配图基本定义"><a href="#资源分配图基本定义" class="headerlink" title="资源分配图基本定义"></a>资源分配图基本定义</h3><p>为了检测是否有死锁发生，可以使用资源分配图来判断。资源分配图由一组结点N和一组边E所组成的对偶G=(N,E)。结点N分为两个互斥的子集，包括一组进程结点和一组资源结点。边由资源节点与进程结点连线构成，如果进程申请资源则边的方向为进程结点指向资源节点，反之则由资源结点指向进程结点。</p>
+<p>如下图为一个简单的资源分配图：<a href="http://c.biancheng.net/cpp/html/2607.html" target="_blank" rel="noopener">图片来源</a></p>
+<p><img src="/images/resource-assignment.jpg" alt="资源分配图"></p>
+<p>其中圆圈代表某一个进程，方框代表某一组同类资源。</p>
+<h3 id="死锁定理"><a href="#死锁定理" class="headerlink" title="死锁定理"></a>死锁定理</h3><p>对于一个确定的资源分配图，死锁定理指出如果图中不存在环路，则一定不会发生死锁，否则<strong>有可能</strong>发生死锁（每类资源实例有多个）。如果每类资源的个数为1，则环路是否存在将成为死锁存在的充分必要条件，即环路存在可以推断出发生死锁，发生死锁也可以推断出环路存在。</p>
+<h3 id="资源分配图简化"><a href="#资源分配图简化" class="headerlink" title="资源分配图简化"></a>资源分配图简化</h3><p>在分析复杂的资源分配图时，可以使用简化方式去判断是否存在死锁，简化过程如下：</p>
+<pre><code>1. 在资源分配图中找到一个只有分配边的进程结点Pi，由于Pi有全部需要的资源，其可运行结束并释放所有资源，即将分配边删除。
+2. 在第一步释放资源后将占有资源分配给等待进程，接着找到只有分配边的进程结点，也将分配边删除
+3. 重复上述两步知道所有的边都可以被删除则称资源分配图时可以完全简化的，否则称为不可完全简化的
+</code></pre><p>上诉简化完成后死锁的充分必要条件有：如果资源图是可以完全简化的则不存在死锁，否则存死锁。</p>
+<h2 id="死锁解决"><a href="#死锁解决" class="headerlink" title="死锁解决"></a>死锁解决</h2><p>根据死锁解决的思想，死锁解决可分为几种情况</p>
+<pre><code>1. 不考虑死锁问题，即鸵鸟算法
+2. 不让死锁发生，有死锁预防（静态策略）与死锁避免（动态策略）
+3. 让死锁发生，然后解除死锁
+</code></pre><h3 id="死锁预防"><a href="#死锁预防" class="headerlink" title="死锁预防"></a>死锁预防</h3><p>死锁预防是指在设计资源分配算法时就考虑不发生死锁，是一种静态的死锁解决方案。其通过设定某些限制条件去破坏死锁的四个必要条件，但是可能由于施加的限制过于严格而导致系统资源利用率低下，减少资源吞吐量。</p>
+<p>根据破坏四个条件不同有如下做法：</p>
+<pre><code>1. 破坏互斥条件，虚拟化技术将互斥资源虚拟成共享资源，如打印机的SPOOLing技术
+2. 破坏占有且等待，比如一次性申请所需资源或者再申请新资源得不到满足时释放已占有的资源
+3. 破坏不可抢占条件，优先级抢占等，需要保证资源易于恢复
+4. 破坏循环等待条件，系统给资源进行线性排队，进程资源申请只能按照线性顺序逐步申请，可能会造成资源浪费
+</code></pre><h3 id="死锁避免"><a href="#死锁避免" class="headerlink" title="死锁避免"></a>死锁避免</h3><p>死锁避免是指算法跟踪资源的分配情况，评估系统的安全状态，使得资源分配不会使系统进入不安全状态，死锁避免的限制较弱，可以获得较高的资源利用率和系统吞吐量。死锁避免经典算法有银行家算法。</p>
+<p>安全序列是指这样一个进程序列{P1,P2,P3…Pn}，对于每一个进程Pi，Pi所需要的资源总数不大于系统剩余资源总数以及进程Pi之前进程占有资源总数之和，则称为安全序列。</p>
+<p>银行家算法应用有系列的条件，如下所示：</p>
+<pre><code>1. 在固定数量的进程中共享数量固定的资源
+2. 每个进程预先指定完成工作量所需的最大资源数量
+3. 进程不允许申请比系统可用资源总数还多的资源
+4. 进程等待资源时间有限
+5. 如果系统满足了进程的资源请求，进程应该在有限时间内归还
+</code></pre><p>银行家基本数据结构如下：</p>
+<pre><code>1. 可用资源数量available，含有m个元素，表示第i个元素的可用资源数量
+2. 最大需求矩阵maxNeed，是一个n*m的矩阵，maxNeed[i][j]代表第i个进程对第j个资源的最大需求量
+3. 分配矩阵allocation，是一个n*m的矩阵，allocation[i][j]代表第i个进程已获得第j个资源数量
+4. 需求矩阵need，是一个n*m的矩阵，need[i][j]代表第i个进程还需要第j个资源数量
+5. 请求资源矩阵request，是一个n*m的矩阵，request[i][j]代表第i个进程向系统请求第j个资源数量
+</code></pre><p>银行家算法实现基本步骤如下：</p>
+<pre><code>1. 先检查request[i][0~m-1]&lt;=need[i][0~m-1]，如果不满足则出错返回
+2. 再检查request[i][0~m-1]&lt;=available[0~m-1]，如果不满足则出错返回
+3. 系统尝试将资源分配给进程，并修改available、allocation、need矩阵
+4. 运行安全状态检查算法，检查如果按照当前分配是否会导致不安全状态出现，如果不安全则恢复，否则完成分配
+</code></pre><p>银行家安全状态检查算法基本步骤如下：</p>
+<pre><code>1. 定义工作向量work[m]表示系统可提供的资源数量，安全算法执行初态work=available
+2. 定义finish[n]向量，初始值为false，当有足够资源分配给进程i时令finish[i]=true
+3. 在进程集合中找到满足以下条件的进程i：finish[i]=false，need[i][0~m]&lt;=work[0~m]
+4. 若第三步成功更新work[j]=work[j]+allocation[i][j]，finish[i]=true
+5. 如果所有进程最后finish[i]=true，则系统处于安全状态，否则处于不安全状态，不能分配资源
+</code></pre><p>以下为银行家算法的实现代码</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//数据结构</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> m = <span class="number">3</span>; <span class="comment">//资源类别数</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> n = <span class="number">5</span>; <span class="comment">//进程数</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Banker</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">	<span class="keyword">int</span> available[m]; <span class="comment">//可用资源数向量</span></span><br><span class="line">	<span class="keyword">int</span> maxNeed[n][m]; <span class="comment">//每个进程最大资源需求量</span></span><br><span class="line">	<span class="keyword">int</span> allocation[n][m]; <span class="comment">//已分配资源</span></span><br><span class="line">	<span class="keyword">int</span> need[n][m]; <span class="comment">//还需要的资源数</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> request[n][m]; <span class="comment">//进程请求资源矩阵</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">SafeStatusCheck</span><span class="params">(Banker &amp;inStatus)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> work[m];</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; m; i++) &#123;</span><br><span class="line">		work[i] = inStatus.available[i];</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">bool</span> finish[n] = &#123;<span class="literal">false</span>&#125;;</span><br><span class="line">	<span class="built_in">set</span>&lt;<span class="keyword">int</span>&gt; okSet;</span><br><span class="line">	<span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">		<span class="keyword">bool</span> hasOne = <span class="literal">false</span>;</span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">			<span class="keyword">if</span> ((okSet.find(i)) != okSet.end()) &#123;</span><br><span class="line">				<span class="keyword">continue</span>;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">bool</span> ok = <span class="literal">true</span>;</span><br><span class="line">			<span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; m; j++) &#123;</span><br><span class="line">				<span class="keyword">if</span> (inStatus.need[i][j] &gt; work[j]) &#123;</span><br><span class="line">					ok = <span class="literal">false</span>; <span class="keyword">break</span>;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">if</span> (ok) &#123;</span><br><span class="line">				okSet.insert(okSet.end(), i);</span><br><span class="line">				<span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; m; j++) &#123;</span><br><span class="line">					work[j] += inStatus.allocation[i][j];</span><br><span class="line">				&#125;</span><br><span class="line">				hasOne = <span class="literal">true</span>; <span class="keyword">break</span>;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> (okSet.size() &gt;= n) &#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> (!hasOne) &#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">BankerAllocate</span><span class="params">(Banker &amp;inStatus, <span class="keyword">int</span> pid, <span class="keyword">int</span> request[m])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; m; i++) &#123;</span><br><span class="line">		<span class="keyword">if</span> (inStatus.need[pid][i] &lt; request[i] || request[i] &gt; inStatus.available[i]) &#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; m; i++) &#123;</span><br><span class="line">		inStatus.available[i] -= request[i];</span><br><span class="line">		inStatus.allocation[pid][i] += request[i];</span><br><span class="line">		inStatus.need[pid][i] -= request[i];</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">bool</span> canAlloc = SafeStatusCheck(inStatus);</span><br><span class="line">	<span class="keyword">if</span> (canAlloc) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; m; i++) &#123;</span><br><span class="line">			inStatus.available[m] += request[i];</span><br><span class="line">			inStatus.allocation[pid][i] -= request[i];</span><br><span class="line">			inStatus.need[pid][i] += request[i];</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">CopyData</span><span class="params">(Banker &amp;inStatus, <span class="keyword">int</span> inAv[m], <span class="keyword">int</span> inMax[n][m], <span class="keyword">int</span> inAlloc[n][m], <span class="keyword">int</span> inNeed[n][m])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; m; j++) &#123;</span><br><span class="line">			inStatus.available[j] = inAv[j];</span><br><span class="line">			inStatus.maxNeed[i][j] = inMax[i][j];</span><br><span class="line">			inStatus.allocation[i][j] = inAlloc[i][j];</span><br><span class="line">			inStatus.need[i][j] = inNeed[i][j];</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	Banker TestStatus = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">	<span class="keyword">int</span> tmpAv[m] = &#123;<span class="number">3</span>,<span class="number">3</span>,<span class="number">2</span>&#125;;</span><br><span class="line">	<span class="keyword">int</span> tmpMax[n][m] = &#123;&#123;<span class="number">7</span>,<span class="number">5</span>,<span class="number">3</span>&#125;,&#123;<span class="number">3</span>,<span class="number">2</span>,<span class="number">2</span>&#125;,&#123;<span class="number">9</span>,<span class="number">0</span>,<span class="number">2</span>&#125;,&#123;<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>&#125;,&#123;<span class="number">4</span>,<span class="number">3</span>,<span class="number">3</span>&#125;&#125;;</span><br><span class="line">	<span class="keyword">int</span> tmpAlloc[n][m] = &#123;&#123;<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>&#125;,&#123;<span class="number">2</span>,<span class="number">0</span>,<span class="number">0</span>&#125;,&#123;<span class="number">3</span>,<span class="number">0</span>,<span class="number">2</span>&#125;,&#123;<span class="number">2</span>,<span class="number">1</span>,<span class="number">1</span>&#125;,&#123;<span class="number">0</span>,<span class="number">0</span>,<span class="number">2</span>&#125;&#125;;</span><br><span class="line">	<span class="keyword">int</span> tmpNeed[n][m] = &#123;&#123;<span class="number">7</span>,<span class="number">4</span>,<span class="number">3</span>&#125;,&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">2</span>&#125;,&#123;<span class="number">6</span>,<span class="number">0</span>,<span class="number">0</span>&#125;,&#123;<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>&#125;,&#123;<span class="number">4</span>,<span class="number">3</span>,<span class="number">1</span>&#125;&#125;;</span><br><span class="line">	CopyData(TestStatus, tmpAv, tmpMax, tmpAlloc, tmpNeed);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//初始状态</span></span><br><span class="line">	<span class="keyword">int</span> request1[m] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="string">"ini status(true):"</span> &lt;&lt; BankerAllocate(TestStatus, <span class="number">0</span>, request1) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//进程P1发出资源请求1,0,2</span></span><br><span class="line">	<span class="keyword">int</span> request2[m] = &#123;<span class="number">1</span>,<span class="number">0</span>,<span class="number">2</span>&#125;;</span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="string">"P1 can satisfied(true):"</span> &lt;&lt; BankerAllocate(TestStatus, <span class="number">1</span>, request2) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//进程P4再发出资源请求3,3,0</span></span><br><span class="line">	<span class="keyword">int</span> request3[m] = &#123;<span class="number">3</span>,<span class="number">3</span>,<span class="number">0</span>&#125;;</span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="string">"P4 can satisfied(false):"</span> &lt;&lt; BankerAllocate(TestStatus, <span class="number">4</span>, request3) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="死锁检测与解除"><a href="#死锁检测与解除" class="headerlink" title="死锁检测与解除"></a>死锁检测与解除</h3><p>如果系统没有采用策略去防止死锁的产生，那么系统必须要能够检测死锁的发生同时能够解除掉死锁。系统检测死锁可以使用资源分配图结合死锁定理完成。系统检测死锁时机可以是发现进程长时间等待或者定时检测或者检测到资源利用率下降时检测死锁。由于使用资源分配图判断死锁需要系统记录资源分配使用情况，因此系统要能够统计这些信息。在解除死锁时，在尽可能以最小代价的方式下解除，主要有撤销所有死锁进程（代价大）、进程回退再启动（代价大）、剥夺资源分配给死锁进程、逐步撤销死锁进程直到解除死锁。</p>
+<p>在死锁检测中，数据结构与银行家算法基本类似，可以直接调用SafeStatusCheck函数完成。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/操作系统/" rel="tag"># 操作系统</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/algorithms-design/sort-algorithm.html" rel="next" title="各大排序算法的分析与实现">
+                <i class="fa fa-chevron-left"></i> 各大排序算法的分析与实现
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/operating-system/disk-scheduling.html" rel="prev" title="磁盘调度策略介绍与实现">
+                磁盘调度策略介绍与实现 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/Limbo.jpg"
+                alt="hsuloong" />
+            
+              <p class="site-author-name" itemprop="name">hsuloong</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">44</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/hsuloong" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#死锁基本概念"><span class="nav-number">1.</span> <span class="nav-text">死锁基本概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#死锁原因"><span class="nav-number">2.</span> <span class="nav-text">死锁原因</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#资源有限导致资源竞争引起死锁"><span class="nav-number">2.1.</span> <span class="nav-text">资源有限导致资源竞争引起死锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#活锁"><span class="nav-number">2.2.</span> <span class="nav-text">活锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#饥饿"><span class="nav-number">2.3.</span> <span class="nav-text">饥饿</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#死锁必要条件"><span class="nav-number">3.</span> <span class="nav-text">死锁必要条件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#互斥条件"><span class="nav-number">3.1.</span> <span class="nav-text">互斥条件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#占有且等待"><span class="nav-number">3.2.</span> <span class="nav-text">占有且等待</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#不可抢占"><span class="nav-number">3.3.</span> <span class="nav-text">不可抢占</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#循环等待"><span class="nav-number">3.4.</span> <span class="nav-text">循环等待</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#死锁资源分配图描述"><span class="nav-number">4.</span> <span class="nav-text">死锁资源分配图描述</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#资源分配图基本定义"><span class="nav-number">4.1.</span> <span class="nav-text">资源分配图基本定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#死锁定理"><span class="nav-number">4.2.</span> <span class="nav-text">死锁定理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#资源分配图简化"><span class="nav-number">4.3.</span> <span class="nav-text">资源分配图简化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#死锁解决"><span class="nav-number">5.</span> <span class="nav-text">死锁解决</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#死锁预防"><span class="nav-number">5.1.</span> <span class="nav-text">死锁预防</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#死锁避免"><span class="nav-number">5.2.</span> <span class="nav-text">死锁避免</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#死锁检测与解除"><span class="nav-number">5.3.</span> <span class="nav-text">死锁检测与解除</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hsuloong</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

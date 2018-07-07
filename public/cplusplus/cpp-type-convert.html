@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="C++," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="类型转换基础对象的类型定义了对象能包含的数据和能够参与的运算，如果在表达式中混杂了多种不同的类型，编译器可能（有些类型转换非法则编译错误）会帮我们进行隐式的类型转换。如果两种类型能够进行相互转换则称两种类型是关联的。类型在进行隐式转换总体规则向上提升，即转换成精度和表达范围更广的数据类型。类型转换按照是否为自动可分为隐式转换和显式转换。隐式转换是由编译器自动完成的，无需编程人员的介入，显示转换是编">
+<meta name="keywords" content="C++">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C&#x2F;C++类型转换总结">
+<meta property="og:url" content="http://yoursite.com/cplusplus/cpp-type-convert.html">
+<meta property="og:site_name" content="千里之行 始于足下">
+<meta property="og:description" content="类型转换基础对象的类型定义了对象能包含的数据和能够参与的运算，如果在表达式中混杂了多种不同的类型，编译器可能（有些类型转换非法则编译错误）会帮我们进行隐式的类型转换。如果两种类型能够进行相互转换则称两种类型是关联的。类型在进行隐式转换总体规则向上提升，即转换成精度和表达范围更广的数据类型。类型转换按照是否为自动可分为隐式转换和显式转换。隐式转换是由编译器自动完成的，无需编程人员的介入，显示转换是编">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-06-13T14:22:08.079Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="C&#x2F;C++类型转换总结">
+<meta name="twitter:description" content="类型转换基础对象的类型定义了对象能包含的数据和能够参与的运算，如果在表达式中混杂了多种不同的类型，编译器可能（有些类型转换非法则编译错误）会帮我们进行隐式的类型转换。如果两种类型能够进行相互转换则称两种类型是关联的。类型在进行隐式转换总体规则向上提升，即转换成精度和表达范围更广的数据类型。类型转换按照是否为自动可分为隐式转换和显式转换。隐式转换是由编译器自动完成的，无需编程人员的介入，显示转换是编">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/cplusplus/cpp-type-convert.html"/>
+
+
+
+
+
+  <title>C/C++类型转换总结 | 千里之行 始于足下</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">千里之行 始于足下</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/cplusplus/cpp-type-convert.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="hsuloong">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Limbo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="千里之行 始于足下">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">C/C++类型转换总结</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-13T10:40:43+08:00">
+                2018-03-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/public/categories/cplusplus/" itemprop="url" rel="index">
+                    <span itemprop="name">C++</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="类型转换基础"><a href="#类型转换基础" class="headerlink" title="类型转换基础"></a>类型转换基础</h2><p>对象的类型定义了对象能包含的数据和能够参与的运算，如果在表达式中混杂了多种不同的类型，编译器可能（有些类型转换非法则编译错误）会帮我们进行隐式的类型转换。如果两种类型能够进行相互转换则称两种类型是关联的。类型在进行隐式转换总体规则向上提升，即转换成精度和表达范围更广的数据类型。类型转换按照是否为自动可分为隐式转换和显式转换。隐式转换是由编译器自动完成的，无需编程人员的介入，显示转换是编程人员希望进行类型转换而显式要求编译器进行类型转换的过程。</p>
+<h2 id="隐式转换"><a href="#隐式转换" class="headerlink" title="隐式转换"></a>隐式转换</h2><p>在表达式中，如果我们在不同类型之间进行赋值，其根据类型不同得到不同的结果，如下为基本的转换规则</p>
+<ol>
+<li>非布尔-&gt;布尔：0-&gt;false; 非0-&gt;true</li>
+<li>布尔-&gt;非布尔：false-&gt;0; true-&gt;1</li>
+<li>浮点-&gt;整数：近似处理，保留浮点数小数点之前的部分</li>
+<li>整数-&gt;浮点数：小数部分记为0，如果整数所占空间超过浮点类型容量，精度会产生损失</li>
+<li>给无符号类型一个超过其表示范围的值时，结果是初始值对无符号类型表示数值的总数取模以后的余数。例如unsigned char(8 bit) 可以表示0-255，如果赋一个区间以外的值，则实际结果为该值对256取模所得的余数。unsigned char x = -1; // x = 255</li>
+<li>当赋给带符号类型一个超过其表示范围的值时，结果是未定义的。此时程序可能继续工作、可能崩溃，也可能产生垃圾数据（未定义）</li>
+<li>无符号数转换为更大的数据类型时, 只需简单地在开头添加0，这种运算称为0扩展</li>
+<li>将有符号数转换为更大的数据类型需要执行符号扩展，规则是将当前数符号位扩展至所需要的位数</li>
+<li>当数据类型转换时，同时需要在不同数据大小，以及无符号和有符号之间转换时，C语言标准要求先进行数据大小的转换，之后再进行无符号和有符号之间的转换。C语言中的强制类型转换保持二进制位值不变，只是改变解释位的方式。</li>
+<li>将一个大的数据类型转换为小的数据类型时，不管是无符号数还是有符号数都是简单地进行位截断</li>
+<li>进行整数的算术运算时，当结果变量的位数不足以存放实际实际结果的位数时，运算的结果就会因截断而产生溢出</li>
+</ol>
+<p>如下图所示为一段测试代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;limits&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">bool</span> bValue = <span class="literal">true</span>;</span><br><span class="line">	<span class="keyword">char</span> cValue = numeric_limits&lt;<span class="keyword">char</span>&gt;::max();</span><br><span class="line">	<span class="keyword">short</span> sValue = numeric_limits&lt;<span class="keyword">short</span>&gt;::max();</span><br><span class="line">	<span class="keyword">int</span> iValue = numeric_limits&lt;<span class="keyword">int</span>&gt;::max();</span><br><span class="line">	<span class="keyword">long</span> lValue = numeric_limits&lt;<span class="keyword">long</span>&gt;::max();</span><br><span class="line">	<span class="keyword">long</span> <span class="keyword">long</span> llValue = numeric_limits&lt;<span class="keyword">long</span> <span class="keyword">long</span>&gt;::max();</span><br><span class="line">	<span class="keyword">float</span> fValue = numeric_limits&lt;<span class="keyword">float</span>&gt;::max();</span><br><span class="line">	<span class="keyword">double</span> dValue = numeric_limits&lt;<span class="keyword">double</span>&gt;::max();</span><br><span class="line">	<span class="keyword">long</span> <span class="keyword">double</span> ldValue = numeric_limits&lt;<span class="keyword">long</span> <span class="keyword">double</span>&gt;::max();</span><br><span class="line"></span><br><span class="line">	<span class="comment">//测试开始</span></span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; (bValue=cValue) &lt;&lt; <span class="string">" "</span> &lt;&lt; (bValue=sValue) &lt;&lt; <span class="string">" "</span> &lt;&lt; (bValue=iValue) &lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; (bValue=lValue) &lt;&lt; <span class="string">" "</span> &lt;&lt; (bValue=llValue) &lt;&lt; <span class="string">" "</span> &lt;&lt; (bValue=fValue) &lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; (bValue=dValue) &lt;&lt; <span class="string">" "</span> &lt;&lt; (bValue=ldValue) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上输出为全1。在进行未定义转换时，可能不同的编译器结果不一致。由于无符号与有符号之间的转换往往出乎意料，一般避免进行转换。</p>
+<p>隐式转换主要发生在以下情况中：</p>
+<pre><code>1. 在大多数表达式中，比int类型小的整型值提升为较大的整数类型
+2. 在条件中，非布尔值转换为布尔类型
+3. 初始化或者赋值语句，右侧转变为左侧类型
+4. 如果算数运算表达式有多种类型，需要转换成同一种类型
+5. 函数调用
+</code></pre><h2 id="整型提升"><a href="#整型提升" class="headerlink" title="整型提升"></a>整型提升</h2><p>整型提升负责把小整数装换成较大的整数类型，对于bool、char、signed char、unsigned char、short、unisned short等类型，只要他们所有可能的值都能存在int类型中，就会提升为int，否则提升为unsigned int。wchar_t、char16_t、char32_6提升成int、unsigned int、long、unsigned long、long long、unsigned long long中最小的一种，前提是能容纳原始类型所有可能的值</p>
+<p>无符号与有符号之间的转换有几种情况：</p>
+<ol>
+<li>如果无符号类型不小于带符号类型，则有符号类型转换成无符号类型，如int需要转换成unsigned int。如果有符号是负数，则取模运算</li>
+<li>如果带符号大于无符号且带符号类型可以容纳所有无符号值，则转换成带符号，否则转换成无符号。比如long和unsigned int，如果int和long大小相同，则long类型转换成unsigned int。</li>
+</ol>
+<h2 id="其他隐式转换"><a href="#其他隐式转换" class="headerlink" title="其他隐式转换"></a>其他隐式转换</h2><p>数组转换成指针，比如如下代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> ia[<span class="number">10</span>];</span><br><span class="line"><span class="keyword">int</span> *ip = ia; <span class="comment">//ia转换成指向数组首元素的指针</span></span><br></pre></td></tr></table></figure>
+<p>当数组被用作decltype或者取址&amp;、sizeof以及typeid等运算符时，上述转换不会发生。</p>
+<p>常量整型和字面值nullptr能转换成任意的指针类型，任意非常量指针能转换成void *指针，指向任意对象的指针能转换成const void*。</p>
+<h2 id="显式转换"><a href="#显式转换" class="headerlink" title="显式转换"></a>显式转换</h2><p>在C++中，有四种命名的强制类型转换关键字，分别为static_cast、dynamic_cast、const_cast、reinterpret_cast。基本使用格式为cast-name<type>(expression)，其中cast-name是上述四种转换类型，type为需要转换的类型，expression是要转换的值。现分别介绍如下：<a href="http://www.cnblogs.com/goodhacker/archive/2011/07/20/2111996.html" target="_blank" rel="noopener">文字来源</a></type></p>
+<h3 id="static-cast"><a href="#static-cast" class="headerlink" title="static_cast"></a>static_cast</h3><p>类似于C风格的强制转换。无条件转换，静态类型转换。用于：</p>
+<ol>
+<li>基类和子类之间转换：其中子类指针转换成父类指针是安全的；但父类指针转换成子类指针是不安全的。(基类和子类之间的动态类型转换建议用dynamic_cast)</li>
+<li>基本数据类型转换。enum, struct, int, char, float等。static_cast不能进行无关类型（如非基类和子类）指针之间的转换。</li>
+<li>把空指针转换成目标类型的空指针。</li>
+<li>static_cast不能去掉类型的const、volitale属性(用const_cast)。</li>
+</ol>
+<h3 id="dynamic-cast"><a href="#dynamic-cast" class="headerlink" title="dynamic_cast"></a>dynamic_cast</h3><p>有条件转换，动态类型转换，运行时类型安全检查(转换失败返回NULL)：</p>
+<ol>
+<li>安全的基类和子类之间转换。</li>
+<li>必须要有虚函数。</li>
+<li>相同基类不同子类之间的交叉转换。但结果是NULL</li>
+</ol>
+<h3 id="const-cast"><a href="#const-cast" class="headerlink" title="const_cast"></a>const_cast</h3><p>去掉类型的const或volatile属性。</p>
+<h3 id="reinterpret-cast"><a href="#reinterpret-cast" class="headerlink" title="reinterpret_cast"></a>reinterpret_cast</h3><p>仅仅重新解释类型，但没有进行二进制的转换：</p>
+<ol>
+<li>转换的类型必须是一个指针、引用、算术类型、函数指针或者成员指针。</li>
+<li>在比特位级别上进行转换。它可以把一个指针转换成一个整数，也可以把一个整数转换成一个指针（先把一个指针转换成一个整数，在把该整数转换成原类型的指针，还可以得到原先的指针值）。</li>
+<li>最普通的用途就是在函数指针类型之间进行转换。</li>
+<li>很难保证移植性。</li>
+</ol>
+<p>用法可以总结如下：</p>
+<ol>
+<li>去const属性用const_cast。</li>
+<li>基本类型转换用static_cast。</li>
+<li>多态类之间的类型转换用daynamic_cast。</li>
+<li>不同类型的指针类型转换用reinterpret_cast。</li>
+</ol>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p><a href="http://blog.csdn.net/gatieme/article/details/52557546" target="_blank" rel="noopener">有符号数和无符号数的转换及思考</a></p>
+<p><a href="http://www.cnblogs.com/goodhacker/archive/2011/07/20/2111996.html" target="_blank" rel="noopener">C++类型转换总结</a></p>
+<p><a href="http://www.cnblogs.com/TenosDoIt/p/3175217.html" target="_blank" rel="noopener">c++数据类型转换：static_cast dynamic_cast reinterpret_cast const_cast</a></p>
+<p><a href="http://cuckootan.me/2016/05/28/C/C++/C++%20-%20隐式转换与四种强制类型转换/" target="_blank" rel="noopener">C++ - 隐式转换与四种强制类型转换</a></p>
+<p><a href="http://blog.csdn.net/ydar95/article/details/69822540" target="_blank" rel="noopener">c++ 四种强制类型转换介绍</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/C/" rel="tag"># C++</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/cplusplus/struct-byte-alignment.html" rel="next" title="struct位段和字节对齐原理及其计算法则">
+                <i class="fa fa-chevron-left"></i> struct位段和字节对齐原理及其计算法则
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/cplusplus/stl-foundation.html" rel="prev" title="STL基础概述">
+                STL基础概述 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/Limbo.jpg"
+                alt="hsuloong" />
+            
+              <p class="site-author-name" itemprop="name">hsuloong</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">44</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/hsuloong" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#类型转换基础"><span class="nav-number">1.</span> <span class="nav-text">类型转换基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#隐式转换"><span class="nav-number">2.</span> <span class="nav-text">隐式转换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#整型提升"><span class="nav-number">3.</span> <span class="nav-text">整型提升</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他隐式转换"><span class="nav-number">4.</span> <span class="nav-text">其他隐式转换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#显式转换"><span class="nav-number">5.</span> <span class="nav-text">显式转换</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#static-cast"><span class="nav-number">5.1.</span> <span class="nav-text">static_cast</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#dynamic-cast"><span class="nav-number">5.2.</span> <span class="nav-text">dynamic_cast</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#const-cast"><span class="nav-number">5.3.</span> <span class="nav-text">const_cast</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#reinterpret-cast"><span class="nav-number">5.4.</span> <span class="nav-text">reinterpret_cast</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文章"><span class="nav-number">6.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hsuloong</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="操作系统," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="进程进程定义进程是操作系统最核心的概念，进程是对正在运行程序的一个抽象。 进程是具有独立功能的程序关于某个数据集合上的一次运行活动，是系统进程资源分配和调度的独立单位。 严格而言，在某一个瞬间CPU只能运行一个进程，但在较长时间间隔下，操作系统可能运行了多个进程，由此导致并行的错觉，实际上只能认为是并发而不是真正的并行。 进程模型在进程模型中，计算机所有可运行的软件（包括）操作系统，被组织成若干个">
+<meta name="keywords" content="操作系统">
+<meta property="og:type" content="article">
+<meta property="og:title" content="进程与线程">
+<meta property="og:url" content="http://yoursite.com/operating-system/process-thread.html">
+<meta property="og:site_name" content="千里之行 始于足下">
+<meta property="og:description" content="进程进程定义进程是操作系统最核心的概念，进程是对正在运行程序的一个抽象。 进程是具有独立功能的程序关于某个数据集合上的一次运行活动，是系统进程资源分配和调度的独立单位。 严格而言，在某一个瞬间CPU只能运行一个进程，但在较长时间间隔下，操作系统可能运行了多个进程，由此导致并行的错觉，实际上只能认为是并发而不是真正的并行。 进程模型在进程模型中，计算机所有可运行的软件（包括）操作系统，被组织成若干个">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/images/process-status.png">
+<meta property="og:image" content="http://yoursite.com/images/process-address-space.png">
+<meta property="og:image" content="http://yoursite.com/images/multiplexer.png">
+<meta property="og:updated_time" content="2018-06-13T14:20:14.080Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="进程与线程">
+<meta name="twitter:description" content="进程进程定义进程是操作系统最核心的概念，进程是对正在运行程序的一个抽象。 进程是具有独立功能的程序关于某个数据集合上的一次运行活动，是系统进程资源分配和调度的独立单位。 严格而言，在某一个瞬间CPU只能运行一个进程，但在较长时间间隔下，操作系统可能运行了多个进程，由此导致并行的错觉，实际上只能认为是并发而不是真正的并行。 进程模型在进程模型中，计算机所有可运行的软件（包括）操作系统，被组织成若干个">
+<meta name="twitter:image" content="http://yoursite.com/images/process-status.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/operating-system/process-thread.html"/>
+
+
+
+
+
+  <title>进程与线程 | 千里之行 始于足下</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">千里之行 始于足下</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/operating-system/process-thread.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="hsuloong">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Limbo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="千里之行 始于足下">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">进程与线程</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-06T10:09:21+08:00">
+                2018-03-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/public/categories/operating-system/" itemprop="url" rel="index">
+                    <span itemprop="name">操作系统</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="进程"><a href="#进程" class="headerlink" title="进程"></a>进程</h1><h2 id="进程定义"><a href="#进程定义" class="headerlink" title="进程定义"></a>进程定义</h2><p>进程是操作系统最核心的概念，进程是对正在运行程序的一个抽象。</p>
+<p>进程是具有独立功能的程序关于某个数据集合上的一次运行活动，是系统进程资源分配和调度的独立单位。</p>
+<p>严格而言，在某一个瞬间CPU只能运行一个进程，但在较长时间间隔下，操作系统可能运行了多个进程，由此导致并行的错觉，实际上只能认为是并发而不是真正的并行。</p>
+<h2 id="进程模型"><a href="#进程模型" class="headerlink" title="进程模型"></a>进程模型</h2><p>在进程模型中，计算机所有可运行的软件（包括）操作系统，被组织成若干个顺序进程（sequence process），简称进程。进程是正在执行程序的实例，包括程序计数器、寄存器、变量的当前值。进程和程序之间的区别就和做菜与菜谱之间的关系，进程是动态的，程序是静态的。</p>
+<h2 id="进程创建"><a href="#进程创建" class="headerlink" title="进程创建"></a>进程创建</h2><ul>
+<li>系统初始化</li>
+<li>执行了正在运行的进程所调用的进程创建系统调用</li>
+<li>用户请求创建一个新进程</li>
+<li>一个批处理作业的初始化</li>
+</ul>
+<p>守护进程：停留在后台处理诸如电子邮件、Web页面、新闻、打印之类的进程。</p>
+<p>Unix创建新进程：fork, exec。<br>Windows创建新进程：CreateProcess。</p>
+<p>在Unix和WIndows中，进程创建后父子进程各自有不同的地址空间。（实际实现中Linux有写时复制以及不可写内存共享）</p>
+<h2 id="进程终止"><a href="#进程终止" class="headerlink" title="进程终止"></a>进程终止</h2><ul>
+<li>正常退出（资源）Unix,exit(); Windows,ExitProcess</li>
+<li>出错退出（自愿）不正确使用，进程可检测到的错误</li>
+<li>严重错误（非自愿）非法指令，引用不存在的内存，除零</li>
+<li>被其他进程杀死（非自愿）Unix,kill; Windows,TerminateProcess</li>
+</ul>
+<h2 id="进程层次"><a href="#进程层次" class="headerlink" title="进程层次"></a>进程层次</h2><p>Unix中，进程和它的所有的子女以及后裔共同组成一个进程组。进程树以init进程为根的一棵树。Windows进程之间的地位是平等的。</p>
+<h2 id="进程状态"><a href="#进程状态" class="headerlink" title="进程状态"></a>进程状态</h2><p>在多进程系统中，由于某一瞬间只有一个进程独占CPU，而进程在运行时可能需要等待某些条件满足后才能继续运行，此时进程必须暂停以等待条件满足，由此引出进程的三种基本状态：</p>
+<ul>
+<li>运行态：此时进程实际占用CPU</li>
+<li>就绪态：进程已经准备好可以运行，但是由于CPU正在使用而暂时停止</li>
+<li>阻塞态：进程在等待外部条件的满足或者外部事件的发生，否则进程不能运行</li>
+</ul>
+<p>如下图为三种基本状态之间的转换关系</p>
+<p><img src="/images/process-status.png" alt="进程状态转换"></p>
+<ol>
+<li>运行态-&gt;阻塞态：比如等待某种I/O操作，像等待用户输入，还有可能是进程调用等待函数主动进入阻塞</li>
+<li>运行态-&gt;就绪态：调度程序调度另外一个进程使用CPU，一般为时间片用完、高优先级抢占等。</li>
+<li>就绪态-&gt;运行态：调度程序选中当前进程上CPU</li>
+<li>阻塞态-&gt;就绪态：外部事件已发生，进程由阻塞态转变为就绪态，如果此时CPU空闲可能立刻调度转变为运行态</li>
+</ol>
+<h2 id="进程实现"><a href="#进程实现" class="headerlink" title="进程实现"></a>进程实现</h2><p>为了实现进程模型，系统维护一张进程表，每个进程占用一个项，该项被称为进程控制块（Process Control Block, PCB），进程控制块是操作系统用于管理进程而设计的专用数据结构，其主要内容可分为：</p>
+<ul>
+<li>进程描述信息</li>
+</ul>
+<p>用描述一个进程的基本信息，比如进程标识符（process ID, PID）、进程名、用户标识符、进程组关系等。</p>
+<ul>
+<li>进程控制信息</li>
+</ul>
+<p>用于操作系统控制进程的运行，包括当前状态、优先级、代码执行入口地址、程序磁盘地址、运行统计时间（执行时间、页面调度）、进程同步与通信、进程队列指针、进程消息队列指针。</p>
+<ul>
+<li>拥有资源及使用情况</li>
+</ul>
+<p>保存当前进程虚拟地址空间的状况、打开的文件等资源情况。</p>
+<ul>
+<li>CPU现场信息</li>
+</ul>
+<p>保存CPU寄存器值（通用寄存器、程序计数器PC、程序状态字PSW、栈指针等）、进程页表指针。</p>
+<p>从操作系统作为资源管理者的角度而言，PCB的主要内容也可分为以下几类：</p>
+<ul>
+<li>进程管理</li>
+</ul>
+<p>保存进程基本管理信息，诸如寄存器、程序计数器、程序状态字、堆栈指针、进程状态、优先级、进程ID等</p>
+<ul>
+<li>存储管理</li>
+</ul>
+<p>保存正文段指针、数据段指针、堆栈段指针</p>
+<ul>
+<li>文件管理</li>
+</ul>
+<p>保存根目录、当前工作目录、文件描述符等</p>
+<h2 id="进程控制"><a href="#进程控制" class="headerlink" title="进程控制"></a>进程控制</h2><p>进程控制是指控制进程完成不同状态之间的转换操作，使用特定功能的原语（又称为原子操作，是完成特定功能的一段程序，具有不可分割性或不可中断性，在实际实现中可通过屏蔽中断实现）完成。进程控制的原语主要有：</p>
+<ul>
+<li><p>进程创建原语</p>
+<ol>
+<li>给新进程分配一个唯一标识以及进程控制块</li>
+<li>分配地址空间</li>
+<li>初始化控制块</li>
+<li>将进程插入到就绪队列中</li>
+</ol>
+</li>
+<li><p>进程撤销原语</p>
+<ol>
+<li>收回进程占用的资源，如关闭打开的文件、断开网络链接、回收内存</li>
+<li>撤销该进程的进程控制块PCB</li>
+</ol>
+</li>
+<li><p>阻塞原语</p>
+<ol>
+<li>有进程自己执行阻塞原语，等待事件发生</li>
+<li>Unix, wait; Windows, WaitForSingleObject</li>
+</ol>
+</li>
+<li><p>唤醒原语</p>
+</li>
+<li><p>挂起原语</p>
+</li>
+<li><p>激活原语</p>
+</li>
+<li><p>优先级改变原语</p>
+</li>
+</ul>
+<h2 id="Unix进程控制操作"><a href="#Unix进程控制操作" class="headerlink" title="Unix进程控制操作"></a>Unix进程控制操作</h2><ul>
+<li>fork</li>
+</ul>
+<p>fork通过复制调用进程来新建一个进程，其基本过程如下</p>
+<ol>
+<li>为子进程分配一个空闲的进程描述符proc（即PCB）结构</li>
+<li>给子进程分配唯一进程标识PID</li>
+<li>以一次一页的方式复制父进程的地址空间（Linux使用COW技术，Copy On Write）</li>
+<li>从父进程出继承共享资源比如打开的文件和当前工作目录等</li>
+<li>将子进程设为就绪态并插入就绪队列</li>
+<li>在父进程中返回子进程的PID值，子进程中返回0，即一次调用两次返回</li>
+</ol>
+<ul>
+<li>exec</li>
+</ul>
+<p>由一系列系统调用组成，通过一段新的程序代码覆盖掉原来的地址空间，实现执行代码的转换</p>
+<ul>
+<li>wait</li>
+</ul>
+<p>提供初级的同步操作，使一个进程等待另外一个一个进程的结束</p>
+<ul>
+<li>exit</li>
+</ul>
+<p>终止一个进程的运行</p>
+<h2 id="进程分类"><a href="#进程分类" class="headerlink" title="进程分类"></a>进程分类</h2><ol>
+<li><p>第一种分类</p>
+<ul>
+<li>系统进程</li>
+<li>用户进程</li>
+</ul>
+</li>
+<li><p>第二种分类</p>
+<ul>
+<li>前台进程</li>
+<li>后台进程</li>
+</ul>
+</li>
+<li><p>第三种分类</p>
+<ul>
+<li>CPU密集型进程</li>
+<li>IO密集型进程</li>
+</ul>
+</li>
+</ol>
+<h2 id="进程和程序的区别"><a href="#进程和程序的区别" class="headerlink" title="进程和程序的区别"></a>进程和程序的区别</h2><ul>
+<li>进程能够准确刻画并发，程序不能</li>
+<li>进程是动态的，而程序是静态的</li>
+<li>进程有生命周期，有创建终止，而程序则相对长久的</li>
+<li>一个进程能对应一个程序，而一个程序可以对应多个进程。</li>
+</ul>
+<h2 id="进程地址空间"><a href="#进程地址空间" class="headerlink" title="进程地址空间"></a>进程地址空间</h2><p>每个进程有自己独立的地址空间，对于采用虚拟内存管理的操作系统，地址空间的地址是虚拟地址，需要进行映射以转换到实际物理内存地址。基本结构如下图所示：<br><img src="/images/process-address-space.png" alt="进程地址空间"></p>
+<h2 id="进程映像（IMAGE）"><a href="#进程映像（IMAGE）" class="headerlink" title="进程映像（IMAGE）"></a>进程映像（IMAGE）</h2><p>和进程地址空间关联的一个概念为进程映像，其是指对进程执行活动全过程的静态描述，由地址空间内容、硬件寄存器、相关的内核数据结构、内和栈组成。是某一瞬间进程的快照。具体内容有：</p>
+<ul>
+<li>用户相关:进程地址空间（代码段、数据段、堆和栈、共享库等）</li>
+<li>寄存器相关：程序计数器、指令寄存器、程序状态寄存器、栈指针、通用寄存器等</li>
+<li>内核相关<ol>
+<li>静态部分：PCB以及各种资源结构</li>
+<li>动态部分：内和栈</li>
+</ol>
+</li>
+</ul>
+<h2 id="进程上下文（CONTEXT）切换"><a href="#进程上下文（CONTEXT）切换" class="headerlink" title="进程上下文（CONTEXT）切换"></a>进程上下文（CONTEXT）切换</h2><p>将CPU硬件从一个进程换到另外一个进程的过程称为上下文切换。当进程运行时，其硬件状态保存在CPU的寄存器中；当进程不运行时，这些寄存器保存在进程控制块PCB中。如果切换进程则需要将PCB控制块保存的寄存器信息送入CPU寄存器中。</p>
+<h1 id="线程基本概念"><a href="#线程基本概念" class="headerlink" title="线程基本概念"></a>线程基本概念</h1><p>进程是一个操作系统资源分配与调度的基本单位，但是在实际应用时，一个应用内部可以划分为多个不同的执行线路或者说细分为更小的任务，执行线路在某种程度上可以进行一定程度的并行，同时执行线路之间通过共享地址空间来协作完成整个任务。而进程作为资源分配与调度的基本单位，如果将这两者分离，让进程完成资源的集中，线程完成实际的执行过程。由此引入线程的概念。至此进程成为资源的分配单位而线程分别称为CPU的实际调度单位。也可以认为线程是进程中的一个运行的实体。</p>
+<h2 id="线程的属性"><a href="#线程的属性" class="headerlink" title="线程的属性"></a>线程的属性</h2><p>线程主要具有如下属性：</p>
+<ul>
+<li>有标识符ID</li>
+<li>有状态及状态转换</li>
+<li>需要保存上下文环境</li>
+<li>有自己的栈和指针</li>
+<li>共享进程的地址空间和其他资源</li>
+<li>线程可撤销和创建</li>
+</ul>
+<p>实际在进程创建后程序以单线程的方式运行，通过thread_create等系统调用可以创建新线程。</p>
+<h2 id="线程的实现"><a href="#线程的实现" class="headerlink" title="线程的实现"></a>线程的实现</h2><p>在线程的实际实现中，同有如下三种方法：</p>
+<ul>
+<li>用户级线程</li>
+</ul>
+<p>在用户空间建立线程库，通过运行时系统进行线程的管理，此时内核对于线程一无所知。由于线程也存在状态的转换，因此和进程类似，在每个进程中需要有专用的线程表来跟踪记录各个线程的属性（如程序计数器、堆栈指针、寄存器和状态等），线程表由运行时系统进行管理。</p>
+<p>用户级线程由于自身的特点，主要有如下优缺点：</p>
+<ol>
+<li><p>优点</p>
+<ol>
+<li>线程与线程之间切换速度快，只需要切换堆栈指针程序计数器等，通常几条指令就可完成线程的切换</li>
+<li>线程调度算法可以由每个进程自己定制</li>
+<li>用户级线程可以方便在任何系统中实现，只需实现线程库即可</li>
+</ol>
+</li>
+<li><p>缺点</p>
+<ol>
+<li>由于内核对线程一无所知，此时系统调度的单位为进程，因此多线程只能在一个CPU上运行</li>
+<li>由于多数系统调用是阻塞的，一旦线程调用了阻塞的系统调用，内核将阻塞整个进程，即所有的线程被阻塞</li>
+</ol>
+</li>
+</ol>
+<ul>
+<li>核心级线程</li>
+</ul>
+<p>核心级线程需要改造操作系统，由内核直接管理所有的线程。此时进程无需专用的线程表而改由内核来记录线程表。此时线程调度有内核完成，当一个线程被阻塞时，内核可以选择运行进程中的另外一个线程而不是直接将整个进程阻塞。在核心级线程实现中，内核需要维护进程表和线程表。</p>
+<p>核心级线程实现通常有如下优缺点：</p>
+<ol>
+<li>优点<ol>
+<li>内核无需新的非阻塞的系统调用</li>
+<li>线程阻塞不会导致整个进程的阻塞</li>
+</ol>
+</li>
+<li>缺点<ol>
+<li>在内核中创建或者撤销线程的代价比较大</li>
+<li>需要改造操作系统</li>
+</ol>
+</li>
+</ol>
+<ul>
+<li>混合实现</li>
+</ul>
+<p>由于用户级线程实现以及核心级线程实现均有其优缺点，通过综合两者的优点从而形成混合实现。在这种是实现中，由编程人员决定有多少个内核级线程与用户级线程，内核只识别内核级线程并进行调度。多个用户级线程通过多路复用来复用多个内核级线程，如下图为多路复用模型：</p>
+<p><img src="/images/multiplexer.png" alt="多路复用模型"></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/操作系统/" rel="tag"># 操作系统</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/operating-system/os-introduction.html" rel="next" title="操作系统概述">
+                <i class="fa fa-chevron-left"></i> 操作系统概述
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/operating-system/process-state-model.html" rel="prev" title="进程状态模型">
+                进程状态模型 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/Limbo.jpg"
+                alt="hsuloong" />
+            
+              <p class="site-author-name" itemprop="name">hsuloong</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">44</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/hsuloong" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#进程"><span class="nav-number">1.</span> <span class="nav-text">进程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#进程定义"><span class="nav-number">1.1.</span> <span class="nav-text">进程定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程模型"><span class="nav-number">1.2.</span> <span class="nav-text">进程模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程创建"><span class="nav-number">1.3.</span> <span class="nav-text">进程创建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程终止"><span class="nav-number">1.4.</span> <span class="nav-text">进程终止</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程层次"><span class="nav-number">1.5.</span> <span class="nav-text">进程层次</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程状态"><span class="nav-number">1.6.</span> <span class="nav-text">进程状态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程实现"><span class="nav-number">1.7.</span> <span class="nav-text">进程实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程控制"><span class="nav-number">1.8.</span> <span class="nav-text">进程控制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Unix进程控制操作"><span class="nav-number">1.9.</span> <span class="nav-text">Unix进程控制操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程分类"><span class="nav-number">1.10.</span> <span class="nav-text">进程分类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程和程序的区别"><span class="nav-number">1.11.</span> <span class="nav-text">进程和程序的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程地址空间"><span class="nav-number">1.12.</span> <span class="nav-text">进程地址空间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程映像（IMAGE）"><span class="nav-number">1.13.</span> <span class="nav-text">进程映像（IMAGE）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程上下文（CONTEXT）切换"><span class="nav-number">1.14.</span> <span class="nav-text">进程上下文（CONTEXT）切换</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#线程基本概念"><span class="nav-number">2.</span> <span class="nav-text">线程基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#线程的属性"><span class="nav-number">2.1.</span> <span class="nav-text">线程的属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程的实现"><span class="nav-number">2.2.</span> <span class="nav-text">线程的实现</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hsuloong</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="算法设计," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前言前缀表达式又称波兰表达式，其将操作符放置于操作数前面，该类型的表达式无需括号仍然可以无歧义地被解析，如果将表达式以表达式树的形式展现，则前缀表达式对应于前序遍历结果。 中缀表达式在表达式中将操作符（双目）置于操作数的中间，是目前常用的一种表示方法，中缀表达式需要通过括号来指示运算优先顺序，一般中缀表达式在计算机中无法直接用于计算，中缀表达式对应于表达式树的中序遍历结果。 后缀表达式又称逆波兰表">
+<meta name="keywords" content="算法设计">
+<meta property="og:type" content="article">
+<meta property="og:title" content="前、中缀表达式转后缀表达式以及后缀表达式求值的实现">
+<meta property="og:url" content="http://yoursite.com/algorithms-design/prefix-infix-to-postfix.html">
+<meta property="og:site_name" content="千里之行 始于足下">
+<meta property="og:description" content="前言前缀表达式又称波兰表达式，其将操作符放置于操作数前面，该类型的表达式无需括号仍然可以无歧义地被解析，如果将表达式以表达式树的形式展现，则前缀表达式对应于前序遍历结果。 中缀表达式在表达式中将操作符（双目）置于操作数的中间，是目前常用的一种表示方法，中缀表达式需要通过括号来指示运算优先顺序，一般中缀表达式在计算机中无法直接用于计算，中缀表达式对应于表达式树的中序遍历结果。 后缀表达式又称逆波兰表">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/images/expression-tree-test.png">
+<meta property="og:updated_time" content="2018-06-14T07:54:58.381Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="前、中缀表达式转后缀表达式以及后缀表达式求值的实现">
+<meta name="twitter:description" content="前言前缀表达式又称波兰表达式，其将操作符放置于操作数前面，该类型的表达式无需括号仍然可以无歧义地被解析，如果将表达式以表达式树的形式展现，则前缀表达式对应于前序遍历结果。 中缀表达式在表达式中将操作符（双目）置于操作数的中间，是目前常用的一种表示方法，中缀表达式需要通过括号来指示运算优先顺序，一般中缀表达式在计算机中无法直接用于计算，中缀表达式对应于表达式树的中序遍历结果。 后缀表达式又称逆波兰表">
+<meta name="twitter:image" content="http://yoursite.com/images/expression-tree-test.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/algorithms-design/prefix-infix-to-postfix.html"/>
+
+
+
+
+
+  <title>前、中缀表达式转后缀表达式以及后缀表达式求值的实现 | 千里之行 始于足下</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">千里之行 始于足下</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/algorithms-design/prefix-infix-to-postfix.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="hsuloong">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Limbo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="千里之行 始于足下">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">前、中缀表达式转后缀表达式以及后缀表达式求值的实现</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-13T21:07:34+08:00">
+                2018-06-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/public/categories/algorithms-design/" itemprop="url" rel="index">
+                    <span itemprop="name">算法设计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前缀表达式又称波兰表达式，其将操作符放置于操作数前面，该类型的表达式无需括号仍然可以无歧义地被解析，如果将表达式以表达式树的形式展现，则前缀表达式对应于前序遍历结果。</p>
+<p>中缀表达式在表达式中将操作符（双目）置于操作数的中间，是目前常用的一种表示方法，中缀表达式需要通过括号来指示运算优先顺序，一般中缀表达式在计算机中无法直接用于计算，中缀表达式对应于表达式树的中序遍历结果。</p>
+<p>后缀表达式又称逆波兰表达式，式中操作符位于操作数的后面，在计算机内部易于直接计算（借助栈），和前缀表达式一样后缀表达式也无需借助括号便可以无歧地被解析，后缀表达式对应于表达式树的后序遍历结果。</p>
+<p>本文分别实现将前缀、中缀表达式转变为后缀表达式并且实现一个简单的后缀表达式计算器。同时约定放置表达式的基本数据结构如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> OperType</span><br><span class="line">&#123;</span><br><span class="line">        <span class="comment">/*OPERAND-操作数，OPERATOR-操作符*/</span></span><br><span class="line">        OPERAND, OPERATOR</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">union</span> OperData &#123;</span><br><span class="line">        <span class="keyword">char</span> operatorCh;</span><br><span class="line">        DataType operand;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">ExpressionAtom</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">        OperType operFlag;</span><br><span class="line">        OperData&lt;DataType&gt; operValue;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p><strong>注：本文所指表达式操作符只含有双目运算符且运算符的结合顺序为从左到右。</strong></p>
+<h2 id="前缀转后缀表达式"><a href="#前缀转后缀表达式" class="headerlink" title="前缀转后缀表达式"></a>前缀转后缀表达式</h2><p>我们可以通过观察前缀和后缀表达式在表达式树中的遍历顺序：前缀，根-&gt;左-&gt;右；后缀，左-&gt;右-&gt;根。从以上顺序可以得出两者遍历顺序中操作数始终在一起，只是操作符顺序不一致。而且在表达式树上操作数都是叶子节点而操作符必定有两个（双目）子节点。因此在实现前缀转后缀时只需把根放在操作符之后即可，而操作数相对顺序保持不变。综合以上分析我们可以用一个栈来存放根（操作符），队列用来存放结果，通过队列+栈实现根的逆序，基本实现代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stack&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;queue&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">vector</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">stack</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">queue</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="built_in">vector</span>&lt;ExpressionAtom&lt;DataType&gt;&gt; PrefixToPostfix(<span class="built_in">vector</span>&lt;ExpressionAtom&lt;DataType&gt;&gt; &amp;inPrefix)</span><br><span class="line">&#123;</span><br><span class="line">        <span class="built_in">stack</span>&lt;ExpressionAtom&lt;DataType&gt;&gt; operatorStack;</span><br><span class="line">        <span class="built_in">stack</span>&lt;<span class="keyword">int</span>&gt; visitTimesStack;</span><br><span class="line">        <span class="built_in">queue</span>&lt;ExpressionAtom&lt;DataType&gt;&gt; resultQueue;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/*不做差错检测*/</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; inPrefix.size(); i++) &#123;</span><br><span class="line">                <span class="comment">/*后序遍历在第三次访问时弹出*/</span></span><br><span class="line">                <span class="keyword">while</span> (!visitTimesStack.empty() &amp;&amp; visitTimesStack.top() &gt;= <span class="number">2</span>) &#123;</span><br><span class="line">                        resultQueue.push(operatorStack.top());</span><br><span class="line">                        operatorStack.pop(); visitTimesStack.pop();</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">/*每访问一次+1*/</span></span><br><span class="line">                <span class="keyword">if</span> (!visitTimesStack.empty()) &#123;</span><br><span class="line">                        ++visitTimesStack.top();</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (inPrefix[i].operFlag == OPERATOR) &#123;</span><br><span class="line">                        operatorStack.push(inPrefix[i]);</span><br><span class="line">                        visitTimesStack.push(<span class="number">0</span>); <span class="comment">/*初始化访问数据*/</span></span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> &#123;</span><br><span class="line">                        resultQueue.push(inPrefix[i]);</span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/*清空栈中操作符*/</span></span><br><span class="line">        <span class="keyword">while</span> (!visitTimesStack.empty() &amp;&amp; visitTimesStack.top() &gt;= <span class="number">2</span>) &#123;</span><br><span class="line">                resultQueue.push(operatorStack.top());</span><br><span class="line">                operatorStack.pop(); visitTimesStack.pop();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">vector</span>&lt;ExpressionAtom&lt;DataType&gt;&gt; result;</span><br><span class="line">        <span class="keyword">while</span> (!resultQueue.empty()) &#123;</span><br><span class="line">                result.push_back(resultQueue.front());</span><br><span class="line">                resultQueue.pop();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="前缀转后缀代码测试"><a href="#前缀转后缀代码测试" class="headerlink" title="前缀转后缀代码测试"></a>前缀转后缀代码测试</h2><p>使用如下图所示表达式树生成的前缀表达式来进行测试：<a href="http://www.cnblogs.com/lulipro/p/7563217.html" target="_blank" rel="noopener">图片来源</a><br><img src="/images/expression-tree-test.png" alt="表达式树"></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;queue&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">vector</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">queue</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">cout</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">PrintExpression</span><span class="params">(<span class="built_in">vector</span>&lt;ExpressionAtom&lt;DataType&gt;&gt; &amp;inExpr)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; inExpr.size(); i++) &#123;</span><br><span class="line">                <span class="keyword">if</span> (inExpr[i].operFlag == OPERAND) &#123;</span><br><span class="line">                        <span class="built_in">cout</span> &lt;&lt; inExpr[i].operValue.operand &lt;&lt; <span class="string">";"</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> &#123;</span><br><span class="line">                        <span class="built_in">cout</span> &lt;&lt; inExpr[i].operValue.operatorCh &lt;&lt; <span class="string">";"</span>;</span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        <span class="built_in">vector</span>&lt;ExpressionAtom&lt;<span class="keyword">int</span>&gt;&gt; testVec;</span><br><span class="line"></span><br><span class="line">        ExpressionAtom&lt;<span class="keyword">int</span>&gt; manualData;</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'-'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'/'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'*'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'+'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">3</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">1</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">3</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'+'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'-'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">9</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">5</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">2</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'+'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'*'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">3</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'-'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">7</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">4</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">6</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        PrintExpression(testVec);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">auto</span> result = PrefixToPostfix(testVec);</span><br><span class="line"></span><br><span class="line">        PrintExpression(result);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="中缀转后缀表达式"><a href="#中缀转后缀表达式" class="headerlink" title="中缀转后缀表达式"></a>中缀转后缀表达式</h2><p>表达式树在进行中序遍历时，为了保留求值顺序信息必须通过增加括号，因此在进行中缀转后缀时必须处理括号的情况。中缀表达式转后缀表达式有一个经典的调度场算法，具体可参见参考资料中的文章。由于考虑到栈的先进后出的特性，而且表达式从左到右结合，因此操作数在后缀表达式中的相对顺序不发生变化。在决定操作符的输出顺序时只要保证高优先级先出栈即可。综合上述可以使用一个栈来保存操作符，如果当前读到的操作符优先级大于栈顶操作符则一直压栈直至优先级<strong>小于等于</strong>栈顶操作符。在处理括号时，一旦出现左括号则先压入栈，出现右括号则不断从操作符栈中弹出直至遇到左括号为止。具体实现代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stack&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;queue&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">vector</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">stack</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">queue</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">isGreater</span><span class="params">(<span class="keyword">char</span> oper1, <span class="keyword">char</span> oper2)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (oper2 == <span class="string">'('</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (oper1 == <span class="string">'*'</span> || oper1 == <span class="string">'/'</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (oper2 == <span class="string">'*'</span> || oper2 == <span class="string">'/'</span>) &#123;</span><br><span class="line">                        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> &#123;</span><br><span class="line">                        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">PopOperatorUntilLeftBracket</span><span class="params">(<span class="built_in">stack</span>&lt;ExpressionAtom&lt;DataType&gt;&gt; &amp;operatorStack,</span></span></span><br><span class="line"><span class="function"><span class="params">         <span class="built_in">queue</span>&lt;ExpressionAtom&lt;DataType&gt;&gt; &amp;resultQueue)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        <span class="keyword">while</span> (operatorStack.top().operValue.operatorCh != <span class="string">'('</span>) &#123;</span><br><span class="line">                resultQueue.push(operatorStack.top());</span><br><span class="line">                operatorStack.pop();</span><br><span class="line">        &#125;</span><br><span class="line">        operatorStack.pop(); <span class="comment">/*弹出左括号*/</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">PopOperatorUntilLowPriority</span><span class="params">(<span class="built_in">stack</span>&lt;ExpressionAtom&lt;DataType&gt;&gt; &amp;operatorStack,</span></span></span><br><span class="line"><span class="function"><span class="params">         <span class="built_in">queue</span>&lt;ExpressionAtom&lt;DataType&gt;&gt; &amp;resultQueue, <span class="keyword">char</span> nowOperator)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        <span class="keyword">while</span> (!operatorStack.empty() &amp;&amp;</span><br><span class="line">                        !isGreater(nowOperator, operatorStack.top().operValue.operatorCh)) &#123;</span><br><span class="line">                resultQueue.push(operatorStack.top());</span><br><span class="line">                operatorStack.pop();</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="built_in">vector</span>&lt;ExpressionAtom&lt;DataType&gt;&gt; InfixToPostfix(<span class="built_in">vector</span>&lt;ExpressionAtom&lt;DataType&gt;&gt; &amp;inInfix)</span><br><span class="line">&#123;</span><br><span class="line">        <span class="built_in">stack</span>&lt;ExpressionAtom&lt;DataType&gt;&gt; operatorStack;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">queue</span>&lt;ExpressionAtom&lt;DataType&gt;&gt; resultQueue;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/*不做差错检测*/</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; inInfix.size(); i++) &#123;</span><br><span class="line">                <span class="keyword">if</span> (inInfix[i].operFlag == OPERATOR) &#123;</span><br><span class="line">                        <span class="keyword">if</span> (inInfix[i].operValue.operatorCh == <span class="string">')'</span>) &#123;</span><br><span class="line">                                PopOperatorUntilLeftBracket(operatorStack, resultQueue);</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">else</span> <span class="keyword">if</span> (inInfix[i].operValue.operatorCh == <span class="string">'('</span>) &#123;</span><br><span class="line">                                operatorStack.push(inInfix[i]);</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">else</span> &#123;</span><br><span class="line">                                PopOperatorUntilLowPriority(operatorStack, resultQueue,</span><br><span class="line">                                        inInfix[i].operValue.operatorCh);</span><br><span class="line">                                operatorStack.push(inInfix[i]);</span><br><span class="line">                        &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> &#123;</span><br><span class="line">                        resultQueue.push(inInfix[i]);</span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">/*清空栈中操作符*/</span></span><br><span class="line">        <span class="keyword">while</span> (!operatorStack.empty()) &#123;</span><br><span class="line">                resultQueue.push(operatorStack.top());</span><br><span class="line">                operatorStack.pop();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">vector</span>&lt;ExpressionAtom&lt;DataType&gt;&gt; result;</span><br><span class="line">        <span class="keyword">while</span> (!resultQueue.empty()) &#123;</span><br><span class="line">                result.push_back(resultQueue.front());</span><br><span class="line">                resultQueue.pop();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="中缀转后缀代码测试"><a href="#中缀转后缀代码测试" class="headerlink" title="中缀转后缀代码测试"></a>中缀转后缀代码测试</h2><p>使用前缀中的表达式树，同时使用括号改变优先级，具体测试代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;queue&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">vector</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">queue</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">cout</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">PrintExpression</span><span class="params">(<span class="built_in">vector</span>&lt;ExpressionAtom&lt;DataType&gt;&gt; &amp;inExpr)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; inExpr.size(); i++) &#123;</span><br><span class="line">                <span class="keyword">if</span> (inExpr[i].operFlag == OPERAND) &#123;</span><br><span class="line">                        <span class="built_in">cout</span> &lt;&lt; inExpr[i].operValue.operand &lt;&lt; <span class="string">";"</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> &#123;</span><br><span class="line">                        <span class="built_in">cout</span> &lt;&lt; inExpr[i].operValue.operatorCh &lt;&lt; <span class="string">";"</span>;</span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        <span class="built_in">vector</span>&lt;ExpressionAtom&lt;<span class="keyword">int</span>&gt;&gt; testVec;</span><br><span class="line"></span><br><span class="line">        ExpressionAtom&lt;<span class="keyword">int</span>&gt; manualData;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/*表达式为(3+1)*3/(9-5-2)-(3*(7-4)+6)*/</span></span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'('</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">3</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'+'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">1</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">')'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'*'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">3</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'/'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'('</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">9</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'-'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">5</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'+'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">2</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">')'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'-'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'('</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">3</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'*'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'('</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">7</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'-'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">4</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">')'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'+'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">6</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">')'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        PrintExpression(testVec);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">auto</span> result = InfixToPostfix(testVec);</span><br><span class="line"></span><br><span class="line">        PrintExpression(result);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="后缀表达式求值"><a href="#后缀表达式求值" class="headerlink" title="后缀表达式求值"></a>后缀表达式求值</h2><p>后缀表达式求值非常简单，只要在遇到操作符后立刻弹出两个操作数（双目运算符）进行计算。最后栈里剩下一个元素即为求值结果，具体见下所示：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stack&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">vector</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">stack</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="function">DataType <span class="title">Calculate</span><span class="params">(DataType inData1, DataType inData2, <span class="keyword">char</span> operatorCh)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (operatorCh == <span class="string">'+'</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> inData1 + inData2;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (operatorCh == <span class="string">'-'</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> inData1 - inData2;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (operatorCh == <span class="string">'*'</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> inData1 * inData2;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (operatorCh == <span class="string">'/'</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> inData1 / inData2;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> DataType(<span class="number">0</span>);</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="function">DataType <span class="title">CalculatePostfixValue</span><span class="params">(<span class="built_in">vector</span>&lt;ExpressionAtom&lt;DataType&gt;&gt; &amp;inPostfix)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        <span class="built_in">stack</span>&lt;DataType&gt; operandStack;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/*不做差错检测*/</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; inPostfix.size(); i++) &#123;</span><br><span class="line">                <span class="keyword">if</span> (inPostfix[i].operFlag == OPERATOR) &#123;</span><br><span class="line">                        <span class="keyword">int</span> tmp1 = operandStack.top(); operandStack.pop();</span><br><span class="line">                        <span class="keyword">int</span> tmp2 = operandStack.top(); operandStack.pop();</span><br><span class="line">                        <span class="keyword">int</span> result = Calculate(tmp2, tmp1, inPostfix[i].operValue.operatorCh);</span><br><span class="line">                        operandStack.push(result);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> &#123;</span><br><span class="line">                        operandStack.push(inPostfix[i].operValue.operand);</span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> operandStack.top();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="后缀表达式求值代码测试"><a href="#后缀表达式求值代码测试" class="headerlink" title="后缀表达式求值代码测试"></a>后缀表达式求值代码测试</h2><p>在进行测试时直接使用上节求出的后缀表达式，具体代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">vector</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">cout</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">vector</span>&lt;ExpressionAtom&lt;<span class="keyword">int</span>&gt;&gt; testVec;</span><br><span class="line"></span><br><span class="line">    ExpressionAtom&lt;<span class="keyword">int</span>&gt; manualData;</span><br><span class="line"></span><br><span class="line">    manualData.operFlag = OPERATOR;</span><br><span class="line">    manualData.operValue.operatorCh = <span class="string">'('</span>;</span><br><span class="line">    testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">    manualData.operFlag = OPERAND;</span><br><span class="line">    manualData.operValue.operand = <span class="number">3</span>;</span><br><span class="line">    testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">    manualData.operFlag = OPERATOR;</span><br><span class="line">    manualData.operValue.operatorCh = <span class="string">'+'</span>;</span><br><span class="line">    testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">    manualData.operFlag = OPERAND;</span><br><span class="line">    manualData.operValue.operand = <span class="number">1</span>;</span><br><span class="line">    testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">    manualData.operFlag = OPERATOR;</span><br><span class="line">    manualData.operValue.operatorCh = <span class="string">')'</span>;</span><br><span class="line">    testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">    manualData.operFlag = OPERATOR;</span><br><span class="line">    manualData.operValue.operatorCh = <span class="string">'*'</span>;</span><br><span class="line">    testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">    manualData.operFlag = OPERAND;</span><br><span class="line">    manualData.operValue.operand = <span class="number">3</span>;</span><br><span class="line">    testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">    manualData.operFlag = OPERATOR;</span><br><span class="line">    manualData.operValue.operatorCh = <span class="string">'/'</span>;</span><br><span class="line">    testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">    manualData.operFlag = OPERATOR;</span><br><span class="line">    manualData.operValue.operatorCh = <span class="string">'('</span>;</span><br><span class="line">    testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">    manualData.operFlag = OPERAND;</span><br><span class="line">    manualData.operValue.operand = <span class="number">9</span>;</span><br><span class="line">    testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">    manualData.operFlag = OPERATOR;</span><br><span class="line">    manualData.operValue.operatorCh = <span class="string">'-'</span>;</span><br><span class="line">    testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">    manualData.operFlag = OPERAND;</span><br><span class="line">    manualData.operValue.operand = <span class="number">5</span>;</span><br><span class="line">    testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">    manualData.operFlag = OPERATOR;</span><br><span class="line">    manualData.operValue.operatorCh = <span class="string">'+'</span>;</span><br><span class="line">    testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">    manualData.operFlag = OPERAND;</span><br><span class="line">    manualData.operValue.operand = <span class="number">2</span>;</span><br><span class="line">    testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">    manualData.operFlag = OPERATOR;</span><br><span class="line">    manualData.operValue.operatorCh = <span class="string">')'</span>;</span><br><span class="line">    testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">    manualData.operFlag = OPERATOR;</span><br><span class="line">    manualData.operValue.operatorCh = <span class="string">'-'</span>;</span><br><span class="line">    testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">    manualData.operFlag = OPERATOR;</span><br><span class="line">    manualData.operValue.operatorCh = <span class="string">'('</span>;</span><br><span class="line">    testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">    manualData.operFlag = OPERAND;</span><br><span class="line">    manualData.operValue.operand = <span class="number">3</span>;</span><br><span class="line">    testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">    manualData.operFlag = OPERATOR;</span><br><span class="line">    manualData.operValue.operatorCh = <span class="string">'*'</span>;</span><br><span class="line">    testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">    manualData.operFlag = OPERATOR;</span><br><span class="line">    manualData.operValue.operatorCh = <span class="string">'('</span>;</span><br><span class="line">    testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">    manualData.operFlag = OPERAND;</span><br><span class="line">    manualData.operValue.operand = <span class="number">7</span>;</span><br><span class="line">    testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">    manualData.operFlag = OPERATOR;</span><br><span class="line">    manualData.operValue.operatorCh = <span class="string">'-'</span>;</span><br><span class="line">    testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">    manualData.operFlag = OPERAND;</span><br><span class="line">    manualData.operValue.operand = <span class="number">4</span>;</span><br><span class="line">    testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">    manualData.operFlag = OPERATOR;</span><br><span class="line">    manualData.operValue.operatorCh = <span class="string">')'</span>;</span><br><span class="line">    testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">    manualData.operFlag = OPERATOR;</span><br><span class="line">    manualData.operValue.operatorCh = <span class="string">'+'</span>;</span><br><span class="line">    testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">    manualData.operFlag = OPERAND;</span><br><span class="line">    manualData.operValue.operand = <span class="number">6</span>;</span><br><span class="line">    testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">    manualData.operFlag = OPERATOR;</span><br><span class="line">    manualData.operValue.operatorCh = <span class="string">')'</span>;</span><br><span class="line">    testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    PrintExpression(testVec);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">auto</span> result = InfixToPostfix(testVec);</span><br><span class="line"></span><br><span class="line">    PrintExpression(result);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; CalculatePostfixValue(result) &lt;&lt; <span class="built_in">endl</span>; <span class="comment">/*后缀计算结果*/</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a href="https://zh.wikipedia.org/wiki/波兰表示法" target="_blank" rel="noopener">波兰表示法-维基百科</a></p>
+<p><a href="https://zh.wikipedia.org/wiki/中缀表示法" target="_blank" rel="noopener">中缀表示法-维基百科</a></p>
+<p><a href="https://zh.wikipedia.org/wiki/逆波兰表示法" target="_blank" rel="noopener">逆波兰表示法-维基百科</a></p>
+<p><a href="https://zh.wikipedia.org/wiki/调度场算法" target="_blank" rel="noopener">调度场算法-维基百科</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/算法设计/" rel="tag"># 算法设计</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/data-structure/one-way-cursor-list.html" rel="next" title="数据结构之单向链表-游标实现">
+                <i class="fa fa-chevron-left"></i> 数据结构之单向链表-游标实现
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/algorithms-design/infix-postfix-to-prefix.html" rel="prev" title="中、后缀转前缀表达式以及前缀表达式求值的实现">
+                中、后缀转前缀表达式以及前缀表达式求值的实现 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/Limbo.jpg"
+                alt="hsuloong" />
+            
+              <p class="site-author-name" itemprop="name">hsuloong</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">44</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/hsuloong" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#前缀转后缀表达式"><span class="nav-number">2.</span> <span class="nav-text">前缀转后缀表达式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#前缀转后缀代码测试"><span class="nav-number">3.</span> <span class="nav-text">前缀转后缀代码测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#中缀转后缀表达式"><span class="nav-number">4.</span> <span class="nav-text">中缀转后缀表达式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#中缀转后缀代码测试"><span class="nav-number">5.</span> <span class="nav-text">中缀转后缀代码测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#后缀表达式求值"><span class="nav-number">6.</span> <span class="nav-text">后缀表达式求值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#后缀表达式求值代码测试"><span class="nav-number">7.</span> <span class="nav-text">后缀表达式求值代码测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">8.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hsuloong</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>
