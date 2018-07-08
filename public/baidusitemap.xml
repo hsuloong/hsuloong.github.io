@@ -4,6 +4,26 @@
 
     
   <url>
+    <loc>http://yoursite.com/algorithms-design/prefix-postfix-to-expr-tree.html</loc>
+    <lastmod>2018-07-08T07:58:40.427Z</lastmod>
+    <data>
+        <display>
+        <title>前、后缀表达式重建表达式树的实现</title>
+        <pubTime>2018-07-08T07:44:46.000Z</pubTime>
+        
+        <tag>算法设计</tag>
+         
+         
+           
+             
+              <breadCrumb title="算法设计" url="http://yoursite.com/public/categories/algorithms-design/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://yoursite.com/data-structure/sparse-matrix-orthogonal-linked-list.html</loc>
     <lastmod>2018-06-26T12:08:25.968Z</lastmod>
     <data>

@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://yoursite.com/algorithms-design/prefix-postfix-to-expr-tree.html</loc>
+    
+    <lastmod>2018-07-08T07:58:40.427Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://yoursite.com/data-structure/sparse-matrix-orthogonal-linked-list.html</loc>
     
     <lastmod>2018-06-26T12:08:25.968Z</lastmod>
