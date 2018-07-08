@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="算法设计," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="字符串基础知识根据相关资料，字符串定义如下：字符串是由零个或者多个字符组成的有限序列，其中零个字符的串称为空串。字符串的主要存储方式有定长顺序存储（对应于C/C++中栈空间）、堆分配存储（动态申请内存）以及块链存储（链表节点为一个定长小块，多个小块依次组成一个实际串）。 字符串模式匹配是指给定两个串$S_1,S_2$，要求找出串$S_1$中与串$S_2$相等的子串。目前模式匹配算法思路主要有朴素模">
+<meta name="keywords" content="算法设计">
+<meta property="og:type" content="article">
+<meta property="og:title" content="字符串模式匹配及KMP算法分析与实现">
+<meta property="og:url" content="http://yoursite.com/algorithms-design/string-pattern-match-kmp.html">
+<meta property="og:site_name" content="千里之行 始于足下">
+<meta property="og:description" content="字符串基础知识根据相关资料，字符串定义如下：字符串是由零个或者多个字符组成的有限序列，其中零个字符的串称为空串。字符串的主要存储方式有定长顺序存储（对应于C/C++中栈空间）、堆分配存储（动态申请内存）以及块链存储（链表节点为一个定长小块，多个小块依次组成一个实际串）。 字符串模式匹配是指给定两个串$S_1,S_2$，要求找出串$S_1$中与串$S_2$相等的子串。目前模式匹配算法思路主要有朴素模">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/images/kmp-algorithm-pattern.png">
+<meta property="og:image" content="http://yoursite.com/images/brute-pattern-algorithm-step.png">
+<meta property="og:image" content="http://yoursite.com/images/kmp-algorithm-step.png">
+<meta property="og:image" content="http://yoursite.com/images/kmp-algorithm-next.png">
+<meta property="og:image" content="http://yoursite.com/images/kmp-next-array.png">
+<meta property="og:image" content="http://yoursite.com/images/kmp-next-not-equal.png">
+<meta property="og:image" content="http://yoursite.com/images/kmp-next-array-improve.png">
+<meta property="og:updated_time" content="2018-07-07T12:53:33.578Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="字符串模式匹配及KMP算法分析与实现">
+<meta name="twitter:description" content="字符串基础知识根据相关资料，字符串定义如下：字符串是由零个或者多个字符组成的有限序列，其中零个字符的串称为空串。字符串的主要存储方式有定长顺序存储（对应于C/C++中栈空间）、堆分配存储（动态申请内存）以及块链存储（链表节点为一个定长小块，多个小块依次组成一个实际串）。 字符串模式匹配是指给定两个串$S_1,S_2$，要求找出串$S_1$中与串$S_2$相等的子串。目前模式匹配算法思路主要有朴素模">
+<meta name="twitter:image" content="http://yoursite.com/images/kmp-algorithm-pattern.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/algorithms-design/string-pattern-match-kmp.html"/>
+
+
+
+
+
+  <title>字符串模式匹配及KMP算法分析与实现 | 千里之行 始于足下</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">千里之行 始于足下</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/algorithms-design/string-pattern-match-kmp.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="hsuloong">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Limbo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="千里之行 始于足下">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">字符串模式匹配及KMP算法分析与实现</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-23T15:14:25+08:00">
+                2018-06-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/public/categories/algorithms-design/" itemprop="url" rel="index">
+                    <span itemprop="name">算法设计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="字符串基础知识"><a href="#字符串基础知识" class="headerlink" title="字符串基础知识"></a>字符串基础知识</h2><p>根据相关资料，字符串定义如下：字符串是由零个或者多个字符组成的有限序列，其中零个字符的串称为空串。字符串的主要存储方式有定长顺序存储（对应于C/C++中栈空间）、堆分配存储（动态申请内存）以及块链存储（链表节点为一个定长小块，多个小块依次组成一个实际串）。</p>
+<p>字符串模式匹配是指给定两个串$S_1,S_2$，要求找出串$S_1$中与串$S_2$相等的子串。目前模式匹配算法思路主要有朴素模式匹配算法、KMP算法等（更多的算法可见参考资料）。本文依次分析实现两种算法。</p>
+<h2 id="朴素模式匹配算法"><a href="#朴素模式匹配算法" class="headerlink" title="朴素模式匹配算法"></a>朴素模式匹配算法</h2><p>朴素模式匹配算法是最简单最容易想到的算法，也是最暴力的算法。其基本思路是对于主串$S_1$与模式串$S_2$分别设置两个下标 $i,j$。假设主串比较的起始位置为$startPos$，则置$i=startPos,j=0$，依次比较从 $i$ 和从 $j$ 下标开始的字符序列是否相等，如果比较到模式串最后一个位置相等则返回找到的结果，否则将 $i$ 置为上次起始位置的下一个下标（$i=startPos+1$），$j$ 置为模式字符串起始位置（$j=0$）。具体实现代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">string</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">BrutePatternMatch</span><span class="params">(<span class="built_in">string</span> mainString, <span class="built_in">string</span> patternString, <span class="keyword">size_t</span> startPos)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        <span class="keyword">size_t</span> i = startPos, j = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">while</span> (i &lt; mainString.size() &amp;&amp; j &lt; patternString.size()) &#123;</span><br><span class="line">                <span class="keyword">if</span> (mainString[i] == patternString[j]) &#123;</span><br><span class="line">                        ++i; ++j;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> &#123;</span><br><span class="line">                        startPos += <span class="number">1</span>;</span><br><span class="line">                        i = startPos; j = <span class="number">0</span>;</span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (j &gt;= patternString.size()) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">int</span>(startPos);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上朴素的字符串模式匹配算法可以做进一步优化，比如 $i$ 定位到的位置必须保证剩下的子串长度大于等于模式串的长度。</p>
+<h2 id="KMP算法"><a href="#KMP算法" class="headerlink" title="KMP算法"></a>KMP算法</h2><h3 id="KMP算法基本原理"><a href="#KMP算法基本原理" class="headerlink" title="KMP算法基本原理"></a>KMP算法基本原理</h3><p>观察朴素模式匹配算法，每次失配后会导致下标 $i,j$ 均发生回溯，使模式串起始位置（$j=0$）对齐到主串的$startPos+1$位置重新开始下一轮比较。但是我们在 $i,j$ 发生失配时是已知$[0,(j-1)]$与$[i-j,i-1]$之间的字符串是相等，如果我们能找到这部分相等字符子串的某些规律使得我们在对齐主串与模式串的下一轮比较起始位置时能够使 $i$ 尽量多跳几步（即$i=startPos+k,k&gt;1$）甚至使得 $i$ 不发生回溯，那么便可以优化算法的时间复杂度了。根据这种思路得到的算法就是KMP算法了，KMP算法是由D.E.Knuth、J.H.Morris和V.R.Pratt共同发现的，取名字的首字母便得到KMP算法简称。假设主串长度为n模式串长度为m则该算法的时间复杂度为$O(n+m)$。空间复杂度由于增加一个 next 数组为$O(m)$。</p>
+<p>如下图为一张KMP算法说明图：</p>
+<p><img src="/images/kmp-algorithm-pattern.png" alt="KMP"></p>
+<p>红框内为第一次发生失配的的字符，蓝框为已经匹配相等的子串。如果按照朴素模式匹配算法，则此时对齐位置如下图所示：</p>
+<p><img src="/images/brute-pattern-algorithm-step.png" alt="KMP"></p>
+<p>此时显然依旧会发生失配，需要再次将模式串往后移以对齐。但是如果保持 $i$ 不移动，一直移动模式串使得可以再次启动从 $i$ 开始的比较，则会得到如下图所示的对齐位置：</p>
+<p><img src="/images/kmp-algorithm-step.png" alt="KMP"></p>
+<p>如上图所示，我们字符串可以直接开始从 $i$ 启动下一轮比较，此时 $i$ 没有发生回溯，只是 $j$ 发生回溯以对齐比较位置。如果我们希望能够一次就可以使得对齐位置移动到如上图所示的位置该如何处理呢？这便是$next$数组需要完成的工作了。比如上述匹配失配发生在$j=7$的位置，如果此时我们令$next[7]=2$，则我们可以当第 7 号（下标从 0 开始）元素发生失配时直接将 $j$ 的值置为$j=next[j]$便可以完成不回溯 $i$ 的情况下一次性对齐主串和模式串使得下一轮比较可以从当前失配 $i$ 开始。以上便是KMP算法的基本思路了，剩下的就是如何得到这个$next$数组了。</p>
+<h3 id="KMP算法Next数组计算"><a href="#KMP算法Next数组计算" class="headerlink" title="KMP算法Next数组计算"></a>KMP算法Next数组计算</h3><p>在移动模式串对齐主串的过程中，我们先只观察已经匹配的部分，如下图红框内的字符字串所示：</p>
+<p><img src="/images/kmp-algorithm-next.png" alt="KMP"></p>
+<p>我们可以看到在逐步滑动模式串时，会比较主串中已匹配字符子串（图中$ababcab$）的真后缀部分与模式串中已匹配字符子串（和主串中一样）的真前缀部分，我们在滑动过程中发现真前缀和真后缀相等时下标 $i$ 会再次指向上次失配的位置（即图中红框外字符 $c$），如果滑动使得真前缀真后缀不相等会导致 $i$ 回溯至当前失配的前方且必定导致模式串继续向前滑动直到找到一个真前缀与真后缀相等的位置，此时从失配位置（图中红框外字符 $c$）继续比较。如果此时 $i,j$ 对应的字符相等则比较下一个，如果不等则可以重复上述步骤，只是现在已匹配字符子串发生变化（图中在比较主串红框外c再次发生失配，此时已匹配子串为 $ab$）。</p>
+<p>通过上述的分析我们可以得知 $next$ 数组的含义是在某个字符上发生失配后已匹配部分字符串的真前缀和真后缀部分最长相等长度（由于下标从0开始，最长是因为在模式串滑动时找到第一个真前缀真后缀相等部分是最长的）。以上是基本的 $next$ 数组含义。接下来就是具体如何计算该数组了。</p>
+<p>根据上述分析，$next$ 数组是已匹配字符部分的最大前后缀相等（不包含自身）长度，因此最朴素的想法是针对模式串中的每一段字符分别暴力求解最长前后缀相等长度，但此时时间复杂度过高,可能高达$O(m^3)$。如果我们仔细分析问题会发现求最长前后缀长度也是一个模式匹配问题，只不过此时主串与模式串均为同一个字符串且从主串的第1个字符（下标从0开始）开始匹配。如下图是一个模式串的 $next$ 数组：</p>
+<p><img src="/images/kmp-next-array.png" alt="KMP"></p>
+<p>如上图所示，我们依次分析。以 $i,j$ 代表主串和模式串下标。当 $j=0$ 发生失配时，此时已匹配长度为0，因此不应发生回溯而是 $i$ 向前走一步，但在实际编程中为了统一处理需要特殊处理这种情况，因此此处暂时使用问号，后期表明如何设置一个特殊值以方便编程；当 $j=1$ 发生失配时，此时已匹配长度为1，滑动一步即可开始比较，即从头开始比较，此时 $next[1] = 0$；当 $k=j+1$ 时，此时已知 $next[j]$ , 即 $[0, next[j])$ 和 $[j-next[j],j)$之间的字符串相等，如果当模式串的第 $next[j]$ 个字符与第 $j$ 个字符相等时，可推知 $[0, next[j]]$ 和  $[j-next[j],j]$ 之间的字符串相等，可得到 $next[k]=next[j]+1$，如果不等，如下图所示：</p>
+<p><img src="/images/kmp-next-not-equal.png" alt="KMP不等"></p>
+<p>此时只能在该区间缩小范围继续查找，从而有缩小区间真前缀串必定是 $[0, next[j])$ 串的真前缀，上图所示第 $next[j]=4$ 个字符不等于第 $j=9$ 个字符，在缩小范围时需要保证  $[0, nextIndex)$ 与  $[j-nextIndex,j)$ 之间的字符串依旧保持相等(其中$nextIndex &lt; next[j]$)，否则此时比较第 $nextIndex$ 个字符与第 $j$ 个字符已经失去意义。而两个区间的字符串又分别是 $[0, next[j])$ 字符串的真前缀真后缀，此时回到了求某个字符串的最长相等真前缀真后缀问题，这在上一步已经解决了，即本问题是一个递推问题，此时 $nextIndex=next[next[j]]$，即反复递推，最后递推到找到满足相等条件或者递推结束。根据上述思路可以得到计算 $next$ 数组的代码。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">vector</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">string</span>;</span><br><span class="line"></span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; CalculateNextArray(<span class="built_in">string</span> patternString)</span><br><span class="line">&#123;</span><br><span class="line">        <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; nextArray(patternString.size(), <span class="number">-1</span>);</span><br><span class="line">        <span class="keyword">if</span> (patternString.size() &lt;= <span class="number">1</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> nextArray;</span><br><span class="line">        &#125;</span><br><span class="line">        nextArray[<span class="number">1</span>] = <span class="number">0</span>; <span class="comment">/*只有一个匹配的字符子串真前缀真后缀均为空*/</span></span><br><span class="line">        <span class="keyword">int</span> i = <span class="number">1</span>, j = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> ( ; i &lt; <span class="keyword">int</span>(patternString.size()) - <span class="number">1</span>; i++) &#123;</span><br><span class="line">                j = nextArray[i]; <span class="comment">/*获取真前缀下一个下标*/</span></span><br><span class="line">                <span class="keyword">if</span> (patternString[i] == patternString[j]) &#123;</span><br><span class="line">                        nextArray[i+<span class="number">1</span>] = j + <span class="number">1</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> &#123;</span><br><span class="line">                        <span class="keyword">if</span> (j == <span class="number">0</span>) &#123;</span><br><span class="line">                                nextArray[i+<span class="number">1</span>] = <span class="number">0</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">else</span> &#123;</span><br><span class="line">                                <span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">                                        j = nextArray[j];</span><br><span class="line">                                        <span class="keyword">if</span> (j == <span class="number">0</span>) &#123;</span><br><span class="line">                                                <span class="keyword">if</span> (patternString[i] == patternString[j]) &#123;</span><br><span class="line">                                                        nextArray[i+<span class="number">1</span>] = j + <span class="number">1</span>;</span><br><span class="line">                                                &#125;</span><br><span class="line">                                                <span class="keyword">else</span> &#123;</span><br><span class="line">                                                        nextArray[i+<span class="number">1</span>] = <span class="number">0</span>;</span><br><span class="line">                                                &#125;</span><br><span class="line">                                                <span class="keyword">break</span>;</span><br><span class="line">                                        &#125;</span><br><span class="line">                                        <span class="keyword">else</span> <span class="keyword">if</span> (patternString[i] == patternString[j])&#123;</span><br><span class="line">                                                nextArray[i+<span class="number">1</span>] = j + <span class="number">1</span>; <span class="keyword">break</span>;</span><br><span class="line">                                        &#125;</span><br><span class="line">                                &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> nextArray;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>从上述代码可以看出代码重复判断 $j==0$ 的情况，如果可以统一处理可以使得代码更加简洁，这便需要用到前面提到过的 $next[0]$，如何设置该值呢？观察代码，我们可以发现当 $j==0$是有两种情况，一种是此时 $i,j$ 对应的字符相等，此时 $next[i+1]=j+1=0+1=1$，当不等时 $next[i+1]=0=-1+1$，如果我们让 $j==0$ 和字符不等时将 $j$ 置为 $-1$，结合上述思路修改代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">vector</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">string</span>;</span><br><span class="line"></span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; CalculateNextArrayImprove(<span class="built_in">string</span> patternString)</span><br><span class="line">&#123;</span><br><span class="line">        <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; nextArray(patternString.size(), <span class="number">-1</span>);</span><br><span class="line">        <span class="keyword">if</span> (patternString.size() &lt;= <span class="number">1</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> nextArray;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        nextArray[<span class="number">0</span>] = <span class="number">-1</span>; <span class="comment">/*第0个赋为-1*/</span></span><br><span class="line">        <span class="keyword">int</span> i = <span class="number">0</span>, j = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> ( ; i &lt; <span class="keyword">int</span>(patternString.size()) - <span class="number">1</span>; i++) &#123;</span><br><span class="line">                j = i; <span class="comment">/*获取真前缀下一个下标*/</span></span><br><span class="line">                <span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">                        j = nextArray[j];</span><br><span class="line">                        <span class="keyword">if</span> (j == <span class="number">-1</span> || patternString[i] == patternString[j]) &#123;</span><br><span class="line">                                nextArray[i+<span class="number">1</span>] = j + <span class="number">1</span>; <span class="keyword">break</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> nextArray;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述代码是否还可以进一步优化呢？观察代码我们可以发现每次 $j$ 都重置为 $j=i$，然后才进行迭代查找，实际在一次计算完毕后 $j$ 已经保存了下一轮计算所需的结果，因此可做进一步优化，代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">vector</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">string</span>;</span><br><span class="line"></span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; CalculateNextArrayUltimate(<span class="built_in">string</span> patternString)</span><br><span class="line">&#123;</span><br><span class="line">        <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; nextArray(patternString.size(), <span class="number">-1</span>);</span><br><span class="line">        <span class="keyword">if</span> (patternString.size() &lt;= <span class="number">1</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> nextArray;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        nextArray[<span class="number">0</span>] = <span class="number">-1</span>; <span class="comment">/*第0个赋为-1*/</span></span><br><span class="line">        <span class="keyword">int</span> i = <span class="number">0</span>, j = <span class="number">-1</span>;</span><br><span class="line">        <span class="keyword">for</span> ( ; i &lt; <span class="keyword">int</span>(patternString.size()) - <span class="number">1</span>; i++) &#123;</span><br><span class="line">                <span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">                        <span class="keyword">if</span> (j == <span class="number">-1</span> || patternString[i] == patternString[j]) &#123;</span><br><span class="line">                                j += <span class="number">1</span>;</span><br><span class="line">                                nextArray[i+<span class="number">1</span>] = j; <span class="keyword">break</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                        j = nextArray[j];</span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> nextArray;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述代码只是优化掉了一行赋值代码，实际上上面代码依旧可以进行优化，考虑如下图一种情况：</p>
+<p><img src="/images/kmp-next-array-improve.png" alt="KMP不等"></p>
+<p>在第 $2,3,5,6,7,8,10,11$ 个字符一旦失配后，如果 $j$ 回溯到 $next[j]$ 时依旧会失效，因为这两个下标的字符是一样的，因此如果在发现第 $j$ 与第 $next[j]$ 字符相等时，可以接着往前回溯，直到不相等。由于递推是从前往后，因此我们只需把值赋为上一个值即可，优化代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">vector</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">string</span>;</span><br><span class="line"></span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; CalculateNextArrayUltimateImprove(<span class="built_in">string</span> patternString)</span><br><span class="line">&#123;</span><br><span class="line">        <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; nextArray(patternString.size(), <span class="number">-1</span>);</span><br><span class="line">        <span class="keyword">if</span> (patternString.size() &lt;= <span class="number">1</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> nextArray;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        nextArray[<span class="number">0</span>] = <span class="number">-1</span>; <span class="comment">/*第0个赋为-1*/</span></span><br><span class="line">        <span class="keyword">int</span> i = <span class="number">0</span>, j = <span class="number">-1</span>;</span><br><span class="line">        <span class="keyword">for</span> ( ; i &lt; <span class="keyword">int</span>(patternString.size()) - <span class="number">1</span>; i++) &#123;</span><br><span class="line">                <span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">                        <span class="keyword">if</span> (j == <span class="number">-1</span> || patternString[i] == patternString[j]) &#123;</span><br><span class="line">                                j += <span class="number">1</span>;</span><br><span class="line">                                <span class="keyword">if</span> (patternString[j] == patternString[i+<span class="number">1</span>]) &#123;</span><br><span class="line">                                        nextArray[i+<span class="number">1</span>] = nextArray[j];</span><br><span class="line">                                &#125;</span><br><span class="line">                                <span class="keyword">else</span> &#123;</span><br><span class="line">                                        nextArray[i+<span class="number">1</span>] = j;</span><br><span class="line">                                &#125;</span><br><span class="line">                                <span class="keyword">break</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                        j = nextArray[j];</span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> nextArray;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="KMP算法实现"><a href="#KMP算法实现" class="headerlink" title="KMP算法实现"></a>KMP算法实现</h3><p>既然KMP算法Next数组已经计算得到，则写出KMP模式匹配算法也是非常容易的，考虑 $next[0]=-1$，有如下模式匹配算法：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">string</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">KMP</span><span class="params">(<span class="built_in">string</span> mainString, <span class="built_in">string</span> patternString, <span class="keyword">size_t</span> startPos)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; nextArray = CalculateNextArrayUltimate(patternString);</span><br><span class="line">        <span class="keyword">int</span> i = startPos, j = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> ( ; i &lt; <span class="keyword">int</span>(mainString.size()) &amp;&amp; j &lt; <span class="keyword">int</span>(patternString.size()); ) &#123;</span><br><span class="line">                <span class="comment">/*相等i，j均向前推，j==-1表明不存在真前缀真后缀相等，i，j也往前推*/</span></span><br><span class="line">                <span class="keyword">if</span> (j == <span class="number">-1</span> || mainString[i] == patternString[j]) &#123;</span><br><span class="line">                        ++j; ++i;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> &#123;</span><br><span class="line">                        j = nextArray[j];</span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (j &gt;= <span class="keyword">int</span>(patternString.size())) &#123;</span><br><span class="line">                <span class="keyword">return</span> i - j; <span class="comment">/*返回起始位置*/</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="算法测试"><a href="#算法测试" class="headerlink" title="算法测试"></a>算法测试</h2><h3 id="Next数组计算代码测试"><a href="#Next数组计算代码测试" class="headerlink" title="Next数组计算代码测试"></a>Next数组计算代码测试</h3><p>使用多个案例测试Next数组计算代码，测试代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">cout</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">vector</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">string</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        <span class="comment">/*问号代表值未确定*/</span></span><br><span class="line">        <span class="built_in">string</span> testStrings[] = &#123;<span class="string">"ababcabababc"</span>, <span class="comment">/*?,0,0,1,2,0,1,2,3,4,3,4*/</span></span><br><span class="line">                                <span class="string">"ababaaababaa"</span>, <span class="comment">/*?,0,0,1,2,3,1,1,2,3,4,5*/</span></span><br><span class="line">                                <span class="string">"babababaa"</span>,    <span class="comment">/*?,0,0,1,2,3,4,5,6*/</span></span><br><span class="line">                                <span class="string">"aaab"</span>,         <span class="comment">/*?,0,1,2*/</span></span><br><span class="line">                               &#125;;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&gt; correct = &#123;</span><br><span class="line">                                       &#123;<span class="number">-1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">3</span>,<span class="number">4</span>&#125;,</span><br><span class="line">                                       &#123;<span class="number">-1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>&#125;,</span><br><span class="line">                                       &#123;<span class="number">-1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>&#125;,</span><br><span class="line">                                       &#123;<span class="number">-1</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>&#125;</span><br><span class="line">                                      &#125;;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; <span class="keyword">sizeof</span>(testStrings)/<span class="keyword">sizeof</span>(testStrings[<span class="number">0</span>]); i++) &#123;</span><br><span class="line">                <span class="comment">/*调用具体的函数*/</span></span><br><span class="line">                <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; result = CalculateNextArray(testStrings[i]);</span><br><span class="line"></span><br><span class="line">                <span class="built_in">cout</span> &lt;&lt; (result == correct[i] ? <span class="string">"Correct"</span> : <span class="string">"Wrong"</span>) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="KMP算法测试"><a href="#KMP算法测试" class="headerlink" title="KMP算法测试"></a>KMP算法测试</h3><p>KMP算法测试代码如下所示：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">cout</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">vector</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">string</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        <span class="comment">/*第一个主串，第二个模式串*/</span></span><br><span class="line">        <span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;<span class="built_in">string</span>&gt;&gt; testStrings = &#123;</span><br><span class="line">                                              &#123;<span class="string">"ababcabcaabcbaabc"</span>, <span class="string">"ababcabababc"</span>&#125;,</span><br><span class="line">                                              &#123;<span class="string">"ababcabcaabcbaabc"</span>, <span class="string">"cabc"</span>&#125;,</span><br><span class="line">                                              &#123;<span class="string">"HA"</span>, <span class="string">"HAHAHA"</span>&#125;,</span><br><span class="line">                                              &#123;<span class="string">"WQN"</span>, <span class="string">"WQN"</span>&#125;,</span><br><span class="line">                                              &#123;<span class="string">"ADDAADAADDAAADAAD"</span>, <span class="string">"DAD"</span>&#125;,</span><br><span class="line">                                              &#123;<span class="string">"BABABABABABABABABB"</span>, <span class="string">"BABABB"</span>&#125;,</span><br><span class="line">                                             &#125;;</span><br><span class="line">        <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; correct = &#123;<span class="number">-1</span>,</span><br><span class="line">                                <span class="number">4</span>,</span><br><span class="line">                               <span class="number">-1</span>,</span><br><span class="line">                                <span class="number">0</span>,</span><br><span class="line">                               <span class="number">-1</span>,</span><br><span class="line">                               <span class="number">12</span></span><br><span class="line">                               &#125;;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; testStrings.size(); i++) &#123;</span><br><span class="line">                <span class="comment">/*调用具体的函数*/</span></span><br><span class="line">                <span class="keyword">int</span> result = KMP(testStrings[i][<span class="number">0</span>], testStrings[i][<span class="number">1</span>], <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">                <span class="built_in">cout</span> &lt;&lt; (result == correct[i] ? <span class="string">"Correct"</span> : <span class="string">"Wrong"</span>) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a href="https://zh.wikipedia.org/zh-hans/%E5%AD%97%E7%AC%A6%E4%B8%B2" target="_blank" rel="noopener">字符串</a></p>
+<p><a href="https://zh.wikipedia.org/zh-hans/子串" target="_blank" rel="noopener">子串</a></p>
+<p><a href="http://dsqiu.iteye.com/blog/1700312" target="_blank" rel="noopener">字符串模式匹配算法</a></p>
+<p><a href="https://zh.wikipedia.org/wiki/%E5%85%8B%E5%8A%AA%E6%96%AF-%E8%8E%AB%E9%87%8C%E6%96%AF-%E6%99%AE%E6%8B%89%E7%89%B9%E7%AE%97%E6%B3%95" target="_blank" rel="noopener">克努斯-莫里斯-普拉特算法</a></p>
+<p><a href="https://book.douban.com/subject/2024655/" target="_blank" rel="noopener">数据结构</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/算法设计/" rel="tag"># 算法设计</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/algorithms-design/prefix-postfix-to-infix.html" rel="next" title="前、后缀表达式转中缀表达式的实现">
+                <i class="fa fa-chevron-left"></i> 前、后缀表达式转中缀表达式的实现
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/data-structure/sparse-matrix-triple-table.html" rel="prev" title="稀疏矩阵压缩存储之三元组">
+                稀疏矩阵压缩存储之三元组 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/Limbo.jpg"
+                alt="hsuloong" />
+            
+              <p class="site-author-name" itemprop="name">hsuloong</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">45</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/hsuloong" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#字符串基础知识"><span class="nav-number">1.</span> <span class="nav-text">字符串基础知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#朴素模式匹配算法"><span class="nav-number">2.</span> <span class="nav-text">朴素模式匹配算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#KMP算法"><span class="nav-number">3.</span> <span class="nav-text">KMP算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#KMP算法基本原理"><span class="nav-number">3.1.</span> <span class="nav-text">KMP算法基本原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#KMP算法Next数组计算"><span class="nav-number">3.2.</span> <span class="nav-text">KMP算法Next数组计算</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#KMP算法实现"><span class="nav-number">3.3.</span> <span class="nav-text">KMP算法实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#算法测试"><span class="nav-number">4.</span> <span class="nav-text">算法测试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Next数组计算代码测试"><span class="nav-number">4.1.</span> <span class="nav-text">Next数组计算代码测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#KMP算法测试"><span class="nav-number">4.2.</span> <span class="nav-text">KMP算法测试</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hsuloong</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

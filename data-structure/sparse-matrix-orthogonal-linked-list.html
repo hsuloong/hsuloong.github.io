@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="数据结构," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="基础知识在使用三元组顺序表实现矩阵压缩存储时，三元组存放在连续的内存区域中，在进行矩阵运算时非零的元素可能变成零元素，非零元素会出现新值，此时需要移动数组中的三元组，对空间消耗是巨大的（本人三元组顺序表实现中直接开辟了一个新的数组），如果结合链表的优点，那么可以使用称为十字链表的数据结构，本文将实现之并完成矩阵常用的操作（可直接采用三元组顺序表中定义的操作）。 在实现十字链表压缩存储稀疏矩阵之前，">
+<meta name="keywords" content="数据结构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="稀疏矩阵压缩存储之十字链表">
+<meta property="og:url" content="http://yoursite.com/data-structure/sparse-matrix-orthogonal-linked-list.html">
+<meta property="og:site_name" content="千里之行 始于足下">
+<meta property="og:description" content="基础知识在使用三元组顺序表实现矩阵压缩存储时，三元组存放在连续的内存区域中，在进行矩阵运算时非零的元素可能变成零元素，非零元素会出现新值，此时需要移动数组中的三元组，对空间消耗是巨大的（本人三元组顺序表实现中直接开辟了一个新的数组），如果结合链表的优点，那么可以使用称为十字链表的数据结构，本文将实现之并完成矩阵常用的操作（可直接采用三元组顺序表中定义的操作）。 在实现十字链表压缩存储稀疏矩阵之前，">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-07-07T12:53:33.578Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="稀疏矩阵压缩存储之十字链表">
+<meta name="twitter:description" content="基础知识在使用三元组顺序表实现矩阵压缩存储时，三元组存放在连续的内存区域中，在进行矩阵运算时非零的元素可能变成零元素，非零元素会出现新值，此时需要移动数组中的三元组，对空间消耗是巨大的（本人三元组顺序表实现中直接开辟了一个新的数组），如果结合链表的优点，那么可以使用称为十字链表的数据结构，本文将实现之并完成矩阵常用的操作（可直接采用三元组顺序表中定义的操作）。 在实现十字链表压缩存储稀疏矩阵之前，">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/data-structure/sparse-matrix-orthogonal-linked-list.html"/>
+
+
+
+
+
+  <title>稀疏矩阵压缩存储之十字链表 | 千里之行 始于足下</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">千里之行 始于足下</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/data-structure/sparse-matrix-orthogonal-linked-list.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="hsuloong">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Limbo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="千里之行 始于足下">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">稀疏矩阵压缩存储之十字链表</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-26T20:01:50+08:00">
+                2018-06-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/public/categories/data-structure/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h2><p>在使用三元组顺序表实现矩阵压缩存储时，三元组存放在连续的内存区域中，在进行矩阵运算时非零的元素可能变成零元素，非零元素会出现新值，此时需要移动数组中的三元组，对空间消耗是巨大的（本人三元组顺序表实现中直接开辟了一个新的数组），如果结合链表的优点，那么可以使用称为十字链表的数据结构，本文将实现之并完成矩阵常用的操作（可直接采用三元组顺序表中定义的操作）。</p>
+<p>在实现十字链表压缩存储稀疏矩阵之前，预先定义十字链表三元组节点结构如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">OrthAtom</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">        <span class="keyword">int</span> row;       <span class="comment">/*行号*/</span></span><br><span class="line">        <span class="keyword">int</span> col;       <span class="comment">/*列号*/</span></span><br><span class="line">        DataType ele;  <span class="comment">/*存放的数据*/</span></span><br><span class="line">        OrthAtom *rowNext; <span class="comment">/*同一行下一个元素*/</span></span><br><span class="line">        OrthAtom *colNext; <span class="comment">/*同一列下一个元素*/</span></span><br><span class="line">        OrthAtom() : row(<span class="number">0</span>), col(<span class="number">0</span>), rowNext(<span class="literal">nullptr</span>), colNext(<span class="literal">nullptr</span>) &#123;&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>上述结构和三元组顺序表最大的不同是增加了两个链接指针。</p>
+<p>需要是实现的矩阵基本运算主要有：</p>
+<ul>
+<li>矩阵转置：TransposeMatrix</li>
+<li>矩阵加法：AddMatrix</li>
+<li>矩阵减法：SubMatrix</li>
+<li>矩阵乘法：MultiMatrix</li>
+<li>打印矩阵：PrintMatrix</li>
+<li>清空整个矩阵：MakeEmpty</li>
+</ul>
+<h2 id="十字链表基本定义"><a href="#十字链表基本定义" class="headerlink" title="十字链表基本定义"></a>十字链表基本定义</h2><p>根据上述分析可定义如下基本ADT:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">vector</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">OrthList</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">        OrthList(<span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;DataType&gt;&gt; &amp;inArray);</span><br><span class="line">        ~OrthList();</span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">TransposeMatrix</span><span class="params">()</span></span>;         <span class="comment">/*转置矩阵*/</span></span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">AddMatrix</span><span class="params">(OrthList&lt;DataType&gt; &amp;otherMatrix)</span></span>; <span class="comment">/*加上另外一个矩阵，第二个矩阵保持不变*/</span></span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">SubMatrix</span><span class="params">(OrthList&lt;DataType&gt; &amp;otherMatrix)</span></span>; <span class="comment">/*减去另外一个矩阵，第二个矩阵保持不变*/</span></span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">MultiMatrix</span><span class="params">(OrthList&lt;DataType&gt; &amp;otherMatrix)</span></span>; <span class="comment">/*乘上另外一个矩阵，第二个矩阵保持不变*/</span></span><br><span class="line">        <span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;DataType&gt;&gt; TransformTo2DArray(); <span class="comment">/*转换成二维数组*/</span></span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">PrintMatrix</span><span class="params">()</span></span>; <span class="comment">/*打印矩阵*/</span></span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">MakeEmpty</span><span class="params">()</span></span>;   <span class="comment">/*清空并释放内存*/</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">        <span class="built_in">vector</span>&lt;OrthAtom&lt;DataType&gt;&gt; rowDummy; <span class="comment">/*行哑节点，内含矩阵行数*/</span></span><br><span class="line">        <span class="built_in">vector</span>&lt;OrthAtom&lt;DataType&gt;&gt; colDummy; <span class="comment">/*列哑节点，内含矩阵列数*/</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>如上即为整个十字链表的ADT基本结构，基本仿照三元组顺序表中的定义，具体含义可见注释。接下来依次实现个函数。</p>
+<h2 id="三元组顺序表ADT的实现"><a href="#三元组顺序表ADT的实现" class="headerlink" title="三元组顺序表ADT的实现"></a>三元组顺序表ADT的实现</h2><ul>
+<li>构造函数</li>
+</ul>
+<p>构造函数主要将二维存储的稀疏矩阵转变为十字链表矩阵。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line">OrthList&lt;DataType&gt;::OrthList(<span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;DataType&gt;&gt; &amp;inArray) : rowDummy(inArray.size()), colDummy(inArray.size() &gt; <span class="number">0</span> ? inArray[<span class="number">0</span>].size() : <span class="number">0</span>)</span><br><span class="line">&#123;</span><br><span class="line">        <span class="keyword">if</span> (inArray.size() &gt; <span class="number">0</span> &amp;&amp; inArray[<span class="number">0</span>].size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="keyword">int</span>(inArray.size()); i++) &#123;</span><br><span class="line">                        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; <span class="keyword">int</span>(inArray[i].size()); j++) &#123;</span><br><span class="line">                                <span class="keyword">if</span> (inArray[i][j] != DataType(<span class="number">0</span>)) &#123;</span><br><span class="line">                                        OrthAtom&lt;DataType&gt; *rowIter = &amp;rowDummy[i]; <span class="comment">/*行遍历*/</span></span><br><span class="line">                                        OrthAtom&lt;DataType&gt; *colIter = &amp;colDummy[j]; <span class="comment">/*列遍历*/</span></span><br><span class="line">                                        <span class="keyword">while</span> (rowIter-&gt;rowNext != <span class="literal">nullptr</span> &amp;&amp; rowIter-&gt;rowNext-&gt;col &lt; j+<span class="number">1</span>) &#123;</span><br><span class="line">                                                rowIter = rowIter-&gt;rowNext;</span><br><span class="line">                                        &#125;</span><br><span class="line">                                        <span class="keyword">while</span> (colIter-&gt;colNext != <span class="literal">nullptr</span> &amp;&amp; colIter-&gt;colNext-&gt;row &lt; i+<span class="number">1</span>) &#123;</span><br><span class="line">                                                colIter = colIter-&gt;colNext;</span><br><span class="line">                                        &#125;</span><br><span class="line">                                        OrthAtom&lt;DataType&gt; *newNode = <span class="keyword">new</span> OrthAtom&lt;DataType&gt;; <span class="comment">/*新节点*/</span></span><br><span class="line">                                        newNode-&gt;row = i+<span class="number">1</span>; <span class="comment">/*下标从1开始*/</span></span><br><span class="line">                                        newNode-&gt;col = j+<span class="number">1</span>; <span class="comment">/*下标从1开始*/</span></span><br><span class="line">                                        newNode-&gt;ele = inArray[i][j];</span><br><span class="line">                                        newNode-&gt;rowNext = rowIter-&gt;rowNext;</span><br><span class="line">                                        newNode-&gt;colNext = colIter-&gt;colNext;</span><br><span class="line">                                        rowIter-&gt;rowNext = colIter-&gt;colNext = newNode;</span><br><span class="line">                                &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述在定位插入点位置时可以进一步优化。</p>
+<ul>
+<li>析构函数</li>
+</ul>
+<p>析构主要释放创建十字链表节点时申请的空间，直接调用MakeEmpty函数即可，具体代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line">OrthList&lt;DataType&gt;::~OrthList&lt;DataType&gt;()</span><br><span class="line">&#123;</span><br><span class="line">        MakeEmpty();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>矩阵转置</li>
+</ul>
+<p>和三元组顺序表不同的是，十字链表转置只需交换节点内数据即可，具体代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::swap;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">void</span> OrthList&lt;DataType&gt;::TransposeMatrix()</span><br><span class="line">&#123;</span><br><span class="line">        OrthAtom&lt;DataType&gt; *cycleIter = <span class="literal">nullptr</span>; <span class="comment">/*遍历迭代器*/</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; rowDummy.size(); i++) &#123;</span><br><span class="line">                cycleIter = rowDummy[i].rowNext;</span><br><span class="line">                <span class="keyword">while</span> (cycleIter != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">                        OrthAtom&lt;DataType&gt; * tmp = cycleIter;</span><br><span class="line">                         cycleIter = cycleIter-&gt;rowNext;</span><br><span class="line">                         <span class="comment">/*交换下标和指针*/</span></span><br><span class="line">                         swap(tmp-&gt;row, tmp-&gt;col);</span><br><span class="line">                         swap(tmp-&gt;rowNext, tmp-&gt;colNext);</span><br><span class="line">                 &#125;</span><br><span class="line">                 swap(rowDummy[i].rowNext, rowDummy[i].colNext);</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; colDummy.size(); i++) &#123;</span><br><span class="line">                 swap(colDummy[i].rowNext, colDummy[i].colNext);</span><br><span class="line">         &#125;</span><br><span class="line">         swap(rowDummy, colDummy);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>矩阵相加</li>
+</ul>
+<p>在进行矩阵加法，首先需要判断两个矩阵是否能够相加，然后我们也可以借鉴三元组顺序表的处理方式，不过我们在进行加法时按照行的顺序一行一行加并且保持一个列节点数组用来指定列插入的顺序以节省插入时间，具体实现代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">void</span> OrthList&lt;DataType&gt;::AddMatrix(OrthList&lt;DataType&gt; &amp;otherMatrix)</span><br><span class="line">&#123;</span><br><span class="line">        <span class="keyword">if</span> (rowDummy.size() != otherMatrix.rowDummy.size() || colDummy.size() != otherMatrix.colDummy.size() ) &#123;</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">vector</span>&lt;OrthAtom&lt;DataType&gt; *&gt; colCycleIter(colDummy.size(), <span class="literal">nullptr</span>); <span class="comment">/*列指针，方便快速插入列中*/</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; colDummy.size(); i++) &#123;</span><br><span class="line">                colCycleIter[i] = &amp;colDummy[i];</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; rowDummy.size(); i++) &#123;</span><br><span class="line">                <span class="comment">/*重定位列节点*/</span></span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">size_t</span> j = <span class="number">0</span>; j &lt; colCycleIter.size(); j++) &#123;</span><br><span class="line">                        <span class="keyword">while</span> (colCycleIter[j]-&gt;colNext != <span class="literal">nullptr</span> &amp;&amp; colCycleIter[j]-&gt;colNext-&gt;row &lt; <span class="keyword">int</span>(i)+<span class="number">1</span>) &#123;</span><br><span class="line">                                colCycleIter[j] = colCycleIter[j]-&gt;colNext;</span><br><span class="line">                        &#125;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                OrthAtom&lt;DataType&gt; *firstIter = &amp;rowDummy[i]; <span class="comment">/*第一个矩阵*/</span></span><br><span class="line">                OrthAtom&lt;DataType&gt; *secondIter = &amp;otherMatrix.rowDummy[i]; <span class="comment">/*第二个矩阵*/</span></span><br><span class="line">                <span class="keyword">while</span> (firstIter-&gt;rowNext != <span class="literal">nullptr</span> &amp;&amp; secondIter-&gt;rowNext != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">                        <span class="keyword">if</span> (firstIter-&gt;rowNext-&gt;row &lt; secondIter-&gt;rowNext-&gt;row) &#123;</span><br><span class="line">                                firstIter = firstIter-&gt;rowNext;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">else</span> <span class="keyword">if</span> (firstIter-&gt;rowNext-&gt;row &gt; secondIter-&gt;rowNext-&gt;row) &#123;</span><br><span class="line">                                OrthAtom&lt;DataType&gt; *newNode = <span class="keyword">new</span> OrthAtom&lt;DataType&gt;; <span class="comment">/*新节点*/</span></span><br><span class="line">                                <span class="keyword">int</span> colIndex = secondIter-&gt;rowNext-&gt;col;</span><br><span class="line">                                newNode-&gt;rowNext = firstIter-&gt;rowNext;</span><br><span class="line">                                newNode-&gt;colNext = colCycleIter[colIndex<span class="number">-1</span>]-&gt;colNext;</span><br><span class="line">                                newNode-&gt;ele = secondIter-&gt;rowNext-&gt;ele;</span><br><span class="line">                                newNode-&gt;row = secondIter-&gt;rowNext-&gt;row;</span><br><span class="line">                                newNode-&gt;col = secondIter-&gt;rowNext-&gt;col;</span><br><span class="line">                                firstIter-&gt;rowNext = newNode;</span><br><span class="line">                                colCycleIter[colIndex<span class="number">-1</span>]-&gt;colNext = newNode;</span><br><span class="line">                                secondIter = secondIter-&gt;rowNext;</span><br><span class="line">                                firstIter = firstIter-&gt;rowNext;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">else</span> <span class="keyword">if</span> (firstIter-&gt;rowNext-&gt;col &lt; secondIter-&gt;rowNext-&gt;col) &#123;</span><br><span class="line">                                firstIter = firstIter-&gt;rowNext;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">else</span> <span class="keyword">if</span> (firstIter-&gt;rowNext-&gt;col &gt; secondIter-&gt;rowNext-&gt;col) &#123;</span><br><span class="line">                                OrthAtom&lt;DataType&gt; *newNode = <span class="keyword">new</span> OrthAtom&lt;DataType&gt;; <span class="comment">/*新节点*/</span></span><br><span class="line">                                <span class="keyword">int</span> colIndex = secondIter-&gt;rowNext-&gt;col;</span><br><span class="line">                                newNode-&gt;rowNext = firstIter-&gt;rowNext;</span><br><span class="line">                                newNode-&gt;colNext = colCycleIter[colIndex<span class="number">-1</span>]-&gt;colNext;</span><br><span class="line">                                newNode-&gt;ele = secondIter-&gt;rowNext-&gt;ele;</span><br><span class="line">                                newNode-&gt;row = secondIter-&gt;rowNext-&gt;row;</span><br><span class="line">                                newNode-&gt;col = secondIter-&gt;rowNext-&gt;col;</span><br><span class="line">                                firstIter-&gt;rowNext = newNode;</span><br><span class="line">                                colCycleIter[colIndex<span class="number">-1</span>]-&gt;colNext = newNode;</span><br><span class="line">                                secondIter = secondIter-&gt;rowNext;</span><br><span class="line">                                firstIter = firstIter-&gt;rowNext;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">else</span> &#123;</span><br><span class="line">                                <span class="keyword">if</span> (firstIter-&gt;rowNext-&gt;ele + secondIter-&gt;rowNext-&gt;ele != DataType(<span class="number">0</span>)) &#123;</span><br><span class="line">                                        firstIter-&gt;rowNext-&gt;ele += secondIter-&gt;rowNext-&gt;ele;</span><br><span class="line">                                        firstIter = firstIter-&gt;rowNext;</span><br><span class="line">                                &#125;</span><br><span class="line">                                <span class="keyword">else</span> &#123;</span><br><span class="line">                                        OrthAtom&lt;DataType&gt; *toBeDelete = firstIter-&gt;rowNext; <span class="comment">/*待删除节点*/</span></span><br><span class="line">                                        firstIter-&gt;rowNext = toBeDelete-&gt;rowNext;</span><br><span class="line">                                        <span class="keyword">int</span> colIndex = toBeDelete-&gt;col;</span><br><span class="line">                                        colCycleIter[colIndex<span class="number">-1</span>]-&gt;colNext = toBeDelete-&gt;colNext;</span><br><span class="line">                                        <span class="keyword">delete</span> toBeDelete;</span><br><span class="line">                                &#125;</span><br><span class="line">                                secondIter = secondIter-&gt;rowNext;</span><br><span class="line">                        &#125;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="comment">/*剩下的第二个矩阵的非零元*/</span></span><br><span class="line">                <span class="keyword">while</span> (secondIter-&gt;rowNext != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">                        OrthAtom&lt;DataType&gt; *newNode = <span class="keyword">new</span> OrthAtom&lt;DataType&gt;; <span class="comment">/*新节点*/</span></span><br><span class="line">                        <span class="keyword">int</span> colIndex = secondIter-&gt;rowNext-&gt;col;</span><br><span class="line">                        newNode-&gt;rowNext = firstIter-&gt;rowNext;</span><br><span class="line">                        newNode-&gt;colNext = colCycleIter[colIndex<span class="number">-1</span>]-&gt;colNext;</span><br><span class="line">                        newNode-&gt;ele = secondIter-&gt;rowNext-&gt;ele;</span><br><span class="line">                        newNode-&gt;row = secondIter-&gt;rowNext-&gt;row;</span><br><span class="line">                        newNode-&gt;col = secondIter-&gt;rowNext-&gt;col;</span><br><span class="line">                        firstIter-&gt;rowNext = newNode;</span><br><span class="line">                        colCycleIter[colIndex<span class="number">-1</span>]-&gt;colNext = newNode;</span><br><span class="line">                        secondIter = secondIter-&gt;rowNext;</span><br><span class="line">                        firstIter = firstIter-&gt;rowNext;</span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>矩阵减法</li>
+</ul>
+<p>将加法代码稍作修改即可：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">void</span> OrthList&lt;DataType&gt;::SubMatrix(OrthList&lt;DataType&gt; &amp;otherMatrix)</span><br><span class="line">&#123;</span><br><span class="line">        <span class="keyword">if</span> (rowDummy.size() != otherMatrix.rowDummy.size() || colDummy.size() != otherMatrix.colDummy.size() ) &#123;</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">vector</span>&lt;OrthAtom&lt;DataType&gt; *&gt; colCycleIter(colDummy.size(), <span class="literal">nullptr</span>); <span class="comment">/*列指针，方便快速插入列中*/</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; colDummy.size(); i++) &#123;</span><br><span class="line">                colCycleIter[i] = &amp;colDummy[i];</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; rowDummy.size(); i++) &#123;</span><br><span class="line">                <span class="comment">/*重定位列节点*/</span></span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">size_t</span> j = <span class="number">0</span>; j &lt; colCycleIter.size(); j++) &#123;</span><br><span class="line">                        <span class="keyword">while</span> (colCycleIter[j]-&gt;colNext != <span class="literal">nullptr</span> &amp;&amp; colCycleIter[j]-&gt;colNext-&gt;row &lt; <span class="keyword">int</span>(i)+<span class="number">1</span>) &#123;</span><br><span class="line">                                colCycleIter[j] = colCycleIter[j]-&gt;colNext;</span><br><span class="line">                        &#125;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                OrthAtom&lt;DataType&gt; *firstIter = &amp;rowDummy[i]; <span class="comment">/*第一个矩阵*/</span></span><br><span class="line">                OrthAtom&lt;DataType&gt; *secondIter = &amp;otherMatrix.rowDummy[i]; <span class="comment">/*第二个矩阵*/</span></span><br><span class="line">                <span class="keyword">while</span> (firstIter-&gt;rowNext != <span class="literal">nullptr</span> &amp;&amp; secondIter-&gt;rowNext != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">                        <span class="keyword">if</span> (firstIter-&gt;rowNext-&gt;row &lt; secondIter-&gt;rowNext-&gt;row) &#123;</span><br><span class="line">                                firstIter = firstIter-&gt;rowNext;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">else</span> <span class="keyword">if</span> (firstIter-&gt;rowNext-&gt;row &gt; secondIter-&gt;rowNext-&gt;row) &#123;</span><br><span class="line">                                OrthAtom&lt;DataType&gt; *newNode = <span class="keyword">new</span> OrthAtom&lt;DataType&gt;; <span class="comment">/*新节点*/</span></span><br><span class="line">                                <span class="keyword">int</span> colIndex = secondIter-&gt;rowNext-&gt;col;</span><br><span class="line">                                newNode-&gt;rowNext = firstIter-&gt;rowNext;</span><br><span class="line">                                newNode-&gt;colNext = colCycleIter[colIndex<span class="number">-1</span>]-&gt;colNext;</span><br><span class="line">                                newNode-&gt;ele = -secondIter-&gt;rowNext-&gt;ele;</span><br><span class="line">                                newNode-&gt;row = secondIter-&gt;rowNext-&gt;row;</span><br><span class="line">                                newNode-&gt;col = secondIter-&gt;rowNext-&gt;col;</span><br><span class="line">                                firstIter-&gt;rowNext = newNode;</span><br><span class="line">                                colCycleIter[colIndex<span class="number">-1</span>]-&gt;colNext = newNode;</span><br><span class="line">                                secondIter = secondIter-&gt;rowNext;</span><br><span class="line">                                firstIter = firstIter-&gt;rowNext;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">else</span> <span class="keyword">if</span> (firstIter-&gt;rowNext-&gt;col &lt; secondIter-&gt;rowNext-&gt;col) &#123;</span><br><span class="line">                                firstIter = firstIter-&gt;rowNext;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">else</span> <span class="keyword">if</span> (firstIter-&gt;rowNext-&gt;col &gt; secondIter-&gt;rowNext-&gt;col) &#123;</span><br><span class="line">                                OrthAtom&lt;DataType&gt; *newNode = <span class="keyword">new</span> OrthAtom&lt;DataType&gt;; <span class="comment">/*新节点*/</span></span><br><span class="line">                                <span class="keyword">int</span> colIndex = secondIter-&gt;rowNext-&gt;col;</span><br><span class="line">                                newNode-&gt;rowNext = firstIter-&gt;rowNext;</span><br><span class="line">                                newNode-&gt;colNext = colCycleIter[colIndex<span class="number">-1</span>]-&gt;colNext;</span><br><span class="line">                                newNode-&gt;ele = -secondIter-&gt;rowNext-&gt;ele;</span><br><span class="line">                                newNode-&gt;row = secondIter-&gt;rowNext-&gt;row;</span><br><span class="line">                                newNode-&gt;col = secondIter-&gt;rowNext-&gt;col;</span><br><span class="line">                                firstIter-&gt;rowNext = newNode;</span><br><span class="line">                                colCycleIter[colIndex<span class="number">-1</span>]-&gt;colNext = newNode;</span><br><span class="line">                                secondIter = secondIter-&gt;rowNext;</span><br><span class="line">                                firstIter = firstIter-&gt;rowNext;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">else</span> &#123;</span><br><span class="line">                                <span class="keyword">if</span> (firstIter-&gt;rowNext-&gt;ele - secondIter-&gt;rowNext-&gt;ele != DataType(<span class="number">0</span>)) &#123;</span><br><span class="line">                                        firstIter-&gt;rowNext-&gt;ele -= secondIter-&gt;rowNext-&gt;ele;</span><br><span class="line">                                        firstIter = firstIter-&gt;rowNext;</span><br><span class="line">                                &#125;</span><br><span class="line">                                <span class="keyword">else</span> &#123;</span><br><span class="line">                                        OrthAtom&lt;DataType&gt; *toBeDelete = firstIter-&gt;rowNext; <span class="comment">/*待删除节点*/</span></span><br><span class="line">                                        firstIter-&gt;rowNext = toBeDelete-&gt;rowNext;</span><br><span class="line">                                        <span class="keyword">int</span> colIndex = toBeDelete-&gt;col;</span><br><span class="line">                                        colCycleIter[colIndex<span class="number">-1</span>]-&gt;colNext = toBeDelete-&gt;colNext;</span><br><span class="line">                                        <span class="keyword">delete</span> toBeDelete;</span><br><span class="line">                                &#125;</span><br><span class="line">                                secondIter = secondIter-&gt;rowNext;</span><br><span class="line">                        &#125;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="comment">/*剩下的第二个矩阵的非零元*/</span></span><br><span class="line">                <span class="keyword">while</span> (secondIter-&gt;rowNext != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">                        OrthAtom&lt;DataType&gt; *newNode = <span class="keyword">new</span> OrthAtom&lt;DataType&gt;; <span class="comment">/*新节点*/</span></span><br><span class="line">                        <span class="keyword">int</span> colIndex = secondIter-&gt;rowNext-&gt;col;</span><br><span class="line">                        newNode-&gt;rowNext = firstIter-&gt;rowNext;</span><br><span class="line">                        newNode-&gt;colNext = colCycleIter[colIndex<span class="number">-1</span>]-&gt;colNext;</span><br><span class="line">                        newNode-&gt;ele = -secondIter-&gt;rowNext-&gt;ele;</span><br><span class="line">                        newNode-&gt;row = secondIter-&gt;rowNext-&gt;row;</span><br><span class="line">                        newNode-&gt;col = secondIter-&gt;rowNext-&gt;col;</span><br><span class="line">                        firstIter-&gt;rowNext = newNode;</span><br><span class="line">                        colCycleIter[colIndex<span class="number">-1</span>]-&gt;colNext = newNode;</span><br><span class="line">                        secondIter = secondIter-&gt;rowNext;</span><br><span class="line">                        firstIter = firstIter-&gt;rowNext;</span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>矩阵乘法</li>
+</ul>
+<p>在进行矩阵乘法时，三元组顺序表需要一个额外的数组来快速定位行，而十字链表由于自身的特性可以快速寻址任意一行，因此在仿照三元组的顺序表乘法时可以简化一部分代码，但是乘法可能会改变矩阵列数，因此需要做一些特别的处理，具体见如下代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">void</span> OrthList&lt;DataType&gt;::MultiMatrix(OrthList&lt;DataType&gt; &amp;otherMatrix)</span><br><span class="line">&#123;</span><br><span class="line">        <span class="keyword">if</span> (colDummy.size() != otherMatrix.rowDummy.size()) &#123;</span><br><span class="line">                <span class="keyword">return</span>; <span class="comment">/*是否可以相乘*/</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/*只是为了快速生成数组，并不是为了复制哑节点*/</span></span><br><span class="line">        <span class="built_in">vector</span>&lt;OrthAtom&lt;DataType&gt;&gt; newColDummy(otherMatrix.colDummy.begin(), otherMatrix.colDummy.end());</span><br><span class="line"></span><br><span class="line">        <span class="built_in">vector</span>&lt;OrthAtom&lt;DataType&gt; *&gt; colCycleIter(newColDummy.size(), <span class="literal">nullptr</span>); <span class="comment">/*列指针，方便快速插入列中*/</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; newColDummy.size(); i++) &#123;</span><br><span class="line">                colCycleIter[i] = &amp;newColDummy[i];</span><br><span class="line">                newColDummy[i].colNext = <span class="literal">nullptr</span>; <span class="comment">/*清空原始数据*/</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        DataType *tmpAccumulate = <span class="keyword">new</span> <span class="keyword">int</span>[otherMatrix.colDummy.size()]; <span class="comment">/*记录每行各列的累加和*/</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">/*一行一行处理*/</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; rowDummy.size(); i++) &#123;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">size_t</span> j = <span class="number">0</span>; j &lt; otherMatrix.colDummy.size(); j++) &#123;</span><br><span class="line">                        tmpAccumulate[j] = DataType(<span class="number">0</span>); <span class="comment">/*清空累加器*/</span></span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                OrthAtom&lt;DataType&gt; *firstIter = rowDummy[i].rowNext; <span class="comment">/*第一个矩阵*/</span></span><br><span class="line"></span><br><span class="line">                <span class="keyword">while</span> (firstIter != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">                        <span class="keyword">int</span> rowIndex = firstIter-&gt;col - <span class="number">1</span>; <span class="comment">/*相乘矩阵的行号*/</span></span><br><span class="line">                        OrthAtom&lt;DataType&gt; *secondIter = otherMatrix.rowDummy[rowIndex].rowNext; <span class="comment">/*第二个矩阵*/</span></span><br><span class="line">                        <span class="keyword">while</span> (secondIter != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">                                tmpAccumulate[secondIter-&gt;col<span class="number">-1</span>] += firstIter-&gt;ele * secondIter-&gt;ele;</span><br><span class="line">                                secondIter = secondIter-&gt;rowNext;</span><br><span class="line">                        &#125;</span><br><span class="line">                        firstIter = firstIter-&gt;rowNext;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="comment">/*一行计算结束后进行压缩*/</span></span><br><span class="line"></span><br><span class="line">                firstIter = &amp;rowDummy[i]; <span class="comment">/*重定位扫描器*/</span></span><br><span class="line"></span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">size_t</span> j = <span class="number">0</span>; j &lt; otherMatrix.colDummy.size(); j++) &#123;</span><br><span class="line">                        <span class="keyword">if</span> (tmpAccumulate[j] != DataType(<span class="number">0</span>)) &#123;</span><br><span class="line">                                <span class="comment">/*行不为空*/</span></span><br><span class="line">                                <span class="keyword">if</span> (firstIter-&gt;rowNext != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">                                        <span class="comment">/*删除多余的节点*/</span></span><br><span class="line">                                        <span class="keyword">while</span> (firstIter-&gt;rowNext != <span class="literal">nullptr</span> &amp;&amp; firstIter-&gt;rowNext-&gt;col &lt; <span class="keyword">int</span>(j) + <span class="number">1</span>) &#123;</span><br><span class="line">                                                OrthAtom&lt;DataType&gt; *toBeDelete = firstIter-&gt;rowNext; <span class="comment">/*待删除节点*/</span></span><br><span class="line">                                                firstIter-&gt;rowNext = toBeDelete-&gt;rowNext;</span><br><span class="line">                                                <span class="keyword">delete</span> toBeDelete;</span><br><span class="line">                                        &#125;</span><br><span class="line">                                        <span class="comment">/*如果下标相等直接修改值*/</span></span><br><span class="line">                                        <span class="keyword">if</span> (firstIter-&gt;rowNext != <span class="literal">nullptr</span> &amp;&amp; firstIter-&gt;rowNext-&gt;col == <span class="keyword">int</span>(j) + <span class="number">1</span>) &#123;</span><br><span class="line">                                                firstIter-&gt;rowNext-&gt;ele = tmpAccumulate[j];</span><br><span class="line"></span><br><span class="line">                                                firstIter-&gt;rowNext-&gt;colNext = colCycleIter[j]-&gt;colNext;</span><br><span class="line">                                                colCycleIter[j]-&gt;colNext = firstIter-&gt;rowNext;</span><br><span class="line"></span><br><span class="line">                                                firstIter = firstIter-&gt;rowNext;</span><br><span class="line"></span><br><span class="line">                                                colCycleIter[j] = colCycleIter[j]-&gt;colNext; <span class="comment">/*由于逐行压缩，列指针向后移*/</span></span><br><span class="line">                                        &#125;</span><br><span class="line">                                        <span class="keyword">else</span> &#123; <span class="comment">/*否则需要创建一个新节点*/</span></span><br><span class="line">                                                OrthAtom&lt;DataType&gt; *newNode = <span class="keyword">new</span> OrthAtom&lt;DataType&gt;; <span class="comment">/*新节点*/</span></span><br><span class="line"></span><br><span class="line">                                                newNode-&gt;rowNext = firstIter-&gt;rowNext;</span><br><span class="line">                                                newNode-&gt;colNext = colCycleIter[j]-&gt;colNext;</span><br><span class="line">                                                newNode-&gt;ele = tmpAccumulate[j];</span><br><span class="line">                                                newNode-&gt;row = i+<span class="number">1</span>;</span><br><span class="line">                                                newNode-&gt;col = j+<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">                                                colCycleIter[j]-&gt;colNext = newNode;</span><br><span class="line">                                                colCycleIter[j] = colCycleIter[j]-&gt;colNext;</span><br><span class="line"></span><br><span class="line">                                                firstIter-&gt;rowNext = newNode;</span><br><span class="line">                                                firstIter = firstIter-&gt;rowNext;</span><br><span class="line">                                        &#125;</span><br><span class="line">                                &#125;</span><br><span class="line">                                <span class="keyword">else</span> &#123; <span class="comment">/*直接空了，需要新建节点*/</span></span><br><span class="line">                                        OrthAtom&lt;DataType&gt; *newNode = <span class="keyword">new</span> OrthAtom&lt;DataType&gt;; <span class="comment">/*新节点*/</span></span><br><span class="line"></span><br><span class="line">                                        newNode-&gt;rowNext = firstIter-&gt;rowNext;</span><br><span class="line">                                        newNode-&gt;colNext = colCycleIter[j]-&gt;colNext;</span><br><span class="line">                                        newNode-&gt;ele = tmpAccumulate[j];</span><br><span class="line">                                        newNode-&gt;row = i+<span class="number">1</span>;</span><br><span class="line">                                        newNode-&gt;col = j+<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">                                        colCycleIter[j]-&gt;colNext = newNode;</span><br><span class="line">                                        colCycleIter[j] = colCycleIter[j]-&gt;colNext;</span><br><span class="line"></span><br><span class="line">                                        firstIter-&gt;rowNext = newNode;</span><br><span class="line">                                        firstIter = firstIter-&gt;rowNext;</span><br><span class="line">                                &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="comment">/*如果此时行后面还有元素说明是遗留的元素，需要删除*/</span></span><br><span class="line">                <span class="keyword">while</span> (firstIter-&gt;rowNext != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">                        OrthAtom&lt;DataType&gt; *toBeDelete = firstIter-&gt;rowNext; <span class="comment">/*待删除节点*/</span></span><br><span class="line">                        firstIter-&gt;rowNext = toBeDelete-&gt;rowNext;</span><br><span class="line">                        <span class="keyword">delete</span> toBeDelete;</span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/*修改列数哑节点*/</span></span><br><span class="line">        colDummy.assign(newColDummy.begin(), newColDummy.end());</span><br><span class="line"></span><br><span class="line">        <span class="keyword">delete</span> [] tmpAccumulate;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>压缩矩阵转成二维数组</li>
+</ul>
+<p>直接按行遍历，具体代码如下所示：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;DataType&gt;&gt; OrthList&lt;DataType&gt;::TransformTo2DArray()</span><br><span class="line">&#123;</span><br><span class="line">        <span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;DataType&gt;&gt; result(rowDummy.size(), <span class="built_in">vector</span>&lt;DataType&gt;(colDummy.size(), DataType(<span class="number">0</span>)));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; rowDummy.size(); i++) &#123;</span><br><span class="line">                OrthAtom&lt;DataType&gt; *cycleIter = rowDummy[i].rowNext; <span class="comment">/*按行遍历*/</span></span><br><span class="line">                <span class="keyword">while</span> (cycleIter != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">                        result[cycleIter-&gt;row<span class="number">-1</span>][cycleIter-&gt;col<span class="number">-1</span>] = cycleIter-&gt;ele;</span><br><span class="line">                        cycleIter = cycleIter-&gt;rowNext;</span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>打印矩阵</li>
+</ul>
+<p>先调用转二维函数然后直接打印即可，代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">cout</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">void</span> OrthList&lt;DataType&gt;::PrintMatrix()</span><br><span class="line">&#123;</span><br><span class="line">        <span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;DataType&gt;&gt; result = TransformTo2DArray();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; result.size(); i++) &#123;</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">size_t</span> j = <span class="number">0</span>; j &lt; result[i].size(); j++) &#123;</span><br><span class="line">                        <span class="built_in">cout</span> &lt;&lt; result[i][j] &lt;&lt; <span class="string">";"</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="built_in">cout</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>清空矩阵</li>
+</ul>
+<p>一行一行释放空间，代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">void</span> OrthList&lt;DataType&gt;::MakeEmpty()</span><br><span class="line">&#123;</span><br><span class="line">        <span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;DataType&gt;&gt; result(rowDummy.size(), <span class="built_in">vector</span>&lt;DataType&gt;(colDummy.size(), DataType(<span class="number">0</span>)));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; colDummy.size(); i++) &#123;</span><br><span class="line">                colDummy[i].colNext = <span class="literal">nullptr</span>; <span class="comment">/*置空指针*/</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; rowDummy.size(); i++) &#123;</span><br><span class="line">                <span class="keyword">while</span> (rowDummy[i].rowNext != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">                        OrthAtom&lt;DataType&gt; *toBeDelete = rowDummy[i].rowNext; <span class="comment">/*即将被删除*/</span></span><br><span class="line">                        rowDummy[i].rowNext = toBeDelete-&gt;rowNext;</span><br><span class="line">                        <span class="keyword">delete</span> toBeDelete;</span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="代码测试"><a href="#代码测试" class="headerlink" title="代码测试"></a>代码测试</h2><p>通过随机生成两个稀疏矩阵，然后依次测试各个函数是否正确，测试代码如下所示：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;random&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;ctime&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;chrono&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;functional&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> chrono;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	default_random_engine randEngine(unsigned(time(nullptr)));</span><br><span class="line">	uniform_int_distribution&lt;<span class="keyword">int</span>&gt; intDis(<span class="keyword">int</span>(<span class="number">-100</span>), <span class="keyword">int</span>(<span class="number">100</span>)); <span class="comment">/*不能太大，防止溢出*/</span></span><br><span class="line">        uniform_int_distribution&lt;<span class="keyword">int</span>&gt; mnDis(<span class="keyword">int</span>(<span class="number">1</span>), <span class="keyword">int</span>(<span class="number">100</span>));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> testTimes = <span class="number">50</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">while</span> ((testTimes--) &gt; <span class="number">0</span>) &#123;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">int</span> m = mnDis(randEngine);</span><br><span class="line">                <span class="keyword">int</span> n = mnDis(randEngine);</span><br><span class="line">                <span class="keyword">int</span> k = mnDis(randEngine);</span><br><span class="line"></span><br><span class="line">                uniform_int_distribution&lt;<span class="keyword">int</span>&gt; deltaDis1(<span class="keyword">int</span>(<span class="number">1</span>), <span class="keyword">int</span>(m*n));</span><br><span class="line">                uniform_int_distribution&lt;<span class="keyword">int</span>&gt; deltaDis2(<span class="keyword">int</span>(<span class="number">1</span>), <span class="keyword">int</span>(n*k));</span><br><span class="line"></span><br><span class="line">                <span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&gt; testMatrix1(m, <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;(n, <span class="number">0</span>));</span><br><span class="line">                <span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&gt; testMatrix2(m, <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;(n, <span class="number">0</span>));</span><br><span class="line">                <span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&gt; testMatrix3(n, <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;(k, <span class="number">0</span>));</span><br><span class="line"></span><br><span class="line">                <span class="keyword">int</span> delta1 = deltaDis1(randEngine);</span><br><span class="line"></span><br><span class="line">                <span class="comment">/*这里偷个懒，矩阵1，2同时生成*/</span></span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; delta1; i++) &#123;</span><br><span class="line">                        <span class="keyword">int</span> row = mnDis(randEngine) % m;</span><br><span class="line">                        <span class="keyword">int</span> col = mnDis(randEngine) % n;</span><br><span class="line">                        testMatrix1[row][col] = intDis(randEngine);</span><br><span class="line"></span><br><span class="line">                        row = mnDis(randEngine) % m;</span><br><span class="line">                        col = mnDis(randEngine) % n;</span><br><span class="line">                        testMatrix2[row][col] = intDis(randEngine);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">int</span> delta2 = deltaDis2(randEngine);</span><br><span class="line"></span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; delta2; i++) &#123;</span><br><span class="line">                        <span class="keyword">int</span> row = mnDis(randEngine) % n;</span><br><span class="line">                        <span class="keyword">int</span> col = mnDis(randEngine) % k;</span><br><span class="line">                        testMatrix3[row][col] = intDis(randEngine);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                OrthList&lt;<span class="keyword">int</span>&gt; orthListTest1(testMatrix1);</span><br><span class="line">                OrthList&lt;<span class="keyword">int</span>&gt; orthListTest2(testMatrix2);</span><br><span class="line">                OrthList&lt;<span class="keyword">int</span>&gt; orthListTest3(testMatrix3);</span><br><span class="line"></span><br><span class="line">                orthListTest1.TransposeMatrix(); orthListTest1.TransposeMatrix();</span><br><span class="line">                <span class="built_in">cout</span> &lt;&lt; <span class="string">"矩阵转置测试结果："</span> &lt;&lt; (orthListTest1.TransformTo2DArray() == testMatrix1 ? <span class="string">"Correct"</span> : <span class="string">"Wrong"</span>) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">                <span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&gt; addMatrix(m, <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;(n, <span class="number">0</span>));</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; addMatrix.size(); i++) &#123;</span><br><span class="line">                        <span class="keyword">for</span> (<span class="keyword">size_t</span> j = <span class="number">0</span>; j &lt; addMatrix[i].size(); j++) &#123;</span><br><span class="line">                                addMatrix[i][j] = testMatrix1[i][j] + testMatrix2[i][j];</span><br><span class="line">                        &#125;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                orthListTest1.AddMatrix(orthListTest2);</span><br><span class="line">                <span class="built_in">cout</span> &lt;&lt; <span class="string">"矩阵加法测试结果："</span> &lt;&lt; (orthListTest1.TransformTo2DArray() == addMatrix ? <span class="string">"Correct"</span> : <span class="string">"Wrong"</span>) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">                orthListTest1.SubMatrix(orthListTest2);</span><br><span class="line">                <span class="built_in">cout</span> &lt;&lt; <span class="string">"矩阵减法测试结果："</span> &lt;&lt; (orthListTest1.TransformTo2DArray() == testMatrix1 ? <span class="string">"Correct"</span> : <span class="string">"Wrong"</span>) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">                <span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&gt; multiMatrix(m, <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;(k, <span class="number">0</span>));</span><br><span class="line"></span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; multiMatrix.size(); i++) &#123;</span><br><span class="line">                        <span class="keyword">for</span> (<span class="keyword">size_t</span> j = <span class="number">0</span>; j &lt; multiMatrix[i].size(); j++) &#123;</span><br><span class="line">                                <span class="keyword">for</span> (<span class="keyword">int</span> k = <span class="number">0</span>; k &lt; n; k++) &#123;</span><br><span class="line">                                        multiMatrix[i][j] += testMatrix1[i][k]*testMatrix3[k][j];</span><br><span class="line">                                        <span class="comment">/*矩阵乘法*/</span></span><br><span class="line">                                &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                orthListTest1.MultiMatrix(orthListTest3);</span><br><span class="line">                <span class="built_in">cout</span> &lt;&lt; <span class="string">"矩阵乘法测试结果："</span> &lt;&lt; (orthListTest1.TransformTo2DArray() == multiMatrix ? <span class="string">"Correct"</span> : <span class="string">"Wrong"</span>) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">                <span class="comment">/*orthListTest1.PrintMatrix();*/</span></span><br><span class="line">        &#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a href="https://zh.wikipedia.org/wiki/%E7%A8%80%E7%96%8F%E7%9F%A9%E9%98%B5" target="_blank" rel="noopener">稀疏矩阵</a></p>
+<p><a href="https://book.douban.com/subject/2024655/" target="_blank" rel="noopener">数据结构</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/数据结构/" rel="tag"># 数据结构</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/data-structure/sparse-matrix-triple-table.html" rel="next" title="稀疏矩阵压缩存储之三元组">
+                <i class="fa fa-chevron-left"></i> 稀疏矩阵压缩存储之三元组
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/algorithms-design/prefix-postfix-to-expr-tree.html" rel="prev" title="前、后缀表达式重建表达式树的实现">
+                前、后缀表达式重建表达式树的实现 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/Limbo.jpg"
+                alt="hsuloong" />
+            
+              <p class="site-author-name" itemprop="name">hsuloong</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">45</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/hsuloong" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#基础知识"><span class="nav-number">1.</span> <span class="nav-text">基础知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#十字链表基本定义"><span class="nav-number">2.</span> <span class="nav-text">十字链表基本定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三元组顺序表ADT的实现"><span class="nav-number">3.</span> <span class="nav-text">三元组顺序表ADT的实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码测试"><span class="nav-number">4.</span> <span class="nav-text">代码测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hsuloong</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

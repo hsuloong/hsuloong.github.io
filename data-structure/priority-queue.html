@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="数据结构," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="优先队列基础优先队列是指一种数据结构，其每个元素都有各自的优先级，出队顺序由元素的优先级决定。优先队列一般使用堆来实现。优先队列一般至少需要支持如下操作：  插入带优先级的元素 取出最高优先级的元素 查看最高优先级的元素  优先队列有多种实现方式，分别简述如下：  无序顺序表：在表尾插入，删除时遍历找到优先级最高的元素，因此插入时间复杂度O(1)而删除O(n) 无序链表：在头节点插入，删除时时遍历">
+<meta name="keywords" content="数据结构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="优先队列的定义与二叉堆实现">
+<meta property="og:url" content="http://yoursite.com/data-structure/priority-queue.html">
+<meta property="og:site_name" content="千里之行 始于足下">
+<meta property="og:description" content="优先队列基础优先队列是指一种数据结构，其每个元素都有各自的优先级，出队顺序由元素的优先级决定。优先队列一般使用堆来实现。优先队列一般至少需要支持如下操作：  插入带优先级的元素 取出最高优先级的元素 查看最高优先级的元素  优先队列有多种实现方式，分别简述如下：  无序顺序表：在表尾插入，删除时遍历找到优先级最高的元素，因此插入时间复杂度O(1)而删除O(n) 无序链表：在头节点插入，删除时时遍历">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/images/d-heap.png">
+<meta property="og:updated_time" content="2018-07-07T12:53:33.558Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="优先队列的定义与二叉堆实现">
+<meta name="twitter:description" content="优先队列基础优先队列是指一种数据结构，其每个元素都有各自的优先级，出队顺序由元素的优先级决定。优先队列一般使用堆来实现。优先队列一般至少需要支持如下操作：  插入带优先级的元素 取出最高优先级的元素 查看最高优先级的元素  优先队列有多种实现方式，分别简述如下：  无序顺序表：在表尾插入，删除时遍历找到优先级最高的元素，因此插入时间复杂度O(1)而删除O(n) 无序链表：在头节点插入，删除时时遍历">
+<meta name="twitter:image" content="http://yoursite.com/images/d-heap.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/data-structure/priority-queue.html"/>
+
+
+
+
+
+  <title>优先队列的定义与二叉堆实现 | 千里之行 始于足下</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">千里之行 始于足下</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/data-structure/priority-queue.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="hsuloong">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Limbo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="千里之行 始于足下">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">优先队列的定义与二叉堆实现</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-09T09:45:11+08:00">
+                2018-03-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/public/categories/data-structure/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="优先队列基础"><a href="#优先队列基础" class="headerlink" title="优先队列基础"></a>优先队列基础</h2><p>优先队列是指一种数据结构，其每个元素都有各自的优先级，出队顺序由元素的优先级决定。优先队列一般使用堆来实现。优先队列一般至少需要支持如下操作：</p>
+<ol>
+<li>插入带优先级的元素</li>
+<li>取出最高优先级的元素</li>
+<li>查看最高优先级的元素</li>
+</ol>
+<p>优先队列有多种实现方式，分别简述如下：</p>
+<ol>
+<li>无序顺序表：在表尾插入，删除时遍历找到优先级最高的元素，因此插入时间复杂度O(1)而删除O(n)</li>
+<li>无序链表：在头节点插入，删除时时遍历找到优先级最高的元素，因此插入时间复杂度O(1)而删除O(n)</li>
+<li>有序线性表：保持插入后的线性表有序，因此插入时间复杂度O(n)，删除时间复杂度O(1)</li>
+<li>有序链表：保持插入后的线性表有序，因此插入时间复杂度O(n)，删除时间复杂度O(1)</li>
+<li>二叉查找树：插入操作O(log<sub>2</sub>n)，而删除时间复杂度也为O(log<sub>2</sub>n)</li>
+<li>二叉堆：插入与删除均为O(log<sub>2</sub>n)，构造时间复杂度为O(n)</li>
+</ol>
+<h2 id="二叉堆基础知识"><a href="#二叉堆基础知识" class="headerlink" title="二叉堆基础知识"></a>二叉堆基础知识</h2><p>二叉堆有两个性质，即结构性和堆序性。结构性是指二叉堆是一棵完全被填满的二叉树，只在底层存在例外，即倒数第二层也可能存在叶节点。而堆序性是指对于每一个节点X，X的父亲中的关键字小于（或等于）X中的关键字（根节点除外）。由于堆序性的原因，在插入和删除节点后需要调整二叉堆使得其保持堆序性。在插入时，可以先将带插入的节点放入下一个空闲位置，然后采用称为上滤策略的二叉堆调整方法，不断和父节点比较，如果不满足堆序性就交换，直到满足堆序性或者成为根节点。而删除最小元时，先把堆中最后一个元素填入原来最小元素的空穴，然后采用称为下滤的策略调整二叉堆，其不断和左右子节点比较，和较小的子节点交换，不断重复该过程直到满足堆序性为止。</p>
+<h2 id="二叉堆的实现"><a href="#二叉堆的实现" class="headerlink" title="二叉堆的实现"></a>二叉堆的实现</h2><p>根据上节的分析，二叉堆主要有如下操作：</p>
+<ul>
+<li>插入或者称为入队：Enqueue</li>
+<li>删除或者说称为出队：Dequeue</li>
+<li>查看当前队首元素（即最小元素）：Front</li>
+<li>清空队列：MakeEmpty</li>
+<li>建立二叉堆：BuildHeap</li>
+</ul>
+<p>在STL中，优先队列priority_queue底层采用vector实现，优先队列定义如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PriorityQueue</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	PriorityQueue(<span class="keyword">int</span> inSize);</span><br><span class="line">	~PriorityQueue();</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">Enqueue</span><span class="params">(DataType inData)</span></span>;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">Dequeue</span><span class="params">()</span></span>;</span><br><span class="line">	<span class="function">DataType <span class="title">Front</span><span class="params">()</span></span>;</span><br><span class="line">	<span class="function"><span class="keyword">bool</span> <span class="title">isEmpty</span><span class="params">()</span></span>;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">MakeEmpty</span><span class="params">()</span></span>;</span><br><span class="line">	<span class="function"><span class="keyword">int</span> <span class="title">QueueSize</span><span class="params">()</span></span>;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">BuildHeap</span><span class="params">(<span class="built_in">vector</span>&lt;DataType&gt; &amp;inArray)</span></span>;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	<span class="keyword">int</span> capacity;</span><br><span class="line">	<span class="keyword">int</span> queueSize;</span><br><span class="line">	DataType *queuePtr;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>如上所示，数据成员主要有二叉堆容量，二叉堆大小以及二叉堆实际元素指针，采用动态分配的方式，以下依次实现各函数（最小堆）。</p>
+<ul>
+<li>构造函数，初始化空间并设置数据成员初始值</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line">PriorityQueue&lt;DataType&gt;::PriorityQueue(<span class="keyword">int</span> inSize):capacity(inSize), queueSize(<span class="number">0</span>),queuePtr(<span class="literal">nullptr</span>)</span><br><span class="line">&#123;</span><br><span class="line">	queuePtr = <span class="keyword">new</span> DataType[inSize];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>入队函数，采用上滤策略调整二叉堆，如果堆已满则抛出异常</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">void</span> PriorityQueue&lt;DataType&gt;::Enqueue(DataType inData)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">if</span> (queueSize &gt;= capacity) &#123;</span><br><span class="line">		<span class="keyword">throw</span> <span class="string">"Priority queue is full!"</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">int</span> i = queueSize;</span><br><span class="line">	<span class="keyword">while</span> (i &gt; <span class="number">0</span> &amp;&amp; inData &lt; queuePtr[(i<span class="number">-1</span>)/<span class="number">2</span>]) &#123;</span><br><span class="line">		queuePtr[i] = queuePtr[(i<span class="number">-1</span>)/<span class="number">2</span>];</span><br><span class="line">		i= (i<span class="number">-1</span>)/<span class="number">2</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	queuePtr[i] = inData; ++queueSize;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>出队函数，采用下滤策略调整二叉堆</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">void</span> PriorityQueue&lt;DataType&gt;::Dequeue()</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">if</span> (queueSize &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">		<span class="keyword">throw</span> <span class="string">"Priority queue is empty!"</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	DataType lastElement =  queuePtr[queueSize<span class="number">-1</span>];</span><br><span class="line">	<span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; <span class="number">2</span>*i+<span class="number">1</span> &lt; queueSize;) &#123;</span><br><span class="line">		<span class="keyword">int</span> minChild = <span class="number">2</span>*i+<span class="number">1</span>;</span><br><span class="line">		<span class="keyword">if</span> (minChild+<span class="number">1</span> &lt; queueSize &amp;&amp; queuePtr[minChild] &gt; queuePtr[minChild+<span class="number">1</span>]) &#123;</span><br><span class="line">			minChild += <span class="number">1</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> (lastElement &gt; queuePtr[minChild]) &#123;</span><br><span class="line">			queuePtr[i] = queuePtr[minChild];</span><br><span class="line">			i = minChild;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	queuePtr[i] = lastElement; --queueSize;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>查看队首元素</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line">DataType PriorityQueue&lt;DataType&gt;::Front()</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">if</span> (queueSize &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">		<span class="keyword">throw</span> <span class="string">"Priority queue is empty!"</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> queuePtr[<span class="number">0</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>判断是否为空</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">bool</span> PriorityQueue&lt;DataType&gt;::isEmpty()</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">return</span> queueSize &lt;= <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>清空优先队列</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">void</span> PriorityQueue&lt;DataType&gt;::MakeEmpty()</span><br><span class="line">&#123;</span><br><span class="line">	queueSize = <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>返回优先队列大小</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">int</span> PriorityQueue&lt;DataType&gt;::QueueSize()</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">return</span> queueSize;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>建堆，可以直接循环调用Enqueue函数（时间复杂度O(N)），本文采用另外一种方法，算法思路如下：</p>
+<p>  二叉堆的左右子树也是一个二叉堆，因此从最后一个非叶节点开始，调整该子树成为二叉堆，依次往前推进，循环调整直到根节点即完成二叉堆的构建。</p>
+</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">void</span> PriorityQueue&lt;DataType&gt;::BuildHeap(<span class="built_in">vector</span>&lt;DataType&gt; &amp;inArray)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">if</span> (inArray.size() &gt; capacity) &#123;</span><br><span class="line">		<span class="keyword">throw</span> <span class="string">"Out of space!"</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	queueSize = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; inArray.size(); i++) &#123;</span><br><span class="line">		queuePtr[queueSize++] = inArray.at(i);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = (queueSize<span class="number">-1</span>)/<span class="number">2</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">		<span class="keyword">int</span> tmpElement = queuePtr[i];</span><br><span class="line">		<span class="keyword">int</span> j = i;</span><br><span class="line">		<span class="keyword">while</span> (<span class="number">2</span>*j+<span class="number">1</span> &lt; queueSize) &#123;</span><br><span class="line">			<span class="keyword">int</span> miniChild = <span class="number">2</span>*j+<span class="number">1</span>;</span><br><span class="line">			<span class="keyword">if</span> (miniChild+<span class="number">1</span> &lt; queueSize &amp;&amp; queuePtr[miniChild] &gt; queuePtr[miniChild+<span class="number">1</span>]) &#123;</span><br><span class="line">				miniChild += <span class="number">1</span>;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">if</span> (tmpElement &gt; queuePtr[miniChild]) &#123;</span><br><span class="line">				queuePtr[j] = queuePtr[miniChild];</span><br><span class="line">				j = miniChild;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">else</span> &#123;</span><br><span class="line">				<span class="keyword">break</span>;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		queuePtr[j] = tmpElement;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>析构函数，释放内存</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line">PriorityQueue&lt;DataType&gt;::~PriorityQueue()</span><br><span class="line">&#123;</span><br><span class="line">	MakeEmpty();</span><br><span class="line">	<span class="keyword">delete</span> [] queuePtr; </span><br><span class="line">	queuePtr = <span class="literal">nullptr</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>二叉堆除了上述操作以外，还可以有降低某位置关键字的值，增加某位置关键字的值以及删除某个位置的关键字，各操作的基本思路如下：</p>
+<ul>
+<li>降低某位置关键字值：采用上滤（最小堆）策略调整二叉堆使其保持堆序性</li>
+<li>增加某位置关键字的值：采用下滤策略（最小堆）策略调整二叉堆使其保持堆序性</li>
+<li>删除某个位置的关键字：将该位置值设为比最小值还小（最小堆），然后上滤并调用出队函数即可</li>
+<li>合并：调用插入函数依次插入</li>
+</ul>
+<h2 id="二叉堆的相关定理"><a href="#二叉堆的相关定理" class="headerlink" title="二叉堆的相关定理"></a>二叉堆的相关定理</h2><ul>
+<li>包含2<sup>h+1</sup>个节点高为h的理想二叉树的节点的高度的和为2<sup>h+1</sup>-1-(h+1)</li>
+</ul>
+<p>证明：根据二叉树的定义，在高为h的层上总共有1个节点，高为h-1的曾是上有1*2个节点，即每层节点个数是上一层的两倍，故高为h-i层节点数量为2<sup>i</sup>个。则所有节点高的和为∑<sub>i=0~h</sub>2<sup>i</sup>*(h-i)。求解该式便可得出上述结论。将h=logN代入便可得出建堆的时间复杂度为O(N)</p>
+<h2 id="二叉堆扩展-d堆"><a href="#二叉堆扩展-d堆" class="headerlink" title="二叉堆扩展-d堆"></a>二叉堆扩展-d堆</h2><p>d堆是二叉堆的简单推广，其节点有d个子节点，因此二叉堆是d=2的情况。d堆由于子节点数多，其高度比较浅，插入操作时间复杂度为O(log<sub>d</sub>N)，删除时间复杂度为dO(log<sub>d</sub>N)。下图为一个3-堆。<a href="http://mingnote.com/d-heap-algorithm-in-c.html" target="_blank" rel="noopener">图片来源</a></p>
+<p><img src="/images/d-heap.png" alt="3堆"></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/数据结构/" rel="tag"># 数据结构</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/data-structure/binary-search-tree.html" rel="next" title="数据结构之二叉查找树的定义与实现">
+                <i class="fa fa-chevron-left"></i> 数据结构之二叉查找树的定义与实现
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/data-structure/hash-table.html" rel="prev" title="散列表的定义与实现">
+                散列表的定义与实现 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/Limbo.jpg"
+                alt="hsuloong" />
+            
+              <p class="site-author-name" itemprop="name">hsuloong</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">45</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/hsuloong" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#优先队列基础"><span class="nav-number">1.</span> <span class="nav-text">优先队列基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二叉堆基础知识"><span class="nav-number">2.</span> <span class="nav-text">二叉堆基础知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二叉堆的实现"><span class="nav-number">3.</span> <span class="nav-text">二叉堆的实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二叉堆的相关定理"><span class="nav-number">4.</span> <span class="nav-text">二叉堆的相关定理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二叉堆扩展-d堆"><span class="nav-number">5.</span> <span class="nav-text">二叉堆扩展-d堆</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hsuloong</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

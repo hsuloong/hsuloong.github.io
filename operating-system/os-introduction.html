@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="操作系统," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="操作系统的定义与作用操作系统是计算机中一个系统软件，操作系统尽量以有效合理的方式组织管理计算机硬件与软件资源，并合理地组织调度计算机的工作和资源的分配。使得用户能够灵活、方便地使用计算机，使计算机高效率运行。 从操作系统作为资源管理者的角度，操作系统用来管理一个复杂系统的各个部分，包括硬件资源如CPU、内存、I/O设备、磁盘、时钟、网络卡等，软件资源如磁盘文件等。资源管理包括实现资源的多路复用（时">
+<meta name="keywords" content="操作系统">
+<meta property="og:type" content="article">
+<meta property="og:title" content="操作系统概述">
+<meta property="og:url" content="http://yoursite.com/operating-system/os-introduction.html">
+<meta property="og:site_name" content="千里之行 始于足下">
+<meta property="og:description" content="操作系统的定义与作用操作系统是计算机中一个系统软件，操作系统尽量以有效合理的方式组织管理计算机硬件与软件资源，并合理地组织调度计算机的工作和资源的分配。使得用户能够灵活、方便地使用计算机，使计算机高效率运行。 从操作系统作为资源管理者的角度，操作系统用来管理一个复杂系统的各个部分，包括硬件资源如CPU、内存、I/O设备、磁盘、时钟、网络卡等，软件资源如磁盘文件等。资源管理包括实现资源的多路复用（时">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-07-07T12:53:33.548Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="操作系统概述">
+<meta name="twitter:description" content="操作系统的定义与作用操作系统是计算机中一个系统软件，操作系统尽量以有效合理的方式组织管理计算机硬件与软件资源，并合理地组织调度计算机的工作和资源的分配。使得用户能够灵活、方便地使用计算机，使计算机高效率运行。 从操作系统作为资源管理者的角度，操作系统用来管理一个复杂系统的各个部分，包括硬件资源如CPU、内存、I/O设备、磁盘、时钟、网络卡等，软件资源如磁盘文件等。资源管理包括实现资源的多路复用（时">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/operating-system/os-introduction.html"/>
+
+
+
+
+
+  <title>操作系统概述 | 千里之行 始于足下</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">千里之行 始于足下</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/operating-system/os-introduction.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="hsuloong">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Limbo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="千里之行 始于足下">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">操作系统概述</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-05T21:49:24+08:00">
+                2018-03-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/public/categories/operating-system/" itemprop="url" rel="index">
+                    <span itemprop="name">操作系统</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="操作系统的定义与作用"><a href="#操作系统的定义与作用" class="headerlink" title="操作系统的定义与作用"></a>操作系统的定义与作用</h2><p>操作系统是计算机中一个系统软件，操作系统尽量以<strong>有效合理</strong>的方式组织管理计算机硬件与软件资源，并合理地组织调度计算机的工作和资源的分配。使得用户能够灵活、方便地使用计算机，使计算机高效率运行。</p>
+<p>从操作系统作为资源管理者的角度，操作系统用来管理一个复杂系统的各个部分，包括硬件资源如CPU、内存、I/O设备、磁盘、时钟、网络卡等，软件资源如磁盘文件等。资源管理包括实现资源的多路复用（时间上复用、空间上复用）。</p>
+<p>操作系统在管理资源时，需要解决以下问题：</p>
+<ul>
+<li>资源使用状况记录</li>
+<li>资源分配策略</li>
+<li>资源分配与回收</li>
+<li>提高资源利用率</li>
+<li>保护资源的使用</li>
+<li>协调多个进程对资源请求的冲突</li>
+</ul>
+<p>从资源的管理角度，操作系统主要需要实现以下功能：</p>
+<ul>
+<li>进程/线程管理：进程线程状态、控制、同步互斥、通信、调度</li>
+<li>存储管理：内存分配回收、地址转换、存储保护、内存扩充</li>
+<li>文件管理：文件目录、文件操作、磁盘空间、文件存取控制</li>
+<li>设备管理：设备驱动、分配回收、缓冲技术</li>
+<li>用户接口：系统命令、编程接口</li>
+</ul>
+<p>操作系统的三个作用：</p>
+<ul>
+<li>资源的管理者：有效管理资源</li>
+<li>向用户提供服务：方便用户使用</li>
+<li>对硬件机器的扩展：屏蔽硬件细节</li>
+</ul>
+<h2 id="操作系统的特征"><a href="#操作系统的特征" class="headerlink" title="操作系统的特征"></a>操作系统的特征</h2><p>操作系统是一种系统软件，系统软件和哟应用软件存在很大的不同，其主要有如下四大基本特征：</p>
+<h3 id="并发"><a href="#并发" class="headerlink" title="并发"></a>并发</h3><p>指具有在同一时间间隔内具有处理多个事件或者活动的能力，并发是一个宏观上的概念，在微观中，任何时刻只有一个程序正在执行。并发与并行不同的是，并行是指不同程序同时在多个CPU上执行，并发是一种伪并行。</p>
+<h3 id="共享"><a href="#共享" class="headerlink" title="共享"></a>共享</h3><p>操作系统与多个程序共同使用计算机有限的的资源，同时操作系统需要实现合理的分配使得资源可被不同的进程轮流使用。共享可分为两种：互斥共享和同时共享，互斥共享指资源使用是独占排他的，而同时共享则是进程可以同时使用，比如可重入代码、只读数据等。</p>
+<h3 id="虚拟"><a href="#虚拟" class="headerlink" title="虚拟"></a>虚拟</h3><p>虚拟是指操作系统通过分时复用或分空间复用将一个物理实体映射为多个对应的逻辑实体，虚拟是操作系统管理资源的重要手段，可提高资源利用率。</p>
+<h3 id="随机（异步）"><a href="#随机（异步）" class="headerlink" title="随机（异步）"></a>随机（异步）</h3><p>由于多个进程之间的竞争制约关系，每个进程的运行速度是不预知的，而且系统某时刻的状态难以重现，因此操作系统必须能够应对随机事件。</p>
+<h2 id="操作系统分类"><a href="#操作系统分类" class="headerlink" title="操作系统分类"></a>操作系统分类</h2><h3 id="批处理操作系统"><a href="#批处理操作系统" class="headerlink" title="批处理操作系统"></a>批处理操作系统</h3><p>工作方式：</p>
+<pre><code>1. 用户将作业交给系统操作员
+2. 系统操作员将用户作业组成一批作业，输入到计算机系统中，在系统中形成一个自动转接的连续的作业流
+3. 启动操作系统
+4. 系统自动、依次执行每个作业
+5. 由操作员将作业结果交给用户
+</code></pre><p>目标：</p>
+<pre><code>1. 提高资源利用率，增加作业处理吞吐量
+</code></pre><p>存在的问题：</p>
+<pre><code>1. 慢速的输入输出由主机完成，此时CPU处于空闲状态。（解决：采用卫星机完成面向用户的输入输出，中间结果暂在磁带或者磁盘上）
+</code></pre><p>分类：</p>
+<pre><code>1. 单道批处理：一次处理一个作业，处理结束后再选择下一个
+2. 多道批处理：一次选择多个作业处理
+</code></pre><p>实现技术</p>
+<pre><code>1. SPOOLING系统：全称（Simultaneous Peripheral Operation One-Line），同事的外围设备联机操作，又称假脱机技术。
+</code></pre><h3 id="分时系统"><a href="#分时系统" class="headerlink" title="分时系统"></a>分时系统</h3><p>工作方式：</p>
+<pre><code>1. 一台主机连接多个终端
+2. 终端输入命令，主机处理命令并把结果发送到终端上
+</code></pre><p>目标：</p>
+<pre><code>1. 同时为多个用户提供服务
+2. 提高响应速度
+</code></pre><p>实现技术：</p>
+<pre><code>1. 时间片：把CPU的时间划分成若干个片段，轮流为终端用户服务
+</code></pre><h3 id="实时操作系统"><a href="#实时操作系统" class="headerlink" title="实时操作系统"></a>实时操作系统</h3><p>目标</p>
+<pre><code>1. 计算机能够及时响应外部事件的请求，在规定的严格时间内完成对该事件的处理并控制所有实时设备和任务协调一致运行
+2. 高可靠性
+</code></pre><p>分类：</p>
+<pre><code>1. 第一类，实时过程控制：工业控制、航空、军事控制
+2. 第二类：实时通信处理：银行、订票系统、股市系统
+3. 硬实时系统：动作决定要在规定时间内完成
+4. 软实时系统：接受偶尔违反最终时限
+</code></pre><h3 id="个人计算机操作系统"><a href="#个人计算机操作系统" class="headerlink" title="个人计算机操作系统"></a>个人计算机操作系统</h3><p>目标：</p>
+<pre><code>1. 界面友好，使用方便
+2. 丰富的应用软件
+3. 某一时间为单用户服务
+</code></pre><h3 id="网络操作系统"><a href="#网络操作系统" class="headerlink" title="网络操作系统"></a>网络操作系统</h3><p>目标：</p>
+<pre><code>1. 相互通信，资源共享
+2. 按照网络体系结构协议标准开发，完成网络管理、通信、安全
+</code></pre><h3 id="分布式操作系统"><a href="#分布式操作系统" class="headerlink" title="分布式操作系统"></a>分布式操作系统</h3><p>目标</p>
+<pre><code>1. 以计算机网络或多处理机为基础，允许若干个计算机相互协作共同完成一项任务
+</code></pre><h3 id="嵌入式操作系统"><a href="#嵌入式操作系统" class="headerlink" title="嵌入式操作系统"></a>嵌入式操作系统</h3><p>目标</p>
+<pre><code>1. 以各种硬件设备为参照，完成特定功能
+2. 对管理的资源进行统一的协调、调度、指挥和控制。
+</code></pre>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/操作系统/" rel="tag"># 操作系统</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/data-structure/tree-foundation.html" rel="next" title="数据结构之树基础">
+                <i class="fa fa-chevron-left"></i> 数据结构之树基础
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/operating-system/process-thread.html" rel="prev" title="进程与线程">
+                进程与线程 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/Limbo.jpg"
+                alt="hsuloong" />
+            
+              <p class="site-author-name" itemprop="name">hsuloong</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">45</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/hsuloong" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#操作系统的定义与作用"><span class="nav-number">1.</span> <span class="nav-text">操作系统的定义与作用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#操作系统的特征"><span class="nav-number">2.</span> <span class="nav-text">操作系统的特征</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#并发"><span class="nav-number">2.1.</span> <span class="nav-text">并发</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#共享"><span class="nav-number">2.2.</span> <span class="nav-text">共享</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#虚拟"><span class="nav-number">2.3.</span> <span class="nav-text">虚拟</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#随机（异步）"><span class="nav-number">2.4.</span> <span class="nav-text">随机（异步）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#操作系统分类"><span class="nav-number">3.</span> <span class="nav-text">操作系统分类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#批处理操作系统"><span class="nav-number">3.1.</span> <span class="nav-text">批处理操作系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分时系统"><span class="nav-number">3.2.</span> <span class="nav-text">分时系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实时操作系统"><span class="nav-number">3.3.</span> <span class="nav-text">实时操作系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#个人计算机操作系统"><span class="nav-number">3.4.</span> <span class="nav-text">个人计算机操作系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#网络操作系统"><span class="nav-number">3.5.</span> <span class="nav-text">网络操作系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分布式操作系统"><span class="nav-number">3.6.</span> <span class="nav-text">分布式操作系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#嵌入式操作系统"><span class="nav-number">3.7.</span> <span class="nav-text">嵌入式操作系统</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hsuloong</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

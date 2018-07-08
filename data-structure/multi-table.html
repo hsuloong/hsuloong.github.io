@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="数据结构," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="多重表基础多重表是《数据结构与算法分析：C语言描述》一书中给出的概念，书中给出了一张多重表示意图，如下所示： 从图中可以看出多重表是指一个节点有多个链穿过，和矩阵压缩存储中的十字链表十分相似。书中是以大学选课为例说明的，本处以书中例子为蓝本设计实现一种多重表。由于书中并没有给出具体的API，故本文主要根据自己的理解以及结合普通链表的API来编写ADT。本处主要实现如下几个功能：  多重表每条链长度">
+<meta name="keywords" content="数据结构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据结构之多重表的定义与实现">
+<meta property="og:url" content="http://yoursite.com/data-structure/multi-table.html">
+<meta property="og:site_name" content="千里之行 始于足下">
+<meta property="og:description" content="多重表基础多重表是《数据结构与算法分析：C语言描述》一书中给出的概念，书中给出了一张多重表示意图，如下所示： 从图中可以看出多重表是指一个节点有多个链穿过，和矩阵压缩存储中的十字链表十分相似。书中是以大学选课为例说明的，本处以书中例子为蓝本设计实现一种多重表。由于书中并没有给出具体的API，故本文主要根据自己的理解以及结合普通链表的API来编写ADT。本处主要实现如下几个功能：  多重表每条链长度">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/images/multi-table.png">
+<meta property="og:updated_time" content="2018-07-07T12:53:33.568Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="数据结构之多重表的定义与实现">
+<meta name="twitter:description" content="多重表基础多重表是《数据结构与算法分析：C语言描述》一书中给出的概念，书中给出了一张多重表示意图，如下所示： 从图中可以看出多重表是指一个节点有多个链穿过，和矩阵压缩存储中的十字链表十分相似。书中是以大学选课为例说明的，本处以书中例子为蓝本设计实现一种多重表。由于书中并没有给出具体的API，故本文主要根据自己的理解以及结合普通链表的API来编写ADT。本处主要实现如下几个功能：  多重表每条链长度">
+<meta name="twitter:image" content="http://yoursite.com/images/multi-table.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/data-structure/multi-table.html"/>
+
+
+
+
+
+  <title>数据结构之多重表的定义与实现 | 千里之行 始于足下</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">千里之行 始于足下</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/data-structure/multi-table.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="hsuloong">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Limbo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="千里之行 始于足下">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">数据结构之多重表的定义与实现</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-05T21:29:45+08:00">
+                2018-06-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/public/categories/data-structure/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="多重表基础"><a href="#多重表基础" class="headerlink" title="多重表基础"></a>多重表基础</h2><p>多重表是《数据结构与算法分析：C语言描述》一书中给出的概念，书中给出了一张多重表示意图，如下所示：<br><img src="/images/multi-table.png" alt="多重表示意图"></p>
+<p>从图中可以看出多重表是指一个节点有多个链穿过，和矩阵压缩存储中的十字链表十分相似。书中是以大学选课为例说明的，本处以书中例子为蓝本设计实现一种多重表。由于书中并没有给出具体的API，故本文主要根据自己的理解以及结合普通链表的API来编写ADT。本处主要实现如下几个功能：</p>
+<ul>
+<li>多重表每条链长度</li>
+<li>多重表插入、删除节点</li>
+<li>多重表清空</li>
+</ul>
+<p>根据图中示意，我们很容易想到表头统一采用数组来管理，每个链表内部保持有序便于插入删除。</p>
+<h2 id="多重表的定义与实现"><a href="#多重表的定义与实现" class="headerlink" title="多重表的定义与实现"></a>多重表的定义与实现</h2><p>根据书中多重表示意图，我们可以设计多重表的结构如下所示：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">MultiNode</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">        <span class="keyword">unsigned</span> <span class="keyword">int</span> rowIndex; <span class="comment">/*节点所在行*/</span></span><br><span class="line">        <span class="keyword">unsigned</span> <span class="keyword">int</span> colIndex; <span class="comment">/*节点所在列*/</span></span><br><span class="line">        MultiNode *rowNext; <span class="comment">/*所在行下一个节点*/</span></span><br><span class="line">        MultiNode *colNext; <span class="comment">/*列所在下一个节点*/</span></span><br><span class="line">        MultiNode() : rowIndex(<span class="number">0</span>), colIndex(<span class="number">0</span>),</span><br><span class="line">                  rowNext(<span class="literal">nullptr</span>), colNext(<span class="literal">nullptr</span>) &#123;&#125;</span><br><span class="line">        MultiNode(<span class="keyword">unsigned</span> <span class="keyword">int</span> row, <span class="keyword">unsigned</span> <span class="keyword">int</span> col) : rowIndex(row), colIndex(col),</span><br><span class="line">                                                 rowNext(<span class="literal">nullptr</span>), colNext(<span class="literal">nullptr</span>) &#123;&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>在实现多重表时，行和列分别定义一个哑节点数组，具体实现代码如下所示：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MultiTable</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">        MultiTable(<span class="keyword">unsigned</span> <span class="keyword">int</span> row, <span class="keyword">unsigned</span> <span class="keyword">int</span> col);</span><br><span class="line">        ~MultiTable();</span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">MakeEmpty</span><span class="params">()</span></span>; <span class="comment">/*清空整个多重表*/</span></span><br><span class="line">        <span class="function"><span class="keyword">bool</span> <span class="title">IsRowEmpty</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">int</span> rowIndex)</span></span>; <span class="comment">/*某行链表是否为空*/</span></span><br><span class="line">        <span class="function"><span class="keyword">bool</span> <span class="title">IsColEmpty</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">int</span> colIndex)</span></span>; <span class="comment">/*某列链表是否为空*/</span></span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">DeleteNode</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">int</span> row, <span class="keyword">unsigned</span> <span class="keyword">int</span> col)</span></span>; <span class="comment">/*删除某个节点*/</span></span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">InsertNode</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">int</span> row, <span class="keyword">unsigned</span> <span class="keyword">int</span> col)</span></span>; <span class="comment">/*插入某个节点某个节点*/</span></span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">PrintRowList</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">int</span> rowIndex)</span></span>; <span class="comment">/*打印某行*/</span></span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">PrintColList</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">int</span> ColIndex)</span></span>; <span class="comment">/*打印某列*/</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">        <span class="keyword">unsigned</span> <span class="keyword">int</span> rowSize;</span><br><span class="line">        <span class="keyword">unsigned</span> <span class="keyword">int</span> colSize;</span><br><span class="line">        MultiNode *rowArray; <span class="comment">/*行数组*/</span></span><br><span class="line">        MultiNode *colArray; <span class="comment">/*列数组*/</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>如上所示，多重表主要是保存行数和列数以及对应的数组。以下分别实现个函数。</p>
+<ul>
+<li>构造函数</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">MultiTable::MultiTable(<span class="keyword">unsigned</span> <span class="keyword">int</span> row, <span class="keyword">unsigned</span> <span class="keyword">int</span> col) : rowSize(row), colSize(col),</span><br><span class="line">                                               rowArray(<span class="literal">nullptr</span>),colArray(<span class="literal">nullptr</span>)</span><br><span class="line">&#123;</span><br><span class="line">        rowSize = rowSize == <span class="number">0</span> ? <span class="number">1</span> : rowSize;</span><br><span class="line">        colSize = colSize == <span class="number">0</span> ? <span class="number">1</span> : colSize;</span><br><span class="line"></span><br><span class="line">        rowArray = <span class="keyword">new</span> MultiNode[rowSize];</span><br><span class="line">        colArray = <span class="keyword">new</span> MultiNode[colSize];</span><br><span class="line">        <span class="comment">/*做成循环链表*/</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">unsigned</span> <span class="keyword">int</span> i = <span class="number">0</span>; i &lt; rowSize; i++) &#123;</span><br><span class="line">                rowArray[i].rowNext = &amp;rowArray[i];</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">unsigned</span> <span class="keyword">int</span> i = <span class="number">0</span>; i &lt; colSize; i++) &#123;</span><br><span class="line">                colArray[i].colNext = &amp;colArray[i];</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>析构函数</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">MultiTable::~MultiTable()</span><br><span class="line">&#123;</span><br><span class="line">        MakeEmpty();</span><br><span class="line">        <span class="keyword">delete</span> [] rowArray;</span><br><span class="line">        <span class="keyword">delete</span> [] colArray;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>清空函数</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> MultiTable::MakeEmpty()</span><br><span class="line">&#123;</span><br><span class="line">        <span class="comment">/*先把行或者列哑节点指向自己*/</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">unsigned</span> <span class="keyword">int</span> i = <span class="number">0</span>; i &lt; colSize; i++) &#123;</span><br><span class="line">                colArray[i].colNext = &amp;colArray[i];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">unsigned</span> <span class="keyword">int</span> i = <span class="number">0</span>; i &lt; rowSize; i++) &#123;</span><br><span class="line">                MultiNode *cycleIter = rowArray[i].rowNext;</span><br><span class="line">                <span class="comment">/*遍历整个链表删除之*/</span></span><br><span class="line">                <span class="keyword">while</span> (cycleIter != &amp;rowArray[i]) &#123;</span><br><span class="line">                        rowArray[i].rowNext = cycleIter-&gt;rowNext;</span><br><span class="line">                        <span class="keyword">delete</span> cycleIter;</span><br><span class="line">                        cycleIter = rowArray[i].rowNext;</span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>判断某行链表是否为空，如果行不存在也返回false，行从1开始</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> MultiTable::IsRowEmpty(<span class="keyword">unsigned</span> <span class="keyword">int</span> rowIndex)</span><br><span class="line">&#123;</span><br><span class="line">        <span class="keyword">if</span> (rowIndex &lt;= <span class="number">0</span> || rowIndex &gt; rowSize) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> rowArray[rowIndex<span class="number">-1</span>].rowNext == &amp;rowArray[rowIndex<span class="number">-1</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>判断某列链表是否为空，如果行不存在也返回false，列从1开始计算</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> MultiTable::IsColEmpty(<span class="keyword">unsigned</span> <span class="keyword">int</span> colIndex)</span><br><span class="line">&#123;</span><br><span class="line">        <span class="keyword">if</span> (colIndex &lt;= <span class="number">0</span> || colIndex &gt; colSize) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> colArray[colIndex<span class="number">-1</span>].colNext == &amp;colArray[colIndex<span class="number">-1</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>删除某行某列对应的节点，不存在就什么也不做，行列均从1开始</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> MultiTable::DeleteNode(<span class="keyword">unsigned</span> <span class="keyword">int</span> row, <span class="keyword">unsigned</span> <span class="keyword">int</span> col)</span><br><span class="line">&#123;</span><br><span class="line">        <span class="keyword">if</span> (row &lt;= <span class="number">0</span> || row &gt; rowSize || col &lt;= <span class="number">0</span> || col &gt; colSize) &#123;</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        MultiNode *rowIter = &amp;rowArray[row<span class="number">-1</span>]; <span class="comment">/*行链表*/</span></span><br><span class="line">        MultiNode *colIter = &amp;colArray[col<span class="number">-1</span>]; <span class="comment">/*列链表*/</span></span><br><span class="line">        <span class="keyword">while</span> (rowIter-&gt;rowNext != &amp;rowArray[row<span class="number">-1</span>] &amp;&amp; rowIter-&gt;rowNext-&gt;colIndex &lt; col) &#123;</span><br><span class="line">                rowIter = rowIter-&gt;rowNext;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (colIter-&gt;colNext != &amp;colArray[col<span class="number">-1</span>] &amp;&amp; colIter-&gt;colNext-&gt;rowIndex &lt; row) &#123;</span><br><span class="line">                colIter = colIter-&gt;colNext;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">bool</span> nodeExist = rowIter-&gt;rowNext != &amp;rowArray[row<span class="number">-1</span>] &amp;&amp; rowIter-&gt;rowNext-&gt;colIndex == col;</span><br><span class="line">        nodeExist = nodeExist &amp;&amp;  colIter-&gt;colNext != &amp;colArray[col<span class="number">-1</span>] &amp;&amp; colIter-&gt;colNext-&gt;rowIndex == row;</span><br><span class="line">        <span class="keyword">if</span> (nodeExist) &#123;</span><br><span class="line">                MultiNode *toBeDeleteNode = rowIter-&gt;rowNext; <span class="comment">/*待删除节点*/</span></span><br><span class="line">                rowIter-&gt;rowNext = toBeDeleteNode-&gt;rowNext;</span><br><span class="line">                colIter-&gt;colNext = toBeDeleteNode-&gt;colNext;</span><br><span class="line">                <span class="keyword">delete</span> toBeDeleteNode;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>在一行中插入节点，如果已存在就更新（本处啥也不做）</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> MultiTable::InsertNode(<span class="keyword">unsigned</span> <span class="keyword">int</span> row, <span class="keyword">unsigned</span> <span class="keyword">int</span> col)</span><br><span class="line">&#123;</span><br><span class="line">        <span class="keyword">if</span> (row &lt;= <span class="number">0</span> || row &gt; rowSize || col &lt;= <span class="number">0</span> || col &gt; colSize) &#123;</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        MultiNode *rowIter = &amp;rowArray[row<span class="number">-1</span>]; <span class="comment">/*行链表*/</span></span><br><span class="line">        MultiNode *colIter = &amp;colArray[col<span class="number">-1</span>]; <span class="comment">/*列链表*/</span></span><br><span class="line">        <span class="keyword">while</span> (rowIter-&gt;rowNext !=  &amp;rowArray[row - <span class="number">1</span>] &amp;&amp; rowIter-&gt;rowNext-&gt;colIndex &lt; col) &#123;</span><br><span class="line">                rowIter = rowIter-&gt;rowNext;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (colIter-&gt;colNext != &amp;colArray[col<span class="number">-1</span>] &amp;&amp; colIter-&gt;colNext-&gt;rowIndex &lt; row) &#123;</span><br><span class="line">                colIter = colIter-&gt;colNext;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">bool</span> nodeExist = rowIter-&gt;rowNext != &amp;rowArray[row<span class="number">-1</span>] &amp;&amp; rowIter-&gt;rowNext-&gt;colIndex == col;</span><br><span class="line">        nodeExist = nodeExist &amp;&amp;  colIter-&gt;colNext != &amp;colArray[col<span class="number">-1</span>] &amp;&amp; colIter-&gt;colNext-&gt;rowIndex == row;</span><br><span class="line">        <span class="keyword">if</span> (!nodeExist) &#123;</span><br><span class="line">                MultiNode *newNode = <span class="keyword">new</span> MultiNode(row, col); <span class="comment">/*新建节点*/</span></span><br><span class="line">                newNode-&gt;rowNext = rowIter-&gt;rowNext;</span><br><span class="line">                newNode-&gt;colNext = colIter-&gt;colNext;</span><br><span class="line">                rowIter-&gt;rowNext = newNode;</span><br><span class="line">                colIter-&gt;colNext = newNode;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>打印某一行（行不存在不做任何事）</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> MultiTable::PrintRowList(<span class="keyword">unsigned</span> <span class="keyword">int</span> rowIndex)</span><br><span class="line">&#123;</span><br><span class="line">        <span class="keyword">if</span> (rowIndex &lt;= <span class="number">0</span> || rowIndex &gt; rowSize) &#123;</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        MultiNode *rowIter = rowArray[rowIndex<span class="number">-1</span>].rowNext; <span class="comment">/*初始化遍历迭代器*/</span></span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"Row "</span>&lt;&lt; rowIndex &lt;&lt; <span class="string">" Data is follow："</span> &lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">        <span class="keyword">while</span> (rowIter != &amp;rowArray[rowIndex<span class="number">-1</span>]) &#123;</span><br><span class="line">                <span class="built_in">cout</span> &lt;&lt; <span class="string">"("</span> &lt;&lt; rowIter-&gt;rowIndex &lt;&lt; <span class="string">","</span> &lt;&lt; rowIter-&gt;colIndex &lt;&lt; <span class="string">");"</span>;</span><br><span class="line">                rowIter = rowIter-&gt;rowNext;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>打印某一行（列不存在不做任何事）</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> MultiTable::PrintColList(<span class="keyword">unsigned</span> <span class="keyword">int</span> colIndex)</span><br><span class="line">&#123;</span><br><span class="line">        <span class="keyword">if</span> (colIndex &lt;= <span class="number">0</span> || colIndex &gt; colSize) &#123;</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        MultiNode *colIter = colArray[colIndex<span class="number">-1</span>].colNext; <span class="comment">/*初始化遍历迭代器*/</span></span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"Col "</span>&lt;&lt; colIndex &lt;&lt; <span class="string">" Data is follow："</span> &lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">        <span class="keyword">while</span> (colIter != &amp;colArray[colIndex<span class="number">-1</span>]) &#123;</span><br><span class="line">                <span class="built_in">cout</span> &lt;&lt; <span class="string">"("</span> &lt;&lt; colIter-&gt;rowIndex &lt;&lt; <span class="string">","</span> &lt;&lt; colIter-&gt;colIndex &lt;&lt; <span class="string">");"</span>;</span><br><span class="line">                colIter = colIter-&gt;colNext;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="代码测试"><a href="#代码测试" class="headerlink" title="代码测试"></a>代码测试</h2><p>就以书中图中为例，进行一些插入删除操作最后打印结果来检测代码是否正确，检测代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;random&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;ctime&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;chrono&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;functional&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> chrono;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="function">MultiTable <span class="title">testTable</span><span class="params">(<span class="number">4</span>, <span class="number">5</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">        testTable.InsertNode(<span class="number">1</span>, <span class="number">1</span>);</span><br><span class="line">        testTable.InsertNode(<span class="number">1</span>, <span class="number">3</span>);</span><br><span class="line">        testTable.InsertNode(<span class="number">1</span>, <span class="number">4</span>);</span><br><span class="line"></span><br><span class="line">        testTable.InsertNode(<span class="number">4</span>, <span class="number">4</span>);</span><br><span class="line">        testTable.InsertNode(<span class="number">4</span>, <span class="number">2</span>);</span><br><span class="line"></span><br><span class="line">        testTable.InsertNode(<span class="number">3</span>, <span class="number">3</span>);</span><br><span class="line">        testTable.InsertNode(<span class="number">3</span>, <span class="number">4</span>);</span><br><span class="line">        testTable.InsertNode(<span class="number">3</span>, <span class="number">1</span>);</span><br><span class="line">        testTable.InsertNode(<span class="number">3</span>, <span class="number">5</span>);</span><br><span class="line"></span><br><span class="line">        testTable.InsertNode(<span class="number">2</span>, <span class="number">2</span>);</span><br><span class="line">        testTable.InsertNode(<span class="number">2</span>, <span class="number">5</span>);</span><br><span class="line"></span><br><span class="line">        <span class="built_in">cout</span>&lt;&lt; testTable.IsRowEmpty(<span class="number">1</span>) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">        <span class="built_in">cout</span>&lt;&lt; testTable.IsRowEmpty(<span class="number">2</span>) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">        <span class="built_in">cout</span>&lt;&lt; testTable.IsRowEmpty(<span class="number">3</span>) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">        <span class="built_in">cout</span>&lt;&lt; testTable.IsRowEmpty(<span class="number">4</span>) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">cout</span>&lt;&lt; testTable.IsColEmpty(<span class="number">1</span>) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">        <span class="built_in">cout</span>&lt;&lt; testTable.IsColEmpty(<span class="number">2</span>) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">        <span class="built_in">cout</span>&lt;&lt; testTable.IsColEmpty(<span class="number">3</span>) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">        <span class="built_in">cout</span>&lt;&lt; testTable.IsColEmpty(<span class="number">4</span>) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">        <span class="built_in">cout</span>&lt;&lt; testTable.IsColEmpty(<span class="number">5</span>) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">        testTable.DeleteNode(<span class="number">2</span>, <span class="number">2</span>);</span><br><span class="line">        testTable.DeleteNode(<span class="number">2</span>, <span class="number">5</span>);</span><br><span class="line"></span><br><span class="line">        <span class="built_in">cout</span>&lt;&lt; testTable.IsRowEmpty(<span class="number">2</span>) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">        testTable.MakeEmpty();</span><br><span class="line"></span><br><span class="line">        <span class="built_in">cout</span>&lt;&lt; testTable.IsRowEmpty(<span class="number">1</span>) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">        <span class="built_in">cout</span>&lt;&lt; testTable.IsRowEmpty(<span class="number">2</span>) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">        <span class="built_in">cout</span>&lt;&lt; testTable.IsRowEmpty(<span class="number">3</span>) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">        <span class="built_in">cout</span>&lt;&lt; testTable.IsRowEmpty(<span class="number">4</span>) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">cout</span>&lt;&lt; testTable.IsColEmpty(<span class="number">1</span>) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">        <span class="built_in">cout</span>&lt;&lt; testTable.IsColEmpty(<span class="number">2</span>) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">        <span class="built_in">cout</span>&lt;&lt; testTable.IsColEmpty(<span class="number">3</span>) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">        <span class="built_in">cout</span>&lt;&lt; testTable.IsColEmpty(<span class="number">4</span>) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">        <span class="built_in">cout</span>&lt;&lt; testTable.IsColEmpty(<span class="number">5</span>) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        testTable.InsertNode(<span class="number">1</span>, <span class="number">1</span>);</span><br><span class="line">        testTable.InsertNode(<span class="number">1</span>, <span class="number">3</span>);</span><br><span class="line">        testTable.InsertNode(<span class="number">1</span>, <span class="number">4</span>);</span><br><span class="line"></span><br><span class="line">        testTable.InsertNode(<span class="number">4</span>, <span class="number">4</span>);</span><br><span class="line">        testTable.InsertNode(<span class="number">4</span>, <span class="number">2</span>);</span><br><span class="line"></span><br><span class="line">        testTable.InsertNode(<span class="number">3</span>, <span class="number">3</span>);</span><br><span class="line">        testTable.InsertNode(<span class="number">3</span>, <span class="number">4</span>);</span><br><span class="line">        testTable.InsertNode(<span class="number">3</span>, <span class="number">1</span>);</span><br><span class="line">        testTable.InsertNode(<span class="number">3</span>, <span class="number">5</span>);</span><br><span class="line"></span><br><span class="line">        testTable.InsertNode(<span class="number">2</span>, <span class="number">2</span>);</span><br><span class="line">        testTable.InsertNode(<span class="number">2</span>, <span class="number">5</span>);</span><br><span class="line"></span><br><span class="line">        testTable.PrintRowList(<span class="number">1</span>);</span><br><span class="line">        testTable.PrintRowList(<span class="number">2</span>);</span><br><span class="line">        testTable.PrintRowList(<span class="number">3</span>);</span><br><span class="line">        testTable.PrintRowList(<span class="number">4</span>);</span><br><span class="line"></span><br><span class="line">        testTable.PrintColList(<span class="number">1</span>);</span><br><span class="line">        testTable.PrintColList(<span class="number">2</span>);</span><br><span class="line">        testTable.PrintColList(<span class="number">3</span>);</span><br><span class="line">        testTable.PrintColList(<span class="number">4</span>);</span><br><span class="line">        testTable.PrintColList(<span class="number">5</span>);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a href="https://book.douban.com/subject/1139426/" target="_blank" rel="noopener">数据结构与算法分析</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/数据结构/" rel="tag"># 数据结构</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/data-structure/binary-tree-traversal-non-recursive.html" rel="next" title="二叉树的非递归前、中、后、层序遍历的不同实现">
+                <i class="fa fa-chevron-left"></i> 二叉树的非递归前、中、后、层序遍历的不同实现
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/data-structure/one-way-cursor-list.html" rel="prev" title="数据结构之单向链表-游标实现">
+                数据结构之单向链表-游标实现 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/Limbo.jpg"
+                alt="hsuloong" />
+            
+              <p class="site-author-name" itemprop="name">hsuloong</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">45</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/hsuloong" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#多重表基础"><span class="nav-number">1.</span> <span class="nav-text">多重表基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多重表的定义与实现"><span class="nav-number">2.</span> <span class="nav-text">多重表的定义与实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码测试"><span class="nav-number">3.</span> <span class="nav-text">代码测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">4.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hsuloong</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

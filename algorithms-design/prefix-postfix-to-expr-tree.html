@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="算法设计," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前言前、后缀表达式的基本含义可见本人的文章：传送门，本处不再赘述，表达式树在文中也有图示。针对只含有二元运算符的表达式树，树中所有的叶节点均为操作数，非叶节点均为操作符。前后缀表达式可以通过不同的遍历策略遍历表达式树得到，而通过前后缀表达式也可以重建得到表达式树，重建过程和二叉树的序列化与反序列化非常类似，由于操作树本身带有是叶子节点（无子节点）这一信息并且已知整棵树的根节点位置（中缀就无法直接得">
+<meta name="keywords" content="算法设计">
+<meta property="og:type" content="article">
+<meta property="og:title" content="前、后缀表达式重建表达式树的实现">
+<meta property="og:url" content="http://yoursite.com/algorithms-design/prefix-postfix-to-expr-tree.html">
+<meta property="og:site_name" content="千里之行 始于足下">
+<meta property="og:description" content="前言前、后缀表达式的基本含义可见本人的文章：传送门，本处不再赘述，表达式树在文中也有图示。针对只含有二元运算符的表达式树，树中所有的叶节点均为操作数，非叶节点均为操作符。前后缀表达式可以通过不同的遍历策略遍历表达式树得到，而通过前后缀表达式也可以重建得到表达式树，重建过程和二叉树的序列化与反序列化非常类似，由于操作树本身带有是叶子节点（无子节点）这一信息并且已知整棵树的根节点位置（中缀就无法直接得">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/images/expression-tree-test.png">
+<meta property="og:updated_time" content="2018-07-08T07:58:40.427Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="前、后缀表达式重建表达式树的实现">
+<meta name="twitter:description" content="前言前、后缀表达式的基本含义可见本人的文章：传送门，本处不再赘述，表达式树在文中也有图示。针对只含有二元运算符的表达式树，树中所有的叶节点均为操作数，非叶节点均为操作符。前后缀表达式可以通过不同的遍历策略遍历表达式树得到，而通过前后缀表达式也可以重建得到表达式树，重建过程和二叉树的序列化与反序列化非常类似，由于操作树本身带有是叶子节点（无子节点）这一信息并且已知整棵树的根节点位置（中缀就无法直接得">
+<meta name="twitter:image" content="http://yoursite.com/images/expression-tree-test.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/algorithms-design/prefix-postfix-to-expr-tree.html"/>
+
+
+
+
+
+  <title>前、后缀表达式重建表达式树的实现 | 千里之行 始于足下</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">千里之行 始于足下</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/algorithms-design/prefix-postfix-to-expr-tree.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="hsuloong">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Limbo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="千里之行 始于足下">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">前、后缀表达式重建表达式树的实现</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-08T15:44:46+08:00">
+                2018-07-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/public/categories/algorithms-design/" itemprop="url" rel="index">
+                    <span itemprop="name">算法设计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前、后缀表达式的基本含义可见本人的文章：<a href="https://hsuloong.github.io/algorithms-design/prefix-infix-to-postfix.html" target="_blank" rel="noopener">传送门</a>，本处不再赘述，表达式树在文中也有图示。针对只含有二元运算符的表达式树，树中所有的叶节点均为操作数，非叶节点均为操作符。前后缀表达式可以通过不同的遍历策略遍历表达式树得到，而通过前后缀表达式也可以重建得到表达式树，重建过程和二叉树的序列化与反序列化非常类似，由于操作树本身带有是叶子节点（无子节点）这一信息并且已知整棵树的根节点位置（中缀就无法直接得出根节点位置），因此可以直接根据表达式进行重建，各表达式的具体重建过程分析及代码实现见下文。</p>
+<p>先声明本文将用到的基本数据结构：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> OperType</span><br><span class="line">&#123;</span><br><span class="line">        <span class="comment">/*OPERAND-操作数，OPERATOR-操作符*/</span></span><br><span class="line">        OPERAND, OPERATOR</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">union</span> OperData &#123;</span><br><span class="line">        <span class="keyword">char</span> operatorCh;</span><br><span class="line">        DataType operand;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">ExpressionAtom</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">        OperType operFlag;</span><br><span class="line">        OperData&lt;DataType&gt; operValue;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">TreeNode</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">        ExpressionAtom&lt;DataType&gt; nodeData;</span><br><span class="line">        TreeNode&lt;DataType&gt; *left; <span class="comment">/*左子节点*/</span></span><br><span class="line">        TreeNode&lt;DataType&gt; *right; <span class="comment">/*右子节点*/</span></span><br><span class="line">        TreeNode() : left(<span class="literal">nullptr</span>), right(<span class="literal">nullptr</span>) &#123;&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="前缀表达式重建表达式树"><a href="#前缀表达式重建表达式树" class="headerlink" title="前缀表达式重建表达式树"></a>前缀表达式重建表达式树</h2><p>由于二叉树是递归定义的，因此自然而然的思路就是尝试使用递归过程来重建二叉树，同时考虑到遍历过程也能通过辅助数据结构变成非递归过程，此时也可以考虑尝试使用非递归来重建，具体递归与非递归实现见下两小节。</p>
+<h3 id="前缀重建树的递归实现"><a href="#前缀重建树的递归实现" class="headerlink" title="前缀重建树的递归实现"></a>前缀重建树的递归实现</h3><p>由于前缀表达式的第一个节点是根节点，如果节点存在子节点，则紧邻其后的为其左子节点，否则需要递归返回，即本处递归终止条件是遇到操作数节点（因为操作数是没有子节点的）或者整个表达式重建完毕，具体实现思路可见代码及注释，代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">vector</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line">TreeNode&lt;DataType&gt; *PrefixCore(<span class="built_in">vector</span>&lt;ExpressionAtom&lt;DataType&gt;&gt; &amp;inPrefix, <span class="keyword">int</span> &amp;index)</span><br><span class="line">&#123;</span><br><span class="line">        <span class="keyword">if</span> (index &gt;= <span class="keyword">int</span>(inPrefix.size())) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">nullptr</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        TreeNode&lt;DataType&gt; *newNode = <span class="keyword">new</span> TreeNode&lt;DataType&gt;; <span class="comment">/*新建节点*/</span></span><br><span class="line">        newNode-&gt;nodeData = inPrefix[index];</span><br><span class="line"></span><br><span class="line">        <span class="comment">/*由于前缀表达式先序遍历得到，先建立左子树，再建立右子树*/</span></span><br><span class="line">        <span class="keyword">if</span> (newNode-&gt;nodeData.operFlag != OPERAND) &#123;</span><br><span class="line">                newNode-&gt;left = PrefixCore(inPrefix, ++index);</span><br><span class="line">                newNode-&gt;right = PrefixCore(inPrefix, ++index);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> newNode; <span class="comment">/*返回新建立的节点*/</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line">TreeNode&lt;DataType&gt; *PrefixToExprTreeRecurve(<span class="built_in">vector</span>&lt;ExpressionAtom&lt;DataType&gt;&gt; &amp;inPrefix)</span><br><span class="line">&#123;</span><br><span class="line">        <span class="keyword">if</span> (inPrefix.size() &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">nullptr</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">int</span> index = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">return</span> PrefixCore(inPrefix, index);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="前缀重建树的非递归实现"><a href="#前缀重建树的非递归实现" class="headerlink" title="前缀重建树的非递归实现"></a>前缀重建树的非递归实现</h3><p>显然，如果需要不使用递归，则必须使用栈这种结构来保存中间结果。考虑到前序遍历的结果是根-&gt;左-&gt;右，因此我们可以反向遍历表达式，在遇到操作符时可以弹出栈中两个操作数（子表达式树看作一个操作数）和该操作符组成一颗子表达式树并把子表达式树根节点压入栈中，不断重复该过程直到栈中只剩下一个节点即为最终结果，具体实现可见如下代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stack&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">vector</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">stack</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line">TreeNode&lt;DataType&gt; *PrefixToExprTree(<span class="built_in">vector</span>&lt;ExpressionAtom&lt;DataType&gt;&gt; &amp;inPrefix)</span><br><span class="line">&#123;</span><br><span class="line">        <span class="keyword">if</span> (inPrefix.size()  &lt;= <span class="number">1</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">nullptr</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">stack</span>&lt;TreeNode&lt;DataType&gt; *&gt; nodeStack; <span class="comment">/*放置节点指针*/</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="keyword">int</span>(inPrefix.size())<span class="number">-1</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">                TreeNode&lt;DataType&gt; *newNode = <span class="keyword">new</span> TreeNode&lt;DataType&gt;; <span class="comment">/*新建节点*/</span></span><br><span class="line">                newNode-&gt;nodeData = inPrefix[i];</span><br><span class="line">                <span class="comment">/*遇到操作符弹出两个元素*/</span></span><br><span class="line">                <span class="keyword">if</span> (newNode-&gt;nodeData.operFlag == OPERATOR) &#123;</span><br><span class="line">                        TreeNode&lt;DataType&gt; *operand1 = nodeStack.top(); nodeStack.pop();</span><br><span class="line">                        TreeNode&lt;DataType&gt; *operand2 = nodeStack.top(); nodeStack.pop();</span><br><span class="line">                        <span class="comment">/*组建子表达式树*/</span></span><br><span class="line">                        newNode-&gt;left = operand1;</span><br><span class="line">                        newNode-&gt;right = operand2;</span><br><span class="line">                &#125;</span><br><span class="line">                nodeStack.push(newNode); <span class="comment">/*节点入栈*/</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">/*返回栈顶元素*/</span></span><br><span class="line">        <span class="keyword">return</span> nodeStack.top();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="前缀重建树代码测试"><a href="#前缀重建树代码测试" class="headerlink" title="前缀重建树代码测试"></a>前缀重建树代码测试</h3><p>考虑使用本人前面测试用的表达式树，树的形态如下图所示：<a href="http://www.cnblogs.com/lulipro/p/7563217.html" target="_blank" rel="noopener">图片来源</a></p>
+<p><img src="/images/expression-tree-test.png" alt="表达式树"></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">vector</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">cout</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">isEqual</span><span class="params">(ExpressionAtom&lt;DataType&gt;&amp;in1, ExpressionAtom&lt;DataType&gt;&amp;in2)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (in1.operFlag == in2.operFlag) &#123;</span><br><span class="line">		<span class="keyword">if</span> (in1.operFlag == OPERAND) &#123;</span><br><span class="line">			<span class="keyword">return</span> in1.operValue.operand == in2.operValue.operand;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="keyword">return</span> in1.operValue.operatorCh == in2.operValue.operatorCh;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span>  <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">PrefixVisit</span><span class="params">(TreeNode&lt;DataType&gt; *root, <span class="built_in">vector</span>&lt;ExpressionAtom&lt;DataType&gt;&gt; &amp;result)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (root == <span class="literal">nullptr</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        result.push_back(root-&gt;nodeData);</span><br><span class="line"></span><br><span class="line">        PrefixVisit(root-&gt;left, result);</span><br><span class="line">        PrefixVisit(root-&gt;right, result);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        <span class="built_in">vector</span>&lt;ExpressionAtom&lt;<span class="keyword">int</span>&gt;&gt; testVec;</span><br><span class="line"></span><br><span class="line">        ExpressionAtom&lt;<span class="keyword">int</span>&gt; manualData;</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'-'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'/'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'*'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'+'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">3</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">1</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">3</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'+'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'-'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">9</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">5</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">2</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'+'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'*'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">3</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'-'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">7</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">4</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">6</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">auto</span> result = PrefixToExprTreeRecurve(testVec); <span class="comment">/*调用相应的代码*/</span></span><br><span class="line"></span><br><span class="line">        <span class="built_in">vector</span>&lt;ExpressionAtom&lt;<span class="keyword">int</span>&gt;&gt; resultVec;</span><br><span class="line">        PrefixVisit(result, resultVec);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">bool</span> correct = <span class="literal">true</span>;</span><br><span class="line">	<span class="keyword">size_t</span> i = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; resultVec.size() &amp;&amp; testVec.size(); i++) &#123;</span><br><span class="line">		<span class="keyword">if</span> (!isEqual(resultVec[i], testVec[i])) &#123;</span><br><span class="line">			correct = <span class="literal">false</span>; <span class="keyword">break</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (correct &amp;&amp; i &gt;= resultVec.size() &amp;&amp; i &gt;= testVec.size()) &#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; <span class="string">"Correct"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; <span class="string">"Wrong"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="后缀表达式重建表达式树"><a href="#后缀表达式重建表达式树" class="headerlink" title="后缀表达式重建表达式树"></a>后缀表达式重建表达式树</h2><p>后缀表达式和前缀表达式的区别是后缀表达式的操作符是在操作数的后面，即左-&gt;右-&gt;根，因此后缀重建的递归算法可以参考前缀表达式重建算法，只需稍微改变遍历顺序即可。具体代码可见如下两小节。</p>
+<h3 id="后缀重建树的递归实现"><a href="#后缀重建树的递归实现" class="headerlink" title="后缀重建树的递归实现"></a>后缀重建树的递归实现</h3><p>正如前面所说，后缀前缀表达式不同在于根节点位置，对于后缀表达式根节点在最后，因此参考前缀表达式重建树的递归算法只需从后往前递归即可，基本实现代码如下所示：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">vector</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line">TreeNode&lt;DataType&gt; *PostfixCore(<span class="built_in">vector</span>&lt;ExpressionAtom&lt;DataType&gt;&gt; &amp;inPostfix, <span class="keyword">int</span> &amp;index)</span><br><span class="line">&#123;</span><br><span class="line">        <span class="keyword">if</span> (index &lt; <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">nullptr</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        TreeNode&lt;DataType&gt; *newNode = <span class="keyword">new</span> TreeNode&lt;DataType&gt;; <span class="comment">/*新建节点*/</span></span><br><span class="line">        newNode-&gt;nodeData = inPostfix[index];</span><br><span class="line"></span><br><span class="line">        <span class="comment">/*由于前缀遍历得到，先建立左子树，再建立右子树*/</span></span><br><span class="line">        <span class="keyword">if</span> (newNode-&gt;nodeData.operFlag != OPERAND) &#123;</span><br><span class="line">                newNode-&gt;right = PostfixCore(inPostfix, --index);</span><br><span class="line">                newNode-&gt;left = PostfixCore(inPostfix, --index);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> newNode; <span class="comment">/*返回新建立的节点*/</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line">TreeNode&lt;DataType&gt; *PostfixToExprTreeRecurve(<span class="built_in">vector</span>&lt;ExpressionAtom&lt;DataType&gt;&gt; &amp;inPostfix)</span><br><span class="line">&#123;</span><br><span class="line">        <span class="keyword">if</span> (inPostfix.size() &lt;= <span class="number">1</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">nullptr</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">int</span> index = <span class="keyword">int</span>(inPostfix.size()) - <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">return</span> PostfixCore(inPostfix, index);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="后缀重建树的非递归实现"><a href="#后缀重建树的非递归实现" class="headerlink" title="后缀重建树的非递归实现"></a>后缀重建树的非递归实现</h3><p>直接把后缀计算的代码稍作修改即可，代码如下所示：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stack&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">vector</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">stack</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line">TreeNode&lt;DataType&gt; *PostfixToExprTree(<span class="built_in">vector</span>&lt;ExpressionAtom&lt;DataType&gt;&gt; &amp;inPostfix)</span><br><span class="line">&#123;</span><br><span class="line">        <span class="keyword">if</span> (inPostfix.size()  &lt;= <span class="number">1</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">nullptr</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">stack</span>&lt;TreeNode&lt;DataType&gt; *&gt; nodeStack; <span class="comment">/*放置根结点指针*/</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; inPostfix.size(); i++) &#123;</span><br><span class="line">                TreeNode&lt;DataType&gt; *newNode = <span class="keyword">new</span> TreeNode&lt;DataType&gt;; <span class="comment">/*新建节点*/</span></span><br><span class="line">                newNode-&gt;nodeData = inPostfix[i];</span><br><span class="line">                <span class="keyword">if</span> (newNode-&gt;nodeData.operFlag == OPERATOR) &#123;</span><br><span class="line">                        TreeNode&lt;DataType&gt; *operand1 = nodeStack.top(); nodeStack.pop();</span><br><span class="line">                        TreeNode&lt;DataType&gt; *operand2 = nodeStack.top(); nodeStack.pop();</span><br><span class="line">                        <span class="comment">/*遇到操作符直接出栈两个操作数*/</span></span><br><span class="line">                        newNode-&gt;left = operand2;</span><br><span class="line">                        newNode-&gt;right = operand1;</span><br><span class="line">                &#125;</span><br><span class="line">                nodeStack.push(newNode); <span class="comment">/*操作数或者子表达式树入栈*/</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">/*返回栈顶元素*/</span></span><br><span class="line">        <span class="keyword">return</span> nodeStack.top();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="后缀重建树代码测试"><a href="#后缀重建树代码测试" class="headerlink" title="后缀重建树代码测试"></a>后缀重建树代码测试</h3><p>依旧使用前缀图中的表达式树，测试代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">vector</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">cout</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">PostfixVisit</span><span class="params">(TreeNode&lt;DataType&gt; *root, <span class="built_in">vector</span>&lt;ExpressionAtom&lt;DataType&gt;&gt; &amp;result)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (root == <span class="literal">nullptr</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        PostfixVisit(root-&gt;left, result);</span><br><span class="line">        PostfixVisit(root-&gt;right, result);</span><br><span class="line">        result.push_back(root-&gt;nodeData);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        <span class="built_in">vector</span>&lt;ExpressionAtom&lt;<span class="keyword">int</span>&gt;&gt; testVec;</span><br><span class="line"></span><br><span class="line">        ExpressionAtom&lt;<span class="keyword">int</span>&gt; manualData;</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">3</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">1</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'+'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">3</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'*'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">9</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">5</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'-'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">2</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'+'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'/'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">3</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">7</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">4</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'-'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'*'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERAND;</span><br><span class="line">        manualData.operValue.operand = <span class="number">6</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'+'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        manualData.operFlag = OPERATOR;</span><br><span class="line">        manualData.operValue.operatorCh = <span class="string">'-'</span>;</span><br><span class="line">        testVec.push_back(manualData);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">auto</span> result = PostfixToExprTreeRecurve(testVec); <span class="comment">/*调用具体的函数*/</span></span><br><span class="line"></span><br><span class="line">        <span class="built_in">vector</span>&lt;ExpressionAtom&lt;<span class="keyword">int</span>&gt;&gt; resultVec;</span><br><span class="line">        PostfixVisit(result, resultVec);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">bool</span> correct = <span class="literal">true</span>;</span><br><span class="line">	<span class="keyword">size_t</span> i = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; resultVec.size() &amp;&amp; testVec.size(); i++) &#123;</span><br><span class="line">		<span class="keyword">if</span> (!isEqual(resultVec[i], testVec[i])) &#123;</span><br><span class="line">			correct = <span class="literal">false</span>; <span class="keyword">break</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (correct &amp;&amp; i &gt;= resultVec.size() &amp;&amp; i &gt;= testVec.size()) &#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; <span class="string">"Correct"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; <span class="string">"Wrong"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a href="https://book.douban.com/subject/2024655/" target="_blank" rel="noopener">数据结构</a></p>
+<p><a href="https://www.cnblogs.com/z-sm/p/6807308.html" target="_blank" rel="noopener">根据表达式序列构建表达式树</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/算法设计/" rel="tag"># 算法设计</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/data-structure/sparse-matrix-orthogonal-linked-list.html" rel="next" title="稀疏矩阵压缩存储之十字链表">
+                <i class="fa fa-chevron-left"></i> 稀疏矩阵压缩存储之十字链表
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/Limbo.jpg"
+                alt="hsuloong" />
+            
+              <p class="site-author-name" itemprop="name">hsuloong</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">45</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/hsuloong" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#前缀表达式重建表达式树"><span class="nav-number">2.</span> <span class="nav-text">前缀表达式重建表达式树</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#前缀重建树的递归实现"><span class="nav-number">2.1.</span> <span class="nav-text">前缀重建树的递归实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#前缀重建树的非递归实现"><span class="nav-number">2.2.</span> <span class="nav-text">前缀重建树的非递归实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#前缀重建树代码测试"><span class="nav-number">2.3.</span> <span class="nav-text">前缀重建树代码测试</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#后缀表达式重建表达式树"><span class="nav-number">3.</span> <span class="nav-text">后缀表达式重建表达式树</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#后缀重建树的递归实现"><span class="nav-number">3.1.</span> <span class="nav-text">后缀重建树的递归实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#后缀重建树的非递归实现"><span class="nav-number">3.2.</span> <span class="nav-text">后缀重建树的非递归实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#后缀重建树代码测试"><span class="nav-number">3.3.</span> <span class="nav-text">后缀重建树代码测试</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">4.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hsuloong</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="万事开头难，大约在一年前我就想着架个属于自己的博客站，但是由于各种原因多次准备架站时又不得不中途放弃，这次总算是上线了，写下这篇文章作为最终成功上线博客的留念。 Hexo快速安装注册Github账号如果你已经有了账号可略过该步，传送门：（注册GitHub传送门） 创建repository点击头像左边的+号（新建repository传送门），新建一个repository，“Repository na">
+<meta name="keywords" content="Hexo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GitHub+Hexo搭建个人博客站及备份原始网站数据过程记录">
+<meta property="og:url" content="http://yoursite.com/Hexo/build-blog-website.html">
+<meta property="og:site_name" content="千里之行 始于足下">
+<meta property="og:description" content="万事开头难，大约在一年前我就想着架个属于自己的博客站，但是由于各种原因多次准备架站时又不得不中途放弃，这次总算是上线了，写下这篇文章作为最终成功上线博客的留念。 Hexo快速安装注册Github账号如果你已经有了账号可略过该步，传送门：（注册GitHub传送门） 创建repository点击头像左边的+号（新建repository传送门），新建一个repository，“Repository na">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-07-07T12:53:33.548Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GitHub+Hexo搭建个人博客站及备份原始网站数据过程记录">
+<meta name="twitter:description" content="万事开头难，大约在一年前我就想着架个属于自己的博客站，但是由于各种原因多次准备架站时又不得不中途放弃，这次总算是上线了，写下这篇文章作为最终成功上线博客的留念。 Hexo快速安装注册Github账号如果你已经有了账号可略过该步，传送门：（注册GitHub传送门） 创建repository点击头像左边的+号（新建repository传送门），新建一个repository，“Repository na">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/Hexo/build-blog-website.html"/>
+
+
+
+
+
+  <title>GitHub+Hexo搭建个人博客站及备份原始网站数据过程记录 | 千里之行 始于足下</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">千里之行 始于足下</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/Hexo/build-blog-website.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="hsuloong">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Limbo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="千里之行 始于足下">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">GitHub+Hexo搭建个人博客站及备份原始网站数据过程记录</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-28T19:56:13+08:00">
+                2018-02-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/public/categories/Hexo/" itemprop="url" rel="index">
+                    <span itemprop="name">Hexo</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>万事开头难，大约在一年前我就想着架个属于自己的博客站，但是由于各种原因多次准备架站时又不得不中途放弃，这次总算是上线了，写下这篇文章作为最终成功上线博客的留念。</p>
+<h2 id="Hexo快速安装"><a href="#Hexo快速安装" class="headerlink" title="Hexo快速安装"></a>Hexo快速安装</h2><h3 id="注册Github账号"><a href="#注册Github账号" class="headerlink" title="注册Github账号"></a>注册Github账号</h3><p>如果你已经有了账号可略过该步，传送门：（<a href="https://github.com" target="_blank" rel="noopener">注册GitHub传送门</a>）</p>
+<h3 id="创建repository"><a href="#创建repository" class="headerlink" title="创建repository"></a>创建repository</h3><p>点击头像左边的+号（<a href="https://github.com/new" target="_blank" rel="noopener">新建repository传送门</a>），新建一个repository，“Repository name”格式必须为：username.github.io，username为你注册的用户名。设置完名字建议勾选“Initialize this repository with a README”，便于新建一个用于保存原始网站文件的分支（branch）。点击“Create repository”创建repository完毕。<br><br>创建repository后项目下会有一个默认的master分支，该分支用来保存Hexo生成的网页文件。接着新建分支用来存放Hexo原始网站数据方便自己更换电脑时同步。比如创建一个名为backup的分支，并设置为默认分支（这步一定要做）。</p>
+<h3 id="安装Git工具"><a href="#安装Git工具" class="headerlink" title="安装Git工具"></a>安装Git工具</h3><p>Git是开源的分布式的版本控制系统，具体见（<a href="http://www.runoob.com/git/git-tutorial.html" target="_blank" rel="noopener">Git是什么传送门</a>）。Git软件下载地址见（<a href="https://git-scm.com/download/" target="_blank" rel="noopener">Git下载传送门</a>）。安装过程和Windows常用软件相似。</p>
+<h3 id="绑定Git和你的GitHub账号"><a href="#绑定Git和你的GitHub账号" class="headerlink" title="绑定Git和你的GitHub账号"></a>绑定Git和你的GitHub账号</h3><p>Git安装完毕后打开“Git Bash”，使用命令行界面绑定GitHub账号。输入以下命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git config --global user.name “你GitHub注册用户名”</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git config --global user.email “你GitHub注册的邮箱账号”</span><br></pre></td></tr></table></figure>
+<p>以上便完成Git和你的GitHub账号的绑定</p>
+<h3 id="注册密钥"><a href="#注册密钥" class="headerlink" title="注册密钥"></a>注册密钥</h3><p>在“Git Bash”中输入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -C “你GitHub注册的邮箱账号”</span><br></pre></td></tr></table></figure>
+<p>会在Windows系统安装盘“C:\Users\你的电脑名称\.ssh”目录下生成一个名为“id_rsa.pub”的文件，用任何文本处理软件打开，推荐使用NotePad++打开。（<a href="https://notepad-plus-plus.org/download/v7.5.5.html" target="_blank" rel="noopener">NotePad++下载传送门</a>）<br><br>打开GitHub用户设置界面，切换到“SSH and GPG keys”下（<a href="https://github.com/settings/ssh/new" target="_blank" rel="noopener">添加SSH key传送门</a>）。将“id_rsa.pub”文件内容复制的“Key”文本框中，“Title”文本框随便填写一些信息，比如阐明Key的用途。最后点击“Add SSH Key”按钮完成密钥的注册。</p>
+<h3 id="安装Node-js"><a href="#安装Node-js" class="headerlink" title="安装Node.js"></a>安装Node.js</h3><p>由于Hexo基于Node.js，因此需要安装Node.js。（<a href="https://nodejs.org/en/download/" target="_blank" rel="noopener">下载传送门</a>）<br><br>和普通Windows软件一样安装，安装结束后打开cmd或者PowerShell输入<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">node -v</span><br></pre></td></tr></table></figure></p>
+<p>如果输出版本号则证明安装成功。</p>
+<h3 id="克隆repository到本地"><a href="#克隆repository到本地" class="headerlink" title="克隆repository到本地"></a>克隆repository到本地</h3><p>由于我们需要在另外一个分支备份网站的原始数据，为了避免上传原始网站数据到GitHub仓库的出现各种错误，在你本地新建一个文件夹，进入该文件夹后按住Shift键右击鼠标打开“Git Bash”，输入：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone git@github.com:你GitHub注册用户名/你GitHub注册用户名.github.io.git</span><br></pre></td></tr></table></figure>
+<p>结束后本地会新建一个名为“你GitHub注册用户名.github.io”的文件夹。</p>
+<h3 id="本地安装Hexo"><a href="#本地安装Hexo" class="headerlink" title="本地安装Hexo"></a>本地安装Hexo</h3><p>进入上步“你GitHub注册用户名.github.io”的文件夹，按住Shift键右击鼠标打开“Git Bash”，输入：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g hexo-cli</span><br></pre></td></tr></table></figure>
+<p>这是安装Hexo，需要一点时间下载。</p>
+<p>然后输入：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo init blog</span><br></pre></td></tr></table></figure>
+<p>会在当前目录创建一个blog文件夹，所有的建站文件均在该文件夹下，将文件夹下的所有文件剪切到上级目录即“你GitHub注册用户名.github.io”文件夹，在该文件夹下按住Shift键右击鼠标打开cmd或者PowerShell输入：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo g</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo s</span><br></pre></td></tr></table></figure>
+<p>然后在浏览器中输入<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">localhost:4000</span><br></pre></td></tr></table></figure></p>
+<p>便可以打开刚刚建好的博客站了。</p>
+<h3 id="推送博客站到GitHub上"><a href="#推送博客站到GitHub上" class="headerlink" title="推送博客站到GitHub上"></a>推送博客站到GitHub上</h3><p>上一步创建好的博客站只能在本地电脑中打开，需要推送到GitHub中才能通过“你GitHub注册用户名.github.io”域名方式被网友访问。</p>
+<p>首先在“你GitHub注册用户名.github.io”本地文件夹下有一个名为“_config.yml”的配置文件，这个称为站点配置文件，使用NotePad++打开并拉到文件最后，填入以下文字：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git </span><br><span class="line">  repo: https://github.com/你GitHub注册用户名/你GitHub注册用户名.github.io.git </span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
+<p>如果出现下面的问题可尝试使用如下配置格式：</p>
+<blockquote>
+<p>bash: /dev/tty: No such device or address<br>error: failed to execute prompt script (exit code 1)<br>fatal: could not read Username for ‘<a href="https://github.com&#39;" target="_blank" rel="noopener">https://github.com&#39;</a>: No error </p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git  </span><br><span class="line">  repo: git@github.com:你GitHub注册用户名/你GitHub注册用户名.github.io.git  </span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
+<p>注意deploy下面需要缩进，冒号之后有空格。</p>
+<p>接着进入“你GitHub注册用户名.github.io”本地文件下，在该文件夹下按住Shift键右击鼠标打开“Git Bash”依次输入以下命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-deployer-git --save  </span><br><span class="line">hexo g -d</span><br></pre></td></tr></table></figure>
+<p>然后在浏览器中输入“你GitHub注册用户名.github.io”就可以打开刚才建的博客站了。至此建站部分全部完成。</p>
+<h3 id="备份网站原始数据到GitHub上"><a href="#备份网站原始数据到GitHub上" class="headerlink" title="备份网站原始数据到GitHub上"></a>备份网站原始数据到GitHub上</h3><p>进入“你GitHub注册用户名.github.io”本地文件下，在该文件夹下按住Shift键右击鼠标打开“Git Bash”依次输入以下命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git add .  </span><br><span class="line">git commit -m “你为该次备份提供的说明信息”</span><br><span class="line">git push origin “你在repository中创建的另外一个分支名”</span><br></pre></td></tr></table></figure>
+<p>如果你以后新增修改文件，可以把上述三条命令全部运行一遍即可备份当前修改</p>
+<p>至此本次GitHub安装Hexo及备份原始数据全部完成，享受你的个人博客时光吧！</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Hexo/" rel="tag"># Hexo</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/Hexo/hello-world.html" rel="next" title="Hello World">
+                <i class="fa fa-chevron-left"></i> Hello World
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/data-structure/data-structure-introduction.html" rel="prev" title="数据结构简介">
+                数据结构简介 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/Limbo.jpg"
+                alt="hsuloong" />
+            
+              <p class="site-author-name" itemprop="name">hsuloong</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">45</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/hsuloong" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Hexo快速安装"><span class="nav-number">1.</span> <span class="nav-text">Hexo快速安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#注册Github账号"><span class="nav-number">1.1.</span> <span class="nav-text">注册Github账号</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建repository"><span class="nav-number">1.2.</span> <span class="nav-text">创建repository</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装Git工具"><span class="nav-number">1.3.</span> <span class="nav-text">安装Git工具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#绑定Git和你的GitHub账号"><span class="nav-number">1.4.</span> <span class="nav-text">绑定Git和你的GitHub账号</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#注册密钥"><span class="nav-number">1.5.</span> <span class="nav-text">注册密钥</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装Node-js"><span class="nav-number">1.6.</span> <span class="nav-text">安装Node.js</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#克隆repository到本地"><span class="nav-number">1.7.</span> <span class="nav-text">克隆repository到本地</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#本地安装Hexo"><span class="nav-number">1.8.</span> <span class="nav-text">本地安装Hexo</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#推送博客站到GitHub上"><span class="nav-number">1.9.</span> <span class="nav-text">推送博客站到GitHub上</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#备份网站原始数据到GitHub上"><span class="nav-number">1.10.</span> <span class="nav-text">备份网站原始数据到GitHub上</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hsuloong</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

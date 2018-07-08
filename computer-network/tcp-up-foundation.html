@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="计算机网络," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="TCP-UDP基础知识TCP全称传输控制协议（Transmission Control Protocol），是一种面向连接、可靠的、基于字节流的传输层通信协议。面向连接意味着TCP在进行数据交换时需要先建立一个TCP连接（三次握手）；可靠意味着TCP协议需要保证数据可靠的传送到对方，TCP可靠性体现在数据分割成合适长度（MTU限制）、序号确认机制（累积确认，注意回绕问题）、超时重传机制、快速重传（">
+<meta name="keywords" content="计算机网络">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TCP-UDP基础以及区别">
+<meta property="og:url" content="http://yoursite.com/computer-network/tcp-up-foundation.html">
+<meta property="og:site_name" content="千里之行 始于足下">
+<meta property="og:description" content="TCP-UDP基础知识TCP全称传输控制协议（Transmission Control Protocol），是一种面向连接、可靠的、基于字节流的传输层通信协议。面向连接意味着TCP在进行数据交换时需要先建立一个TCP连接（三次握手）；可靠意味着TCP协议需要保证数据可靠的传送到对方，TCP可靠性体现在数据分割成合适长度（MTU限制）、序号确认机制（累积确认，注意回绕问题）、超时重传机制、快速重传（">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/images/tcp-head.png">
+<meta property="og:image" content="http://yoursite.com/images/udp-head.png">
+<meta property="og:image" content="http://yoursite.com/images/tcp-state-change.png">
+<meta property="og:image" content="http://yoursite.com/images/tcp-socket.png">
+<meta property="og:image" content="http://yoursite.com/images/three-way-handshake.png">
+<meta property="og:image" content="http://yoursite.com/images/tcp-open-at-same-time.png">
+<meta property="og:image" content="http://yoursite.com/images/tcp-close-at-same-time.png">
+<meta property="og:image" content="http://yoursite.com/images/tcp-half-close.png">
+<meta property="og:image" content="http://yoursite.com/images/sliding-window.png">
+<meta property="og:updated_time" content="2018-07-07T12:53:33.588Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="TCP-UDP基础以及区别">
+<meta name="twitter:description" content="TCP-UDP基础知识TCP全称传输控制协议（Transmission Control Protocol），是一种面向连接、可靠的、基于字节流的传输层通信协议。面向连接意味着TCP在进行数据交换时需要先建立一个TCP连接（三次握手）；可靠意味着TCP协议需要保证数据可靠的传送到对方，TCP可靠性体现在数据分割成合适长度（MTU限制）、序号确认机制（累积确认，注意回绕问题）、超时重传机制、快速重传（">
+<meta name="twitter:image" content="http://yoursite.com/images/tcp-head.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/computer-network/tcp-up-foundation.html"/>
+
+
+
+
+
+  <title>TCP-UDP基础以及区别 | 千里之行 始于足下</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">千里之行 始于足下</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/computer-network/tcp-up-foundation.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="hsuloong">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Limbo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="千里之行 始于足下">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">TCP-UDP基础以及区别</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-15T21:24:44+08:00">
+                2018-04-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/public/categories/computer-network/" itemprop="url" rel="index">
+                    <span itemprop="name">计算机网络</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="TCP-UDP基础知识"><a href="#TCP-UDP基础知识" class="headerlink" title="TCP-UDP基础知识"></a>TCP-UDP基础知识</h2><p>TCP全称传输控制协议（Transmission Control Protocol），是一种面向连接、可靠的、基于字节流的传输层通信协议。面向连接意味着TCP在进行数据交换时需要先建立一个TCP连接（三次握手）；可靠意味着TCP协议需要保证数据可靠的传送到对方，TCP可靠性体现在数据分割成合适长度（MTU限制）、序号确认机制（累积确认，注意回绕问题）、超时重传机制、快速重传（连续收到三次对同一个包的确认）、数据校验（校验和）、失序重排、重复数据处理、流量控制机制（滑动窗口机制）、拥塞控制机制（慢开始等）。</p>
+<p>UDP全称用户数据包协议（User Datagram Protocol），是一种简单的面向数据报的无连接、不可靠、基于数据报的传输层协议。UDP每次发送整个数据报，不关心是否超过MTU（由应用层协议处理）。UDP数据报发出后并不保证到达目的地，因此如果UDP需要保证可靠性，可以通过应用层处理。</p>
+<h2 id="TCP-UDP首部解析"><a href="#TCP-UDP首部解析" class="headerlink" title="TCP-UDP首部解析"></a>TCP-UDP首部解析</h2><p>TCP首部图如下所示：<a href="https://blog.csdn.net/zhanglong_daniel/article/details/50749098" target="_blank" rel="noopener">图片来源</a></p>
+<p><img src="/images/tcp-head.png" alt="TCP首部"></p>
+<p>UDP首部图如下所示：<a href="https://blog.csdn.net/nestler/article/details/28668153" target="_blank" rel="noopener">图片来源</a></p>
+<p><img src="/images/udp-head.png" alt="UDP首部"></p>
+<p>由于TCP的可靠传输机制，TCP首部由固定的20字节+可选的40字节组成（4位首部长度2^3-1个4字节）；UDP首部由固定的8字节组成。TCP和UDP首部都含有16位源端口、目的端口号（端口号和IP地址组成一个socket）。TCP中的32位序号和32位确认序号用于完成序号确认、失序重排等。TCP和UDP的16校验和计算过程类似，都需要添加12字节伪首部，TCP伪首部和UDP伪首部不同的地方为8位协议部分（TCP为6，UDP为17），长度项均为首部+数据部分长度，TCP校验和计算是强制的，UDP是可选的。TCP首部特有的6个标志比特位置位后用来完成连接过程以及使某些字段有效等，以下为各字段作用：</p>
+<pre><code>1. SYN字段，用于建立连接，前两次握手置为1，建立连接后该字段始终置为0，SYN占用一个序号
+2. FIN，终止连接，TCP连接是全双工的，需要4次挥手关闭一个完整的TCP连接，FIN也占用一个序号
+3. URG，表示紧急指针有效，紧急指针是一个正的偏移量，和TCP首部序号相加可以得出紧急数据位置
+4. ACK，表明确认序号有效，连接建立后必须始终置为1
+5. PSH，提醒接收方快速将数据转交给应用层
+6. RST，表明需要重新建立连接
+</code></pre><p>TCP还有一个窗口大小，其用来进行流量控制，建立连接和通信过程均可以通告窗口大小，窗口大小和可选段的窗口比例组成最终的窗口大小。</p>
+<p>在TCP的可选段中，主要有如下：</p>
+<pre><code>1. MSS（Maxium Segment Size），最大报文段长度，表示数据段最大长度，MSS只出现在SYN报文中，用于避免IP分片
+2. 窗口扩大选项（Windows Scaling），表示窗口大小左移位数，即窗口大小*2^(窗口扩大值)
+3. SACK选择确认项（Selective Acknowledgements），由于启用选择确认机制而不是累计确认，减少重发数据量
+4. 时间戳选项（Timestamps），用来计算RTT往返时间或者解决序号回绕的问题
+5. NOP（NO-Operation），用来填充使可选段长度为4字节倍数
+</code></pre><h2 id="TCP连接建立与终止"><a href="#TCP连接建立与终止" class="headerlink" title="TCP连接建立与终止"></a>TCP连接建立与终止</h2><p>TCP由于预先建立连接，同时在断开时也需要经历四次挥手过程，其状态迁移图如下所示：<a href="http://www.cnblogs.com/missmzt/p/5308149.html" target="_blank" rel="noopener">图片来源</a></p>
+<p><img src="/images/tcp-state-change.png" alt="TCP状态转移"></p>
+<p>整个连接通信终止过程的转移如下图所示：<a href="http://www.cnblogs.com/wujing-hubei/p/5699773.html" target="_blank" rel="noopener">图片来源</a></p>
+<p><img src="/images/tcp-socket.png" alt="TCP状态转移"></p>
+<h3 id="三次握手建立TCP连接"><a href="#三次握手建立TCP连接" class="headerlink" title="三次握手建立TCP连接"></a>三次握手建立TCP连接</h3><p>由于TCP在通信前需要先建立连接，其过程是由称为三次握手建立，其基本步骤为:</p>
+<pre><code>1. 发起方置SYN为1，序列号为x
+2. 接收方返回一个SYN置为1和ACK置为1的连接确认包，序号为y，确认号为x+1（SYN占用一个序号）
+3. 发起方发送一个ACK置为1的确认包，序号为x+1，确认号为y+1
+</code></pre><p>下图为使用WIRESHARK抓取的三次握手过程：</p>
+<p><img src="/images/three-way-handshake.png" alt="三次握手"></p>
+<p>三次握手过程中会通告MSS以及窗口大小。</p>
+<p>TCP在设计过程中考虑到了同时打开的情况，考虑以下情况：主机A以本地端口portA向主机B端口portB发送SYN执行主动打开，同时主机B以本地端口portB向主机A端口portA发送SYN执行主动打开，然后双方回复ACK包，此时TCP只会建立一个TCP连接，共发生4次数据交换。其状态转移图如下所示：<a href="https://blog.csdn.net/huoqubing/article/details/6126189" target="_blank" rel="noopener">图片来源</a></p>
+<p><img src="/images/tcp-open-at-same-time.png" alt="同时打开"></p>
+<h3 id="四次挥手终止TCP连接"><a href="#四次挥手终止TCP连接" class="headerlink" title="四次挥手终止TCP连接"></a>四次挥手终止TCP连接</h3><p>由于TCP连接是一个全双工连接，两个方向可以同时传递数据，因此在终止连接时需要经历四次挥手过程，其状态转移如下图所示：<a href="https://blog.csdn.net/huoqubing/article/details/6126189" target="_blank" rel="noopener">图片来源</a></p>
+<p>四次挥手步骤如下：（假设主动发送最后被确认号为x，被动方发送最后被确认号为y）</p>
+<pre><code>1. 主动关闭方发送FIN包，ACK置为1时确认号为y，序号为x（FIN包占有一个序号）
+2. 被动关闭方发送ACK包，ACK确认号置为x+1，序号为y
+3. 被动方发送FIN包，ACK确认号置为x+1，序号为y（FIN包占有一个序号）
+4. 主动关闭方发送ACK包，ACK确认号置为y+1，序号为x+1
+</code></pre><p>考虑一种情况，TCP连接双方同时发出关闭请求，此时状态转移图如下：<a href="https://blog.csdn.net/huoqubing/article/details/6126189" target="_blank" rel="noopener">图片来源</a></p>
+<p><img src="/images/tcp-close-at-same-time.png" alt="同时关闭"></p>
+<p>在主动发起关闭连接方最后会处于一个TIME_WAIT状态（也称为2MSL，Maximum Segment Lifetime），该状态的主要作用是确保最后发出的ACK被对方接收，否则需要重新发送。在2MSL等待期，本socket对将不能被使用，除非设置某些参数。2MSL收到的报文将会被丢弃。</p>
+<h3 id="TCP半关闭以及半打开"><a href="#TCP半关闭以及半打开" class="headerlink" title="TCP半关闭以及半打开"></a>TCP半关闭以及半打开</h3><p>半关闭是指某一方主动发起关闭连接后，另外一方还有数据需要发送，此时另外一方并不关闭连接，此时数据只能在一个方向上进行流动，半关闭示意图如下：<a href="https://blog.csdn.net/ericzhong83/article/details/8123420" target="_blank" rel="noopener">图片来源</a></p>
+<p><img src="/images/tcp-half-close.png" alt="半关闭"></p>
+<p>半打开是指TCP连接一方以及关闭连接或者异常终止而另外一方却不知情，处于半打开状态的TCP连接如果不发生数据交换一般很难发现连接出现问题，而一旦正常一方向异常一方发送数据，此时一般会回复一个RST包。</p>
+<h2 id="TCP的超时与重传"><a href="#TCP的超时与重传" class="headerlink" title="TCP的超时与重传"></a>TCP的超时与重传</h2><p>TCP由于需要提供可靠的数据传输服务，因此其需要对数据接收进行确认，但是确认包也可能出现丢失的情况，这便是TCP需要使用超时与重传机制的原因。如果发送方在一段时间内没有收到对方确认包，则启动数据重传（此时可能在另外一方出现数据重复的情况）。在实现具体的超时重传时，需要确定具体超时间隔以及重传频率。为此，TCP含有7个不同的定时器来实现超超时与重传机制，分别是建立连接定时器（Connection-establishment Timer）、延迟应答定时器（Delayed ACK Timer）、重传定时器（Retransmission Timer）、坚持定时器（Persist Timer）、保活定时器（Keepalive Timer）、FIN_WAIT_2定时器（FIN_WAIT_2 Timer）、2MSL定时器（TIME_WAIT Timer）。以下分别介绍。</p>
+<h3 id="TCP定时器"><a href="#TCP定时器" class="headerlink" title="TCP定时器"></a>TCP定时器</h3><h4 id="建立连接定时器"><a href="#建立连接定时器" class="headerlink" title="建立连接定时器"></a>建立连接定时器</h4><p>TCP建立连接需要进行三次握手，在发送SYN包后启动定时器，如果在定时器溢出之前没有收到ACK包则重发SYN包。定时器间隔一般采用指数退避，一般在75s尝试后依然没有收到ACK包则放弃本此连接。</p>
+<h4 id="延迟应答定时器"><a href="#延迟应答定时器" class="headerlink" title="延迟应答定时器"></a>延迟应答定时器</h4><p>由于TCP在发送数据后对方需要发送ACK包，如果每次接收到数据后立马发送ACK包可能会加重网络负担，如果等待一段时间可以接收到更多的数据则累计确认可以提高网络传输效率，或者可能在定时器内需要发送数据则可以捎带发送ACK包，也可以提高传输效率。</p>
+<h4 id="重传定时器"><a href="#重传定时器" class="headerlink" title="重传定时器"></a>重传定时器</h4><p>在TCP发送数据后，会启动一个定时器，如果在定时器溢出前没有收到确认包，将会重发数据。定时间隔采用指数退避的方式且和RTT估值有关，在多次重传依然失败后将会发送RST包。</p>
+<h4 id="坚持定时器"><a href="#坚持定时器" class="headerlink" title="坚持定时器"></a>坚持定时器</h4><p>TCP在传输数据时，接收方会发送接收窗口，如果窗口的大小变为0则发送方将停止发送数据直到窗口打开。如果此时窗口打开的数据包丢失，那么会发生接收方在等待接收数据而发送方在等待窗口打开的死锁情况。为了防止这一情况的出现，发送方维持了一个坚持定时器向接收方查询窗口是否打开，这种报文段被称为窗口探查（探查数据一般不占用序列号）。计时器一般也采用了TCP的指数退避方式。和重传不同，TCP从不放弃窗口探查，直到窗口打开或者连接被关闭。</p>
+<h4 id="保活定时器"><a href="#保活定时器" class="headerlink" title="保活定时器"></a>保活定时器</h4><p>TCP在建立连接后任意一方可以不发送任何数据，此时称为一个空闲的TCP连接。双方可以维持一个TCP连接数小时、数天甚至数年只要双方主机没有崩溃或者重启，而不管中间的路由器是否崩溃或者重启。但是如果一方已经崩溃或者关机或者重启，此时需要一种机制能够探测连接是否正常。保活定时器便用来实现这种探测，一般用于服务器。</p>
+<p>一般一个TCP连接如果2小时没有任何活动，服务器就会向客户发送一个探查。服务器探查时客户端可能存在以下几种情况：</p>
+<pre><code>1. 客户端正常并可达：两小时后定时器复位
+2. 客户端已崩溃或者已关闭或者重启：发送多个探查后失败后服务器终止TCP连接
+3. 客户端崩溃或者重启处于正常状态：客户端收到一个未知数据，向服务器发送RST复位包，服务器终止该连接
+4. 客户端正常但是不可达（中间路由崩溃）：发送多个探查后失败后服务器终止TCP连接，即终止了一个良好的连接
+</code></pre><p>正是由于保活的上述特点，其主要有耗费带宽、关闭一个良好连接的缺点。优点是可以一定程度解决无效TCP连接，节省服务器维持连接需要的资源。</p>
+<h4 id="FIN-WAIT-2定时器"><a href="#FIN-WAIT-2定时器" class="headerlink" title="FIN_WAIT_2定时器"></a>FIN_WAIT_2定时器</h4><p>在TCP主动关闭连接并收到ACK包时进入改状态，如果此时对方既不发送数据也不发送FIN包终止连接，此时主动关闭一方会在等待一段时间后直接关闭该连接，这样可以防止对方崩溃后一直等待FIN包的情况。</p>
+<h4 id="2MSL定时器"><a href="#2MSL定时器" class="headerlink" title="2MSL定时器"></a>2MSL定时器</h4><p>2MSL定时器也称为TIME_WAIT定时器，是主动关闭以方出现的状态，在主动一方接收到FIN包后处于的一个状态。该状态主要用来防止丢失ACK包（对方没有收到ACK会重发FIN包）。在该期间收到的任何报文均会被丢弃，防止旧TCP连接出现在新TCP连接中。</p>
+<h3 id="重传RTT时间测量"><a href="#重传RTT时间测量" class="headerlink" title="重传RTT时间测量"></a>重传RTT时间测量</h3><p>TCP超时重传需要确认重传超时时间，由于数据包以及确认包往返需要时间，因此为了确定合适的超时时间需要测量TCP连接的往返时间。RTT时间和网络状态密切相关，因此一般是一个动态变化的值。（相关：Karn算法）</p>
+<h2 id="TCP的流量控制"><a href="#TCP的流量控制" class="headerlink" title="TCP的流量控制"></a>TCP的流量控制</h2><p>由于接收方的缓冲区大小是有限的，因此必须提供一种机制防止发送方发送太快而接收方来不及接收而造成的数据丢失，这就是滑动窗口协议提供的流量控制功能。</p>
+<h3 id="TCP的滑动窗口协议"><a href="#TCP的滑动窗口协议" class="headerlink" title="TCP的滑动窗口协议"></a>TCP的滑动窗口协议</h3><p>滑动窗口的示意图如下：<a href="http://www.cnblogs.com/hupp/p/4857093.html" target="_blank" rel="noopener">图片来源</a></p>
+<p><img src="/images/sliding-window.png" alt="滑动窗口示意图"></p>
+<p>从图中可以看出，数据流有三大部分组成：窗口左边发送已确认数据、窗口内数据、窗口右边未发送数据。在窗口内部又可以分为两部分为：已发送待确认数据、可发送未发送数据。根据窗口的运动情况可分为以下几种几种移动方式：</p>
+<pre><code>1. 窗口左边向右移动导致窗口合拢，表明已发送数据被确认
+2. 窗口右边向右移动导致窗口张开，此时表明对方处理接收缓冲区数据导致接收窗口变大
+3. 窗口右边向左移动导致窗口收缩，该情况一般发生在糊涂窗口处理时，一般该行为不被建议。
+</code></pre><p>接收窗口的大小可以通过API设置发送或者接收缓冲的方式设定。</p>
+<h3 id="糊涂窗口综合症（Silly-Window-Syndrome）"><a href="#糊涂窗口综合症（Silly-Window-Syndrome）" class="headerlink" title="糊涂窗口综合症（Silly Window Syndrome）"></a>糊涂窗口综合症（Silly Window Syndrome）</h3><p>在基于窗口的流量控制方式中，会导致一种称为“糊涂窗口综合症SWS”的情况。该情况是指当前少量的数据（没有满报文长度）进行了交换，使得数据传输效率大大降低。一般发生原因有如下几种：</p>
+<pre><code>1. 发送方缓慢创建数据，解决方式为Nagle算法
+2. 接收方缓慢消耗数据致使接收窗口很小，解决方式为David D Clark算法
+</code></pre><p>解决接收方的主要方式是接收方不通告小的窗口，发送方可以采用当满足一个满报文长度时才发送或者至少是通告窗口的一半等。</p>
+<h2 id="TCP的拥塞控制"><a href="#TCP的拥塞控制" class="headerlink" title="TCP的拥塞控制"></a>TCP的拥塞控制</h2><p>在进行数据传输时不仅需要考虑接收方的接收能力，也需要考虑网络负担问题，网络一旦拥塞将会极大降低传输效率，这既是拥塞控制需要解决的。在进行拥塞控制需要了解网络负载情况，拥塞控制主要有慢启动、拥塞避免、快重传、快恢复，以下分别介绍。</p>
+<h3 id="慢启动算法"><a href="#慢启动算法" class="headerlink" title="慢启动算法"></a>慢启动算法</h3><p>慢启动机制定义了一个拥塞窗口（cwnd），当建立TCP连接时，拥塞窗口初始化为1个报文段，每收到一个ACK包，拥塞窗口就增加一个报文段，发送方在确定发送窗口时取通告接收窗口和拥塞窗口较小的一个。拥塞窗口的增长方式为指数级增长。随着拥塞窗口的增长，最后发送接收之间的管道被填满，此时无论拥塞窗口还是通告窗口大小，管道不能再容纳更多数据，只能是接收方没小号一个单位的数据而发送方发送一个单位的数据，此时返回路径上的的ACK包数量是固定的，这既是连接的理想稳定状态。</p>
+<h3 id="拥塞避免算法"><a href="#拥塞避免算法" class="headerlink" title="拥塞避免算法"></a>拥塞避免算法</h3><p>在使用慢启动算法时，可能很快数据传输达到中间路由器能力的极限，此时数据将会被丢弃。为了防止这一情况出现，在慢启动算法上提出了拥塞避免算法，这两个算法是两个独立的算法，但实现中常常结合在一起。</p>
+<p>拥塞避免算法需要维护一个慢启动门限ssthresh，算法的基本流程为：</p>
+<pre><code>1. 对于一个连接，初始化cwnd为1个报文段，ssthresh初始化65535个字节
+2. 当cwnd&lt;ssthresh使用慢启动，cwnd&gt;ssthresh使用拥塞避免算法，两者相等可随意选择一个
+3. 发生拥塞时（超时或者重复确认），ssthresh设置为当前窗口的一半，如果超时造成拥塞则将cwnd设置为1
+4. 拥塞避免时cwnd以线性方式增长
+</code></pre><h3 id="快重传与快速恢复"><a href="#快重传与快速恢复" class="headerlink" title="快重传与快速恢复"></a>快重传与快速恢复</h3><p>在TCP收到一个失序的报文时，TCP需要立刻产生一个重复的ACK包，该ACK包告诉对方接收失序，期望接受的序列号。由于重复ACK包不一定是接收失序造成，因此只有在连续收到3个以上的重复ACK包再进行快速重传。快速重传无需等待超时定时器溢出。接下来不再执行慢启动算法而是拥塞避免算法，这就是快速恢复算法，既不把cwnd设为1。</p>
+<p>快速恢复算实现如下：</p>
+<pre><code>1. 收到三个重复确认后将ssthresh设置为cwnd的一半，重传丢失的报文，设置cwnd为ssthresh+3倍报文段大小
+2. 每次收到另外一个重复ACK时，cwnd增加一个1个报文段，并发送分组
+3. 收到确认新报文的ACK包后cwnd设置为ssthresh
+</code></pre><h2 id="TCP-UDP对比"><a href="#TCP-UDP对比" class="headerlink" title="TCP-UDP对比"></a>TCP-UDP对比</h2><p>由于UDP自身协议比较简单，而且没有很多控制方法，因此UDP对系统资源要求较少，且效率也更高。由于UDP头部是固定的8字节，相比于TCP头部更加简单，因此传输效率也比较高。但是UDP不对可靠性做任何保证。</p>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p><a href="https://book.douban.com/subject/1088054/" target="_blank" rel="noopener">TCP/IP详解 卷1：协议</a></p>
+<p><a href="https://blog.csdn.net/hyman_yx/article/details/52086389" target="_blank" rel="noopener">TCP中的7种定时器详解</a></p>
+<p><a href="https://www.jianshu.com/p/7178d5c3716e" target="_blank" rel="noopener">计算机网络相关</a></p>
+<p><a href="https://blog.csdn.net/sicofield/article/details/9672457" target="_blank" rel="noopener">TCP中的定时器</a></p>
+<p><a href="https://zh.wikipedia.org/wiki/糊涂窗口综合症" target="_blank" rel="noopener">糊涂窗口综合症-维基百科</a></p>
+<p><a href="http://www.cnblogs.com/way_testlife/archive/2010/10/11/1848241.html" target="_blank" rel="noopener">TCP/IP协议族之运输层：TCP流量控制和拥塞控制1</a></p>
+<p><a href="http://www.cnblogs.com/way_testlife/archive/2010/10/11/1848333.html" target="_blank" rel="noopener">TCP/IP协议族之运输层：TCP流量控制和拥塞控制2</a></p>
+<p><a href="https://blog.csdn.net/nestler/article/details/30237529" target="_blank" rel="noopener">慢启动与拥塞窗口</a></p>
+<p><a href="https://www.jianshu.com/p/8331aeb193d9" target="_blank" rel="noopener">SYN攻击及防范</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/计算机网络/" rel="tag"># 计算机网络</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/operating-system/linux-cpp-thread-pool.html" rel="next" title="Linux下C++实现一个简单的线程池">
+                <i class="fa fa-chevron-left"></i> Linux下C++实现一个简单的线程池
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/algorithms-design/top-k-problem.html" rel="prev" title="选择问题-TopK问题：N个元素的数组找到最大K个数">
+                选择问题-TopK问题：N个元素的数组找到最大K个数 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/Limbo.jpg"
+                alt="hsuloong" />
+            
+              <p class="site-author-name" itemprop="name">hsuloong</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">45</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/hsuloong" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-UDP基础知识"><span class="nav-number">1.</span> <span class="nav-text">TCP-UDP基础知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-UDP首部解析"><span class="nav-number">2.</span> <span class="nav-text">TCP-UDP首部解析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP连接建立与终止"><span class="nav-number">3.</span> <span class="nav-text">TCP连接建立与终止</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#三次握手建立TCP连接"><span class="nav-number">3.1.</span> <span class="nav-text">三次握手建立TCP连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#四次挥手终止TCP连接"><span class="nav-number">3.2.</span> <span class="nav-text">四次挥手终止TCP连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP半关闭以及半打开"><span class="nav-number">3.3.</span> <span class="nav-text">TCP半关闭以及半打开</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP的超时与重传"><span class="nav-number">4.</span> <span class="nav-text">TCP的超时与重传</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP定时器"><span class="nav-number">4.1.</span> <span class="nav-text">TCP定时器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#建立连接定时器"><span class="nav-number">4.1.1.</span> <span class="nav-text">建立连接定时器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#延迟应答定时器"><span class="nav-number">4.1.2.</span> <span class="nav-text">延迟应答定时器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#重传定时器"><span class="nav-number">4.1.3.</span> <span class="nav-text">重传定时器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#坚持定时器"><span class="nav-number">4.1.4.</span> <span class="nav-text">坚持定时器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#保活定时器"><span class="nav-number">4.1.5.</span> <span class="nav-text">保活定时器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#FIN-WAIT-2定时器"><span class="nav-number">4.1.6.</span> <span class="nav-text">FIN_WAIT_2定时器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2MSL定时器"><span class="nav-number">4.1.7.</span> <span class="nav-text">2MSL定时器</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重传RTT时间测量"><span class="nav-number">4.2.</span> <span class="nav-text">重传RTT时间测量</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP的流量控制"><span class="nav-number">5.</span> <span class="nav-text">TCP的流量控制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP的滑动窗口协议"><span class="nav-number">5.1.</span> <span class="nav-text">TCP的滑动窗口协议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#糊涂窗口综合症（Silly-Window-Syndrome）"><span class="nav-number">5.2.</span> <span class="nav-text">糊涂窗口综合症（Silly Window Syndrome）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP的拥塞控制"><span class="nav-number">6.</span> <span class="nav-text">TCP的拥塞控制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#慢启动算法"><span class="nav-number">6.1.</span> <span class="nav-text">慢启动算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#拥塞避免算法"><span class="nav-number">6.2.</span> <span class="nav-text">拥塞避免算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#快重传与快速恢复"><span class="nav-number">6.3.</span> <span class="nav-text">快重传与快速恢复</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-UDP对比"><span class="nav-number">7.</span> <span class="nav-text">TCP-UDP对比</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文章"><span class="nav-number">8.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hsuloong</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

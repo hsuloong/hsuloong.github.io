@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="数据结构," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="二项队列基础知识二项队列不是一棵堆序的树，而是堆序树的集合，称为森林。堆序树中的每一棵树叫着二项式树，高度为0的二项树是一棵单节点树，高度为k的二项树Bk的树通过将一棵二项树Bk-1附接到另一棵Bk-1的根上构成，如下图所示为二项式树：图片来源  每项棵的节点个数按照高从0到k二进制表示为(1)(10)(100)(1000)(10000)….. 二项树的递归定义如下：  度为0的二项树只有一个节点">
+<meta name="keywords" content="数据结构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据结构之二项队列的定义与实现">
+<meta property="og:url" content="http://yoursite.com/data-structure/binomial-queue.html">
+<meta property="og:site_name" content="千里之行 始于足下">
+<meta property="og:description" content="二项队列基础知识二项队列不是一棵堆序的树，而是堆序树的集合，称为森林。堆序树中的每一棵树叫着二项式树，高度为0的二项树是一棵单节点树，高度为k的二项树Bk的树通过将一棵二项树Bk-1附接到另一棵Bk-1的根上构成，如下图所示为二项式树：图片来源  每项棵的节点个数按照高从0到k二进制表示为(1)(10)(100)(1000)(10000)….. 二项树的递归定义如下：  度为0的二项树只有一个节点">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/images/binomial-tree.png">
+<meta property="og:image" content="http://yoursite.com/images/binomial-queue-merge.jpg">
+<meta property="og:image" content="http://yoursite.com/images/binomial-queue-structure.jpg">
+<meta property="og:image" content="http://yoursite.com/images/binomial-queue-merge-process.jpg">
+<meta property="og:updated_time" content="2018-07-07T12:53:33.558Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="数据结构之二项队列的定义与实现">
+<meta name="twitter:description" content="二项队列基础知识二项队列不是一棵堆序的树，而是堆序树的集合，称为森林。堆序树中的每一棵树叫着二项式树，高度为0的二项树是一棵单节点树，高度为k的二项树Bk的树通过将一棵二项树Bk-1附接到另一棵Bk-1的根上构成，如下图所示为二项式树：图片来源  每项棵的节点个数按照高从0到k二进制表示为(1)(10)(100)(1000)(10000)….. 二项树的递归定义如下：  度为0的二项树只有一个节点">
+<meta name="twitter:image" content="http://yoursite.com/images/binomial-tree.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/data-structure/binomial-queue.html"/>
+
+
+
+
+
+  <title>数据结构之二项队列的定义与实现 | 千里之行 始于足下</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">千里之行 始于足下</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/data-structure/binomial-queue.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="hsuloong">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Limbo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="千里之行 始于足下">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">数据结构之二项队列的定义与实现</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-10T21:06:50+08:00">
+                2018-03-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/public/categories/data-structure/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="二项队列基础知识"><a href="#二项队列基础知识" class="headerlink" title="二项队列基础知识"></a>二项队列基础知识</h2><p>二项队列不是一棵堆序的树，而是堆序树的集合，称为森林。堆序树中的每一棵树叫着二项式树，高度为0的二项树是一棵单节点树，高度为k的二项树B<sub>k</sub>的树通过将一棵二项树B<sub>k-1</sub>附接到另一棵B<sub>k-1</sub>的根上构成，如下图所示为二项式树：<a href="http://blog.csdn.net/anlian523/article/details/78147542" target="_blank" rel="noopener">图片来源</a></p>
+<p><img src="/images/binomial-tree.png" alt="二项式树"></p>
+<p>每项棵的节点个数按照高从0到k二进制表示为(1)(10)(100)(1000)(10000)…..</p>
+<p>二项树的递归定义如下：</p>
+<ul>
+<li>度为0的二项树只有一个节点</li>
+<li>度数为k的二项树有一个根节点，根节点下有k个子女，每个子女度数分别为k-1、k-2…..2、1、0的二项树的根</li>
+</ul>
+<p>度数为k（或者说高度为k）的二项式树一共有2<sup>k</sup>个节点，深度为d处节点是<a href="https://zh.wikipedia.org/wiki/二項式係數#計算二項式係數" target="_blank" rel="noopener">二项式系数</a>（k/d）组合中的C(k,d)。一棵二叉树的秩为从为从根节点开始到其叶节点中最长的一条树链上结点的个数。</p>
+<h2 id="二项队列的操作"><a href="#二项队列的操作" class="headerlink" title="二项队列的操作"></a>二项队列的操作</h2><p>按照二项队列的定义，二项队列中的每棵树为堆序树，因此最小元素可以通过遍历所有树的根节点来得到。由于对于N个节点的二项队列总共有logN棵不同的树,因此通常查找时间复杂度为O(logN)。对于合并操作，只要存在相同度的二项式树，就把根节点值较大的一颗成为根节点值较小二项树根的子树，合并操作最坏时间复杂度为O(logN)。插入操作和左式堆类似，可以转化为合并操作，即单节点二项树的合并，最坏时间复杂度O(logN)。删除操作也类似，删除后二项树分裂成二项队列，此时只需和原始二项队列合并即可，最坏时间复杂度O(logN)。总而言之，二项式队列的操作最终都可以采用合并操作完成，和左式堆非常类似。一般而言，对于一个初始为空的二项队列进行N次插入最坏时间复杂度为O(N)。</p>
+<p>下图为队列H1和H2的合并过程：<a href="http://blog.csdn.net/changyuanchn/article/details/14648463" target="_blank" rel="noopener">图片来源</a></p>
+<p><img src="/images/binomial-queue-merge.jpg" alt="二项队列合并过程"></p>
+<p>合并过程类似于二进制加法。</p>
+<h2 id="二项队列的实现"><a href="#二项队列的实现" class="headerlink" title="二项队列的实现"></a>二项队列的实现</h2><p>根据二项式树的特点，其一个节点可能有多个子节点，因此在存储时可能需要采用孩子兄弟表示法来存储。而且子节点按照子树的节点数量从大到小排序，如下图所示：<a href="http://blog.csdn.net/changyuanchn/article/details/14648463" target="_blank" rel="noopener">图片来源</a></p>
+<p><img src="/images/binomial-queue-structure.jpg" alt="二项队列存储"></p>
+<p>二项树合并图解：</p>
+<p><img src="/images/binomial-queue-merge-process.jpg" alt="二项树合并指针变化"></p>
+<p>二项队列的操作主要有：</p>
+<ul>
+<li>合并：Merge</li>
+<li>删除最小值：DeleteMin</li>
+<li>插入节点：InsertElement</li>
+<li>清空二项队列：MakeEmpty</li>
+<li>查找最小元素：FindMin</li>
+</ul>
+<p>根据以上分析，有如下数据结构定义：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Node</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">	DataType data;</span><br><span class="line">	Node * leftChild;</span><br><span class="line">	Node * nextSibling;</span><br><span class="line">	Node() : data(<span class="number">-1</span>), leftChild(<span class="literal">nullptr</span>), nextSibling(<span class="literal">nullptr</span>) &#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BinomialQueue</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	BinomialQueue(<span class="keyword">int</span> inCapacity);</span><br><span class="line">	~BinomialQueue();</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">Merge</span><span class="params">(BinomialQueue&lt;DataType&gt; &amp;otherQueue)</span></span>;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">DeleteMin</span><span class="params">()</span></span>;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">InsertElement</span><span class="params">(DataType inElement)</span></span>;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">MakeEmpty</span><span class="params">()</span></span>;</span><br><span class="line">	<span class="function">DataType <span class="title">FindMin</span><span class="params">()</span></span>;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	Node&lt;DataType&gt; *MergeCore(Node&lt;DataType&gt; *inTree1, Node&lt;DataType&gt; *inTree2);</span><br><span class="line">	<span class="keyword">int</span> capacity; <span class="comment">//此处容量是指可以容纳树的数量</span></span><br><span class="line">	<span class="keyword">int</span> currentSize; <span class="comment">//当前容纳树度数最高+1</span></span><br><span class="line">	Node&lt;DataType&gt; **<span class="built_in">queue</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>以下分别实现各函数</p>
+<ul>
+<li>构造函数，根据输入最大容量建立二项队列，动态分配</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line">BinomialQueue&lt;DataType&gt;::BinomialQueue(<span class="keyword">int</span> inCapacity) : capacity(inCapacity), currentSize(<span class="number">0</span>), <span class="built_in">queue</span>(<span class="literal">nullptr</span>)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="built_in">queue</span> = <span class="keyword">new</span> Node&lt;DataType&gt; *[inCapacity];</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; inCapacity; i++) &#123;</span><br><span class="line">		<span class="built_in">queue</span>[i] = <span class="literal">nullptr</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>合并核心函数，即切换指针操作</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line">Node&lt;DataType&gt; *BinomialQueue&lt;DataType&gt;::MergeCore(Node&lt;DataType&gt; *inTree1, Node&lt;DataType&gt; *inTree2)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">if</span> (inTree1 == <span class="literal">nullptr</span>) <span class="keyword">return</span> inTree2;</span><br><span class="line">	<span class="keyword">if</span> (inTree2 == <span class="literal">nullptr</span>) <span class="keyword">return</span> inTree1;</span><br><span class="line">	<span class="keyword">if</span> (inTree1-&gt;data &gt; inTree2-&gt;data) swap(inTree1, inTree2);</span><br><span class="line"></span><br><span class="line">	inTree2-&gt;nextSibling = inTree1-&gt;leftChild;</span><br><span class="line">	inTree1-&gt;leftChild = inTree2;</span><br><span class="line">	<span class="keyword">return</span> inTree1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>合并函数，采用笨办法而不是《数据结构与算法分析-C语言描述》一书中非常巧妙的办法，分2*2*2=8种情况讨论</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">void</span> BinomialQueue&lt;DataType&gt;::Merge(BinomialQueue&lt;DataType&gt; &amp;otherQueue)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">int</span> maxSize = currentSize &gt; otherQueue.currentSize ? currentSize : otherQueue.currentSize;</span><br><span class="line">	Node&lt;DataType&gt; *carry = <span class="literal">nullptr</span>;</span><br><span class="line">	Node&lt;DataType&gt; *tree1 = <span class="literal">nullptr</span>, *tree2 = <span class="literal">nullptr</span>; </span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; maxSize+<span class="number">1</span>; i++) &#123;</span><br><span class="line">		tree1 = <span class="built_in">queue</span>[i]; tree2 = otherQueue.<span class="built_in">queue</span>[i];</span><br><span class="line">		<span class="keyword">if</span> (carry == <span class="literal">nullptr</span>) &#123;</span><br><span class="line">			<span class="keyword">if</span> (tree1 != <span class="literal">nullptr</span> &amp;&amp; tree2 != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">				carry = MergeCore(tree1, tree2);</span><br><span class="line">				<span class="built_in">queue</span>[i] =  otherQueue.<span class="built_in">queue</span>[i] = <span class="literal">nullptr</span>;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">else</span> &#123;</span><br><span class="line">				<span class="built_in">queue</span>[i] = tree1 != <span class="literal">nullptr</span> ? tree1 :tree2;</span><br><span class="line">				otherQueue.<span class="built_in">queue</span>[i] = <span class="literal">nullptr</span>;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="keyword">if</span> (tree1 != <span class="literal">nullptr</span> &amp;&amp; tree2 != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">				<span class="built_in">queue</span>[i] = carry;</span><br><span class="line">				carry = MergeCore(tree1, tree2);</span><br><span class="line">				otherQueue.<span class="built_in">queue</span>[i] = <span class="literal">nullptr</span>;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">else</span> <span class="keyword">if</span> (tree1 == <span class="literal">nullptr</span> &amp;&amp; tree2 == <span class="literal">nullptr</span>)&#123;</span><br><span class="line">				<span class="built_in">queue</span>[i] = carry;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">else</span> &#123;</span><br><span class="line">				tree1 = tree1 != <span class="literal">nullptr</span> ? tree1 : tree2;</span><br><span class="line">				carry = MergeCore(tree1, carry);</span><br><span class="line">				<span class="built_in">queue</span>[i] =  otherQueue.<span class="built_in">queue</span>[i] = <span class="literal">nullptr</span>;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (<span class="built_in">queue</span>[currentSize] != <span class="literal">nullptr</span>) ++currentSize;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>删除最小元素，先遍历找到最小元素然后删除根几点，将剩下的子树组成一个新的二项队列然后调用合并函数</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">void</span> BinomialQueue&lt;DataType&gt;::DeleteMin()</span><br><span class="line">&#123;</span><br><span class="line">	DataType minElement = numeric_limits&lt;DataType&gt;::max(); <span class="comment">//库函数，当前类型最大值</span></span><br><span class="line">	<span class="keyword">int</span> miniTreeIndex = <span class="number">-1</span>;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; currentSize; i++) &#123;</span><br><span class="line">		<span class="keyword">if</span> (<span class="built_in">queue</span>[i] != <span class="literal">nullptr</span> &amp;&amp; minElement &gt; <span class="built_in">queue</span>[i]-&gt;data) &#123;</span><br><span class="line">			miniTreeIndex = i; minElement = <span class="built_in">queue</span>[i]-&gt;data;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (miniTreeIndex == <span class="number">-1</span>) <span class="keyword">throw</span> <span class="string">"Queue is empty!"</span>; <span class="comment">//没有元素</span></span><br><span class="line">	</span><br><span class="line">	BinomialQueue&lt;DataType&gt; remainQueue(currentSize+<span class="number">5</span>); </span><br><span class="line">	remainQueue.currentSize = miniTreeIndex;</span><br><span class="line">	Node&lt;DataType&gt; *startTree = <span class="built_in">queue</span>[miniTreeIndex]-&gt;leftChild;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = miniTreeIndex<span class="number">-1</span>; i &gt;= <span class="number">0</span>; --i) &#123;</span><br><span class="line">		remainQueue.<span class="built_in">queue</span>[i] = startTree;</span><br><span class="line">		startTree = startTree-&gt;nextSibling;</span><br><span class="line">		remainQueue.<span class="built_in">queue</span>[i]-&gt;nextSibling = <span class="literal">nullptr</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">delete</span> <span class="built_in">queue</span>[miniTreeIndex]; <span class="built_in">queue</span>[miniTreeIndex] = <span class="literal">nullptr</span>;</span><br><span class="line">	Merge(remainQueue);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>插入元素，新建一个单树队列，调用Merge函数</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">void</span> BinomialQueue&lt;DataType&gt;::InsertElement(DataType inElement)</span><br><span class="line">&#123;</span><br><span class="line">	BinomialQueue&lt;DataType&gt; remainQueue(currentSize+<span class="number">5</span>); </span><br><span class="line">	remainQueue.<span class="built_in">queue</span>[<span class="number">0</span>] = <span class="keyword">new</span> Node&lt;DataType&gt;;</span><br><span class="line">	remainQueue.<span class="built_in">queue</span>[<span class="number">0</span>]-&gt;data = inElement;</span><br><span class="line">	remainQueue.currentSize = <span class="number">1</span>;</span><br><span class="line">	Merge(remainQueue);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>清空二项式队列，非递归遍历，采用类似于二叉树中序遍历的方式</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">void</span> BinomialQueue&lt;DataType&gt;::MakeEmpty()</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; currentSize; i++) &#123;</span><br><span class="line">		<span class="built_in">stack</span>&lt;Node&lt;DataType&gt; *&gt; nodeStack;</span><br><span class="line">		Node&lt;DataType&gt; *cycleIter = <span class="built_in">queue</span>[i];</span><br><span class="line">		<span class="keyword">while</span> (cycleIter != <span class="literal">nullptr</span> || !nodeStack.empty()) &#123;</span><br><span class="line">			<span class="keyword">while</span> (cycleIter != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">				nodeStack.push(cycleIter); cycleIter = cycleIter-&gt;leftChild;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">if</span> (!nodeStack.empty()) &#123;</span><br><span class="line">				Node&lt;DataType&gt; *tmp = nodeStack.top();</span><br><span class="line">				nodeStack.pop();</span><br><span class="line">				cycleIter = tmp-&gt;nextSibling;</span><br><span class="line">				<span class="keyword">delete</span> tmp;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; currentSize; i++) &#123;</span><br><span class="line">		<span class="built_in">queue</span>[i] = <span class="literal">nullptr</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	currentSize = <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>查找最小元素</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line">DataType BinomialQueue&lt;DataType&gt;::FindMin()</span><br><span class="line">&#123;</span><br><span class="line">	DataType minElement = numeric_limits&lt;DataType&gt;::max(); <span class="comment">//库函数，当前类型最大值</span></span><br><span class="line">	<span class="keyword">int</span> miniTreeIndex = <span class="number">-1</span>;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; currentSize; i++) &#123;</span><br><span class="line">		<span class="keyword">if</span> (<span class="built_in">queue</span>[i] != <span class="literal">nullptr</span> &amp;&amp; minElement &gt; <span class="built_in">queue</span>[i]-&gt;data) &#123;</span><br><span class="line">			miniTreeIndex = i; minElement = <span class="built_in">queue</span>[i]-&gt;data;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (miniTreeIndex == <span class="number">-1</span>) <span class="keyword">throw</span> <span class="string">"Queue is empty!"</span>; <span class="comment">//没有元素</span></span><br><span class="line">	<span class="keyword">return</span> minElement;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>析构函数，清空内存</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line">BinomialQueue&lt;DataType&gt;::~BinomialQueue()</span><br><span class="line">&#123;</span><br><span class="line">	MakeEmpty(); <span class="keyword">delete</span> [] <span class="built_in">queue</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p><a href="http://blog.csdn.net/changyuanchn/article/details/14648463" target="_blank" rel="noopener">二项队列</a></p>
+<p><a href="http://www.cnblogs.com/skywang12345/p/3655900.html" target="_blank" rel="noopener">二项堆(一)之图文解析和C语言的实现</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/数据结构/" rel="tag"># 数据结构</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/data-structure/self-adjusting-heap.html" rel="next" title="数据结构之斜堆的定义与实现">
+                <i class="fa fa-chevron-left"></i> 数据结构之斜堆的定义与实现
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/cplusplus/cpp-io.html" rel="prev" title="C++输入输出基础">
+                C++输入输出基础 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/Limbo.jpg"
+                alt="hsuloong" />
+            
+              <p class="site-author-name" itemprop="name">hsuloong</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">45</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/hsuloong" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#二项队列基础知识"><span class="nav-number">1.</span> <span class="nav-text">二项队列基础知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二项队列的操作"><span class="nav-number">2.</span> <span class="nav-text">二项队列的操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二项队列的实现"><span class="nav-number">3.</span> <span class="nav-text">二项队列的实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文章"><span class="nav-number">4.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hsuloong</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

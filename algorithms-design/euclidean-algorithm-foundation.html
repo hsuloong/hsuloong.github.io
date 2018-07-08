@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="算法设计," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="最大公因数定义最大公因数又名最大公约数，是指两个整数（本文约定为正整数）共同的最大约数。在实际编程中按照维基百科的说法主要有穷举法、素因数分解法、短除法、辗转相除法（欧几里得算法）。本文主要尝试分析实现穷举法和辗转相除法。具体分析实现见下小节。 穷举法穷举法的思路非常简单，即在所有可能的解中遍历找出符合要求的解。按照遍历思路可以从小往大遍历，也可以从两个数中较小的一个数往前遍历。本文使用第二种思路">
+<meta name="keywords" content="算法设计">
+<meta property="og:type" content="article">
+<meta property="og:title" content="欧几里得计算最大公因数数学原理及实现">
+<meta property="og:url" content="http://yoursite.com/algorithms-design/euclidean-algorithm-foundation.html">
+<meta property="og:site_name" content="千里之行 始于足下">
+<meta property="og:description" content="最大公因数定义最大公因数又名最大公约数，是指两个整数（本文约定为正整数）共同的最大约数。在实际编程中按照维基百科的说法主要有穷举法、素因数分解法、短除法、辗转相除法（欧几里得算法）。本文主要尝试分析实现穷举法和辗转相除法。具体分析实现见下小节。 穷举法穷举法的思路非常简单，即在所有可能的解中遍历找出符合要求的解。按照遍历思路可以从小往大遍历，也可以从两个数中较小的一个数往前遍历。本文使用第二种思路">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-07-07T12:53:33.578Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="欧几里得计算最大公因数数学原理及实现">
+<meta name="twitter:description" content="最大公因数定义最大公因数又名最大公约数，是指两个整数（本文约定为正整数）共同的最大约数。在实际编程中按照维基百科的说法主要有穷举法、素因数分解法、短除法、辗转相除法（欧几里得算法）。本文主要尝试分析实现穷举法和辗转相除法。具体分析实现见下小节。 穷举法穷举法的思路非常简单，即在所有可能的解中遍历找出符合要求的解。按照遍历思路可以从小往大遍历，也可以从两个数中较小的一个数往前遍历。本文使用第二种思路">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/algorithms-design/euclidean-algorithm-foundation.html"/>
+
+
+
+
+
+  <title>欧几里得计算最大公因数数学原理及实现 | 千里之行 始于足下</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">千里之行 始于足下</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/algorithms-design/euclidean-algorithm-foundation.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="hsuloong">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Limbo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="千里之行 始于足下">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">欧几里得计算最大公因数数学原理及实现</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-30T11:08:11+08:00">
+                2018-05-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/public/categories/algorithms-design/" itemprop="url" rel="index">
+                    <span itemprop="name">算法设计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="最大公因数定义"><a href="#最大公因数定义" class="headerlink" title="最大公因数定义"></a>最大公因数定义</h2><p>最大公因数又名最大公约数，是指两个整数（本文约定为正整数）共同的最大约数。在实际编程中按照维基百科的说法主要有穷举法、素因数分解法、短除法、辗转相除法（欧几里得算法）。本文主要尝试分析实现穷举法和辗转相除法。具体分析实现见下小节。</p>
+<h2 id="穷举法"><a href="#穷举法" class="headerlink" title="穷举法"></a>穷举法</h2><p>穷举法的思路非常简单，即在所有可能的解中遍历找出符合要求的解。按照遍历思路可以从小往大遍历，也可以从两个数中较小的一个数往前遍历。本文使用第二种思路实现穷举法暴力求解最大公约数，具体代码如下所示：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;&lt;utility&gt;&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">int</span> <span class="title">BruteGCD</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">int</span> num1, <span class="keyword">unsigned</span> <span class="keyword">int</span> num2)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (num1 &gt; num2) &#123;</span><br><span class="line">                swap(num1, num2);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">unsigned</span> <span class="keyword">int</span> result = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">unsigned</span> <span class="keyword">int</span> i = num1; i &gt;= <span class="number">1</span>; i--) &#123;</span><br><span class="line">                <span class="keyword">if</span> (num1 % i == <span class="number">0</span> &amp;&amp; num2 % i == <span class="number">0</span>) &#123;</span><br><span class="line">                        result = i; <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="欧几里得算法"><a href="#欧几里得算法" class="headerlink" title="欧几里得算法"></a>欧几里得算法</h2><p>欧几里得算法的主要依据是$gcd(a,b)=gcd(b, a\%b)$。该公式证明如下：  </p>
+<ol>
+<li>令$g$为$(a,b)$的任意一个公因数，则有$a=k_1g, b=k_2g$，假设$a \mod b=r$，则有$a = kb+r$</li>
+<li>将前两式代入第三式得出$k_1g = kk_2g + r=&gt;r = (k_1g-kk_2g)g$，可得出$r\mod g=0$</li>
+<li>结合上述可知$a,b$任意的公因数也是$r$的因数，即可推知$(a,b)$的任意公因数是$(b,r)$的公因数</li>
+<li>同理对于任意$(b,r)$的公因数$h$，$b=m_1h,r=m_2h=&gt;a=km_1h+m_2h$，亦可推出$(b,r)$的任意公因数也是$(a,b)$的公因数</li>
+<li>最终得出两者具有相同的公因数序列，进一步得知最大公因数也相等</li>
+</ol>
+<p>根据上述数学结论如何得出最大公因数算法呢？需要注意的是，对于两个数，如果其中一个数能被另外一个数整除，那么被除数一定是两个数的最大公因数，因此我们只要重复$gcd(a,b)=gcd(b, a\%b)$过程直到出现两数可以整除为止，以上思路的实现代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*显而易见的递归算法*/</span></span><br><span class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">int</span> <span class="title">EuclideanAlgorithm</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">int</span> num1, <span class="keyword">unsigned</span> <span class="keyword">int</span> num2)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (num1 % num2 == <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> num2;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> EuclideanAlgorithm(num2, num1 % num2);</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*非递归写法*/</span></span><br><span class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">int</span> <span class="title">EuclideanAlgorithm</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">int</span> num1, <span class="keyword">unsigned</span> <span class="keyword">int</span> num2)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        <span class="keyword">while</span> (num1 % num2 != <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">unsigned</span> <span class="keyword">int</span> tmp = num1 % num2;</span><br><span class="line">                num1 = num2;</span><br><span class="line">                num2 = tmp;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> num2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上算法的时间复杂度如何计算呢？注意根据取模运算特点，对于$M&gt;N$，那么有$M\mod N&lt;M/2$，因此可以大致认为欧几里得算法的时间复杂度为$O(\log M)$。</p>
+<h2 id="算法测试"><a href="#算法测试" class="headerlink" title="算法测试"></a>算法测试</h2><p>上述算法的测试代码如下，随机生成两个正整数，然后调用每个函数进行测试，为了测试代码正确性，我们直接抄录书上的代码作为测试基准，教材实现代码如下<code>Gcd</code>函数所示</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;random&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;ctime&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;chrono&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;functional&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> chrono;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">int</span> <span class="title">Gcd</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">int</span> M, <span class="keyword">unsigned</span> <span class="keyword">int</span> N)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        <span class="keyword">unsigned</span> <span class="keyword">int</span> Rem;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (N &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                Rem = M % N;</span><br><span class="line">                M = N;</span><br><span class="line">                N = Rem;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> M;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	default_random_engine randEngine(unsigned(time(nullptr)));</span><br><span class="line">	uniform_int_distribution&lt;<span class="keyword">unsigned</span> <span class="keyword">int</span>&gt; uIntDis(<span class="keyword">unsigned</span> <span class="keyword">int</span>(<span class="number">1</span>), <span class="keyword">unsigned</span> <span class="keyword">int</span>(<span class="number">10e4</span>));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> testTimes = <span class="number">15</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">while</span> ((testTimes--) &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">unsigned</span> <span class="keyword">int</span> num1 = uIntDis(randEngine);</span><br><span class="line">                <span class="keyword">unsigned</span> <span class="keyword">int</span> num2 = uIntDis(randEngine);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">                <span class="keyword">auto</span> startTime = system_clock::now();</span><br><span class="line"></span><br><span class="line">                <span class="keyword">unsigned</span> <span class="keyword">int</span> testResult = <span class="number">0</span>;</span><br><span class="line">                <span class="comment">//testResult = BruteGCD(num1, num2); /*调用具体的算法*/</span></span><br><span class="line"></span><br><span class="line">                <span class="keyword">auto</span> endTime = system_clock::now();</span><br><span class="line"></span><br><span class="line">                <span class="keyword">unsigned</span> <span class="keyword">int</span> correctResult = Gcd(num1, num2);</span><br><span class="line"></span><br><span class="line">                <span class="built_in">cout</span> &lt;&lt; <span class="string">"num1 = "</span> &lt;&lt; num1 &lt;&lt; <span class="string">"\tnum2 = "</span> &lt;&lt; num2;</span><br><span class="line">                <span class="built_in">cout</span> &lt;&lt; <span class="string">"\tgcd = "</span> &lt;&lt; correctResult &lt;&lt; <span class="string">"\t"</span>;</span><br><span class="line">                <span class="built_in">cout</span> &lt;&lt; ((testResult == correctResult) ? <span class="string">"Correct;"</span> : <span class="string">"Wrong;"</span>);</span><br><span class="line"></span><br><span class="line">                <span class="keyword">auto</span> duration = duration_cast&lt;microseconds&gt;(endTime - startTime);</span><br><span class="line">                <span class="built_in">cout</span> &lt;&lt; <span class="string">"TimeCost:"</span> &lt;&lt; duration.count() &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">        &#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p><a href="https://zh.wikipedia.org/wiki/%E6%9C%80%E5%A4%A7%E5%85%AC%E5%9B%A0%E6%95%B8" target="_blank" rel="noopener">最大公因数-维基百科</a></p>
+<p><a href="https://zh.wikipedia.org/wiki/%E8%BC%BE%E8%BD%89%E7%9B%B8%E9%99%A4%E6%B3%95" target="_blank" rel="noopener">辗转相除法-维基百科</a></p>
+<p><a href="https://www.cnblogs.com/drizzlecrj/archive/2007/09/14/892340.html" target="_blank" rel="noopener">最大公约数(Gcd)两种算法</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/算法设计/" rel="tag"># 算法设计</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/algorithms-design/max-subsequence-sum.html" rel="next" title="最大连续子序列和问题">
+                <i class="fa fa-chevron-left"></i> 最大连续子序列和问题
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/data-structure/double-circular-linked-list.html" rel="prev" title="数据结构之双向循环链表-指针实现">
+                数据结构之双向循环链表-指针实现 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/Limbo.jpg"
+                alt="hsuloong" />
+            
+              <p class="site-author-name" itemprop="name">hsuloong</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">45</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/hsuloong" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#最大公因数定义"><span class="nav-number">1.</span> <span class="nav-text">最大公因数定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#穷举法"><span class="nav-number">2.</span> <span class="nav-text">穷举法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#欧几里得算法"><span class="nav-number">3.</span> <span class="nav-text">欧几里得算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#算法测试"><span class="nav-number">4.</span> <span class="nav-text">算法测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文章"><span class="nav-number">5.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hsuloong</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

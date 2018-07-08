@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="C++,数据结构," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="队列基础知识和栈类似，队列也是一种线性表，不过队列是在一端插入在另外一端删除。插入的一端称为队尾，删除的一端称为队头。队列的基本操作是入队和出队。由于队列的插入删除特性，因此队列具有“先进先出(FIFO)”的特点。同理，使用顺序表实现的队列称为顺序队列，使用链表实现的队列称为链式队列。队列采用数组实现时一般需要实现为循环数组，故一般也称为循环队列。队列实现中一般有如下操作：  入队：Enqueue">
+<meta name="keywords" content="C++,数据结构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据结构之队列的定义与实现">
+<meta property="og:url" content="http://yoursite.com/data-structure/queue.html">
+<meta property="og:site_name" content="千里之行 始于足下">
+<meta property="og:description" content="队列基础知识和栈类似，队列也是一种线性表，不过队列是在一端插入在另外一端删除。插入的一端称为队尾，删除的一端称为队头。队列的基本操作是入队和出队。由于队列的插入删除特性，因此队列具有“先进先出(FIFO)”的特点。同理，使用顺序表实现的队列称为顺序队列，使用链表实现的队列称为链式队列。队列采用数组实现时一般需要实现为循环数组，故一般也称为循环队列。队列实现中一般有如下操作：  入队：Enqueue">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-07-07T12:53:33.568Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="数据结构之队列的定义与实现">
+<meta name="twitter:description" content="队列基础知识和栈类似，队列也是一种线性表，不过队列是在一端插入在另外一端删除。插入的一端称为队尾，删除的一端称为队头。队列的基本操作是入队和出队。由于队列的插入删除特性，因此队列具有“先进先出(FIFO)”的特点。同理，使用顺序表实现的队列称为顺序队列，使用链表实现的队列称为链式队列。队列采用数组实现时一般需要实现为循环数组，故一般也称为循环队列。队列实现中一般有如下操作：  入队：Enqueue">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/data-structure/queue.html"/>
+
+
+
+
+
+  <title>数据结构之队列的定义与实现 | 千里之行 始于足下</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">千里之行 始于足下</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/data-structure/queue.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="hsuloong">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Limbo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="千里之行 始于足下">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">数据结构之队列的定义与实现</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-05T13:34:10+08:00">
+                2018-03-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/public/categories/data-structure/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="队列基础知识"><a href="#队列基础知识" class="headerlink" title="队列基础知识"></a>队列基础知识</h2><p>和栈类似，队列也是一种线性表，不过队列是在一端插入在另外一端删除。插入的一端称为队尾，删除的一端称为队头。队列的基本操作是入队和出队。由于队列的插入删除特性，因此队列具有“先进先出(FIFO)”的特点。同理，使用顺序表实现的队列称为顺序队列，使用链表实现的队列称为链式队列。队列采用数组实现时一般需要实现为循环数组，故一般也称为循环队列。队列实现中一般有如下操作：</p>
+<ul>
+<li>入队：Enqueue</li>
+<li>出队：Dequeue</li>
+<li>判断是否为空：IsEmpty</li>
+<li>清空队列：MakeEmpty</li>
+<li>读取队首元素：Front</li>
+</ul>
+<h2 id="队列的链表实现"><a href="#队列的链表实现" class="headerlink" title="队列的链表实现"></a>队列的链表实现</h2><p>在采用链表实现队列时，由于队列是“先进先出”的，因此可以尝试使用尾插法同时从头部删除的方式实现队列“先进先出”的特点。在STL中queue的实现中，其底层采用的是deque，和栈类似，list也可实现队列。</p>
+<p>仿照《数据结构与算法分析-C语言描述》的定义，队列可定义如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Node</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	Node(DataType inData):data(inData),next(<span class="literal">nullptr</span>) &#123;&#125;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	DataType data;</span><br><span class="line">	Node *next;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Queue</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	Queue():dummyNode(<span class="number">-1</span>), queueSize(<span class="number">0</span>), lastNode(<span class="literal">nullptr</span>) &#123;&#125;</span><br><span class="line">	~Queue();</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">Enqueue</span><span class="params">(DataType inData)</span></span>; <span class="comment">//入队</span></span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">Dequeue</span><span class="params">()</span></span>; <span class="comment">//出队</span></span><br><span class="line">	<span class="function">DataType <span class="title">Front</span><span class="params">()</span></span>; <span class="comment">//读取队首元素，队空则抛出异常</span></span><br><span class="line">	<span class="function"><span class="keyword">bool</span> <span class="title">IsEmpty</span><span class="params">()</span></span>; <span class="comment">//判断队列是否为空</span></span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">MakeEmpty</span><span class="params">()</span></span>; <span class="comment">//清空队列</span></span><br><span class="line">	<span class="function"><span class="keyword">int</span> <span class="title">QueueSize</span><span class="params">()</span></span>; <span class="comment">//返回队列大小</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	Node&lt;DataType&gt; dummyNode;</span><br><span class="line">	<span class="keyword">int</span> queueSize;</span><br><span class="line">	Node&lt;DataType&gt; *lastNode;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>如上所示，队列的数据成员有哑节点、队列大小以及一个指链表尾端的指针。如下依次实现各个操作</p>
+<ul>
+<li>入队操作，采用尾插法</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">void</span> Queue&lt;DataType&gt;::Enqueue(DataType inData)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">if</span> (queueSize &lt;= <span class="number">0</span> || lastNode == <span class="literal">nullptr</span>) &#123;</span><br><span class="line">		lastNode = &amp;dummyNode;</span><br><span class="line">	&#125;</span><br><span class="line">	lastNode-&gt;next = <span class="keyword">new</span> Node&lt;DataType&gt;(inData);</span><br><span class="line">	lastNode = lastNode-&gt;next; ++queueSize;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>出队操作，不断删除链表第一个元素，队空抛出异常</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">void</span> Queue&lt;DataType&gt;::Dequeue()</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">if</span> (queueSize &lt;= <span class="number">0</span> || dummyNode.next == <span class="literal">nullptr</span>) &#123;</span><br><span class="line">		<span class="keyword">throw</span> <span class="string">"Queue is empty!"</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	Node&lt;DataType&gt; *tmp = dummyNode.next; <span class="comment">/*删除头部*/</span></span><br><span class="line">	dummyNode.next = dummyNode.next-&gt;next;</span><br><span class="line">	<span class="keyword">delete</span> tmp; --queueSize;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>读取队首元素，队空则抛出异常</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line">DataType Queue&lt;DataType&gt;::Front()</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">if</span> (queueSize &lt;= <span class="number">0</span> || dummyNode.next == <span class="literal">nullptr</span>) &#123;</span><br><span class="line">		<span class="keyword">throw</span> <span class="string">"Queue is empty!"</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> dummyNode.next-&gt;data;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>判断队列是否为空</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">bool</span> Queue&lt;DataType&gt;::IsEmpty()</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">return</span> queueSize &lt;= <span class="number">0</span> || dummyNode.next == <span class="literal">nullptr</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>清空队列，也可以直接通过调用Dequeue函数实现</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">void</span> Queue&lt;DataType&gt;::MakeEmpty()</span><br><span class="line">&#123;</span><br><span class="line">	Node&lt;DataType&gt; *tmp = dummyNode.next;</span><br><span class="line">	<span class="comment">/*循环删除头部*/</span></span><br><span class="line">	<span class="keyword">while</span> (tmp != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">		dummyNode.next = tmp-&gt;next;</span><br><span class="line">		<span class="keyword">delete</span> tmp; --queueSize;</span><br><span class="line">		tmp = dummyNode.next;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>返回队列大小</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">int</span> Queue&lt;DataType&gt;::QueueSize()</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">return</span> queueSize;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>析构函数，直接调用MakeEmpty函数实现</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line">Queue&lt;DataType&gt;::~Queue()</span><br><span class="line">&#123;</span><br><span class="line">	MakeEmpty();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="队列的循环数组实现"><a href="#队列的循环数组实现" class="headerlink" title="队列的循环数组实现"></a>队列的循环数组实现</h2><p>在使用数组实现队列时，由于队列是在一端插入，另外一端删除，因此队列和栈不同的是需要两个指针分别指向队首和队尾，同时需要采用循环数组的实现方式，循环数组意味着在物理结构上队首、队尾标记可能不遵循前后的位置关系。采用循环数组实现队列的基本ADT定义如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Queue</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	Queue(<span class="keyword">int</span> inQueueCapacity);</span><br><span class="line">	~Queue(); <span class="comment">//析构函数，回收内存</span></span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">Enqueue</span><span class="params">(DataType inData)</span></span>; <span class="comment">//入队，堆满则抛出异常</span></span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">Dequeue</span><span class="params">()</span></span>; <span class="comment">//出队，队空则抛出异常</span></span><br><span class="line">	<span class="function">DataType <span class="title">Front</span><span class="params">()</span></span>; <span class="comment">//读取队首元素，队空则抛出异常</span></span><br><span class="line">	<span class="function"><span class="keyword">bool</span> <span class="title">IsEmpty</span><span class="params">()</span></span>; <span class="comment">//判断队列是否为空</span></span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">MakeEmpty</span><span class="params">()</span></span>; <span class="comment">//清空队列</span></span><br><span class="line">	<span class="function"><span class="keyword">int</span> <span class="title">QueueSize</span><span class="params">()</span></span>; <span class="comment">//返回队列大小</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	<span class="keyword">int</span> queueCapacity;</span><br><span class="line">	DataType *queuePtr; <span class="comment">/*动态申请*/</span></span><br><span class="line">	<span class="keyword">int</span> front, rear; <span class="comment">/*分别指向队首、队尾*/</span></span><br><span class="line">	<span class="keyword">int</span> queueSize;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>如上所示为队列的循环数组实现的基本数据结构定义。queueCapacity保存队列的容量，queuePtr为队列的空间起始地址，front、rear分别用来指示队首、队尾位置，queueSize表示当前队列的大小。在计算front、rear时由于需要考虑绕回的情况，因此其不能直接加1，应该加1后再对容量取模。在我的是实现版本中，front==rear的情况可能是队空或者队满，因此在判断队空或者队满的时候不能简单判断两者是否相等。以下为各函数具体实现。</p>
+<ul>
+<li>构造函数的实现，分配内存，初始化数据成员</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line">Queue&lt;DataType&gt;::Queue(<span class="keyword">int</span> inQueueCapacity): queueCapacity(inQueueCapacity),</span><br><span class="line">				front(<span class="number">0</span>), rear(<span class="number">0</span>), queueSize(<span class="number">0</span>)</span><br><span class="line">&#123;</span><br><span class="line">	queuePtr = <span class="keyword">new</span> DataType[inQueueCapacity];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>入队操作，堆满则抛出异常</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">void</span> Queue&lt;DataType&gt;::Enqueue(DataType inData)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">if</span> (queueSize &gt;= queueCapacity) &#123;</span><br><span class="line">		<span class="keyword">throw</span> <span class="string">"Queue is full"</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	queuePtr[rear] = inData;</span><br><span class="line">	rear = (rear+<span class="number">1</span>) % queueCapacity;</span><br><span class="line">	++queueSize;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>出队操作，队空抛出异常</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">void</span> Queue&lt;DataType&gt;::Dequeue()</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">if</span> (queueSize &lt;= <span class="number">0</span> &amp;&amp; front == rear) &#123;</span><br><span class="line">		<span class="keyword">throw</span> <span class="string">"Queue is empty!"</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	front = (front+<span class="number">1</span>) % queueCapacity;</span><br><span class="line">	--queueSize;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>读取队首元素，队空则抛出异常</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line">DataType Queue&lt;DataType&gt;::Front()</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">if</span> (queueSize &lt;= <span class="number">0</span> &amp;&amp; front == rear) &#123;</span><br><span class="line">		<span class="keyword">throw</span> <span class="string">"Queue is empty!"</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> queuePtr[front];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>判断队列是否为空</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">bool</span> Queue&lt;DataType&gt;::IsEmpty()</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">return</span> queueSize &lt;= <span class="number">0</span> &amp;&amp; front == rear;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>清空队列，也可以直接通过调用Dequeue函数实现</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">void</span> Queue&lt;DataType&gt;::MakeEmpty()</span><br><span class="line">&#123;</span><br><span class="line">	queueSize = <span class="number">0</span>;</span><br><span class="line">	front = rear = <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>返回队列大小</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line"><span class="keyword">int</span> Queue&lt;DataType&gt;::QueueSize()</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">return</span> queueSize;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>析构函数，直接调用MakeEmpty函数实现</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</span><br><span class="line">Queue&lt;DataType&gt;::~Queue()</span><br><span class="line">&#123;</span><br><span class="line">	MakeEmpty();</span><br><span class="line">	<span class="keyword">delete</span> [] queuePtr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="代码测试"><a href="#代码测试" class="headerlink" title="代码测试"></a>代码测试</h2><p>基本数据结构测试代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">cout</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		Queue&lt;<span class="keyword">int</span>&gt; TestQueue; <span class="comment">/*实际测试*/</span></span><br><span class="line">		<span class="comment">/*Queue&lt;int&gt; TestQueue(20);*/</span></span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">13</span>; i++) &#123;</span><br><span class="line">			TestQueue.Enqueue(i);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++) &#123;</span><br><span class="line">			<span class="built_in">cout</span> &lt;&lt; TestQueue.Front() &lt;&lt; <span class="string">";"</span>;</span><br><span class="line">			TestQueue.Dequeue();</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">catch</span>(<span class="keyword">const</span> <span class="keyword">char</span> *msg) &#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; msg &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a href="https://book.douban.com/subject/1139426/" target="_blank" rel="noopener">数据结构与算法分析</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/C/" rel="tag"># C++</a>
+          
+            <a href="/tags/数据结构/" rel="tag"># 数据结构</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/data-structure/stack.html" rel="next" title="数据结构之栈的定义与实现">
+                <i class="fa fa-chevron-left"></i> 数据结构之栈的定义与实现
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/data-structure/multi-dimensional-arrays.html" rel="prev" title="数据结构之多维数组及特殊矩阵的压缩存储">
+                数据结构之多维数组及特殊矩阵的压缩存储 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/Limbo.jpg"
+                alt="hsuloong" />
+            
+              <p class="site-author-name" itemprop="name">hsuloong</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">45</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/hsuloong" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#队列基础知识"><span class="nav-number">1.</span> <span class="nav-text">队列基础知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#队列的链表实现"><span class="nav-number">2.</span> <span class="nav-text">队列的链表实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#队列的循环数组实现"><span class="nav-number">3.</span> <span class="nav-text">队列的循环数组实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码测试"><span class="nav-number">4.</span> <span class="nav-text">代码测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hsuloong</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>
